@@ -85,7 +85,7 @@ public class Player_Controller : MonoBehaviour
              rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;           
         }
 
-        if (Input.GetKeyDown("space") && partConfiguration != 1)
+        if (Input.GetKeyDown("space") && partConfiguration != 1 && extraJumps > 0)
         {
             if(partConfiguration > 2)
             {
