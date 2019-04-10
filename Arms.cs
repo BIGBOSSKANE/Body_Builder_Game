@@ -7,7 +7,7 @@ public class Arms : MonoBehaviour
     // int movementSpeed = 10;
     // int jumpForce = 10;
 
-    bool attached;
+    bool attached = false;
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
     public Rigidbody2D rb;
@@ -23,7 +23,7 @@ public class Arms : MonoBehaviour
     {
         if(unavailableTimer < 1f)
         {
-            unavailableTimer = unavailableTimer + Time.deltaTime;
+            unavailableTimer += Time.deltaTime;
         }
     }
 
@@ -41,11 +41,13 @@ public class Arms : MonoBehaviour
 
     public void Detached()
     {
-        Debug.Log("Detached");
         attached = false;
         unavailableTimer = 0f;
         boxCol.enabled = true;
-        Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
+        if(rb == null)
+        {
+            Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
+        }
         rb = this.GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;   
         rb.mass = 2;
@@ -66,7 +68,7 @@ public class Arms : MonoBehaviour
         {
             Player_Controller playerScript = player.gameObject.GetComponent<Player_Controller>();
             int playerParts = playerScript.partConfiguration;
-            if(attached == false && playerParts != 2 && playerParts != 4 && unavailableTimer > 0.8f)
+            if(attached == false && playerParts != 2 && playerParts != 4 && unavailableTimer > 0.3f)
             {
                 player.gameObject.transform.rotation = Quaternion.identity;
                 if(playerParts == 1) // this one needs changing

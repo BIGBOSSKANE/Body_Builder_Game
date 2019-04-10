@@ -142,6 +142,7 @@ public class Player_Controller : MonoBehaviour
 
         Vector2 thisPos = gameObject.transform.position;
         thisPos.y += 0.755f;
+        // all other thisPos calculations need to take this into account, probably better to just change the head starting position
         Transform head = gameObject.transform.Find("Head");
         head.position = thisPos;
 
@@ -157,6 +158,11 @@ public class Player_Controller : MonoBehaviour
         }
         else if (hasArms && !hasLegs) // need to change collider
         {
+            Transform arms = gameObject.transform.Find("Arms");
+            thisPos.y -= 0.24f;  
+            head.position = thisPos;
+            thisPos.y -= 0.76f;
+            arms.position = thisPos; 
             partConfiguration = 2;
             movementSpeed = 7.5f;
             jumpForce = 7.5f;
@@ -179,6 +185,9 @@ public class Player_Controller : MonoBehaviour
         }
         else if(hasArms && hasLegs) // need to change collider
         {
+            thisPos.y -= 0.755f;
+            Transform arms = gameObject.transform.Find("Arms");
+            arms.position = thisPos;
             partConfiguration = 4;
             movementSpeed = 10f;
             jumpForce = 10f;

@@ -44,7 +44,10 @@ public class Legs : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         boxCol.enabled = true;
-        Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
+        if(rb == null)
+        {
+            Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
+        }
         rb = this.GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;   
         rb.mass = 2;
@@ -65,7 +68,7 @@ public class Legs : MonoBehaviour
         {
             Player_Controller playerScript = player.gameObject.GetComponent<Player_Controller>();
             int playerParts = playerScript.partConfiguration;
-            if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.8f)
+            if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {
                 player.gameObject.transform.rotation = Quaternion.identity;
                 if(playerParts == 1) // this one needs changing
