@@ -1,4 +1,11 @@
-﻿
+﻿/*
+Creator: Daniel
+Created: 09/04/2019
+Laste Edited by: Daniel
+Last Edit: 15/05/2019
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,19 +14,27 @@ public class Player_Controller : MonoBehaviour
 {
     public int partConfiguration = 1; // 1 is head, 2 adds arms, 3 adds legs, 4 adds arms and legs
     public float movementSpeed = 10f;
-    public float speed;
+    float speed; // current speed
     public float jumpForce = 10f;
+    public float jumpsRemaining;
     bool jumpGate;
     private float moveInput;
-    private bool facingRight = true;
+    private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
+    public GameObject pickupBox; // the box that the player is currently picking up
+    public Transform boxHoldPos;
+    public bool boxInRange = false;
+    private Vector2 mousePos;
+    public bool holding = false;
     private Rigidbody2D rb;
-    public CapsuleCollider2D capCol;
-    public CircleCollider2D headCol;
-    private bool isGrounded;
-    public GameObject groundChecker;
-    public Transform groundCheck;
-    public float checkRadius;
-    public LayerMask whatIsGround;
+    public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
+    public CircleCollider2D headCol; // collider used when the player is just a head
+    private bool isGrounded; //is the character on the ground?
+    public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
+    public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
+    public float checkRadius; // radius of the ground checker (for Scaler Augment)
+    public LayerMask groundLayer; // determine what layer the character can actually walk and jump off of
+    public float groundedDistance = 0.3f; // distance of the grounded raycast
+    public GameObject scalerStar;
 
     private int extraJumps;
     public int numberOfJumps = 1;
@@ -27,12 +42,9 @@ public class Player_Controller : MonoBehaviour
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 2f;
 
-    public Transform armPos;
-    public Transform legPos;
-
-
-    public string armString;
-    public string legString;
+    public string armString; // will be used later to recall arm loadout
+    public string legString; // will be used later to recall leg loadout
+    public string headString; // will be used later to recall head loadout
 
 
     void Start()
@@ -47,9 +59,11 @@ public class Player_Controller : MonoBehaviour
 
     void FixedUpdate()
     {
+        
         // the checkRadius is currently too large for the head - it sets up for spider climb though
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
-        if(!isGrounded) // slow the player's horizontal movement in the air
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        
+        if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
             speed = movementSpeed / 1.2f;
         }
@@ -65,9 +79,21 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - bandaid fix
+    {
+        if(col.tag == "Box") //&& pickupBox == null)
+        {
+            pickupBox = col.gameObject;
+            boxInRange = true;
+        }
+    }
+
     void Update()
     {
-        if(isGrounded == true)
+        // Allow the below line of code to check the groundcheck distance
+        Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green);
+
+        if(groundCheckRaycast() || (headString == "Scaler" && isGrounded == true)) // used to be isGrounded == true
         {
             extraJumps = numberOfJumps;
         }
@@ -99,9 +125,9 @@ public class Player_Controller : MonoBehaviour
             rb.velocity = Vector2.up * jumpForce;
             extraJumps --;
         }
-        else if(Input.GetButton("Jump") && extraJumps == 0 && isGrounded == true && jumpGate == false)
+        else if(Input.GetButton("Jump") && extraJumps == 0 && groundCheckRaycast() && jumpGate == false) //&& isGrounded == true)
         {
-            rb.velocity = Vector2.up * jumpForce;
+            //rb.velocity = Vector2.up * jumpForce;
             jumpGate = true;
         }
 
@@ -118,9 +144,48 @@ public class Player_Controller : MonoBehaviour
         {
              rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;           
         }
+    
+
+        if(pickupBox != null)
+        {
+            if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and throw box
+            {
+                if(holding == false && boxInRange == true) // may potentially need to adjust collider to account for box
+                {                
+                    pickupBox.GetComponent<Collider2D>().enabled = false;
+                    pickupBox.transform.parent = this.transform;
+                    BoxSnap();
+                    pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
+                    holding = true;
+                }
+                else
+                {
+                    BoxDrop();
+                    /*
+                    mousePos = Input.mousePosition;
+                    var mouseDir = mousePos - pickupBox.transform.position;
+                    mouseDir.Normalize();
+                    */
+                }
+            }
+        }
+
     }
 
-    void Flip() // reverses the character sprite on turn
+    void BoxSnap()
+    {
+        pickupBox.transform.position = boxHoldPos.position;
+    }
+
+    void BoxDrop()
+    {
+        pickupBox.transform.parent = null;
+        pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
+        pickupBox.GetComponent<Collider2D>().enabled = true;
+        holding = false;      
+    }
+
+    void Flip() // reverses the character sprite when the player turns
     {
         facingRight = !facingRight;
         Vector3 Scaler = transform.localScale;
@@ -128,7 +193,18 @@ public class Player_Controller : MonoBehaviour
         transform.localScale = Scaler;
     }
 
-
+    bool groundCheckRaycast()
+    {
+        Vector2 position = transform.position;
+        Vector2 direction = Vector2.down;
+        
+        RaycastHit2D hit = Physics2D.Raycast(position, direction, groundedDistance, groundLayer);
+        if(hit.collider != null)
+        {
+            return true;
+        }
+        return false;
+    }
 
 
 
@@ -172,7 +248,16 @@ public class Player_Controller : MonoBehaviour
         {
             partConfiguration = 1;
             movementSpeed = 5f;
-            jumpForce = 5f;
+            if(headString == "Scaler")
+            {
+                scalerStar.SetActive(true);
+                jumpForce = 5f;
+            }
+            else
+            {
+                scalerStar.SetActive(false);
+                jumpForce = 7f;
+            }
             capCol.enabled = false;
             headCol.enabled = true;
             checkRadius = 0.5f; // this check radius allows for the spider climb
@@ -180,6 +265,11 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.localPosition = new Vector2(0f, 0.47f); // issue if player is rotating, the ground checker should shift to become the entire player rigidbody
             head.position = gameObject.transform.position;
             groundChecker.transform.position = gameObject.transform.position;
+            legString = "None";
+            armString = "None";
+            groundedDistance = 0.34f;
+            BoxDrop();
+            scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f);
         }
         else if (hasArms && !hasLegs) // need to change collider
         {
@@ -198,6 +288,9 @@ public class Player_Controller : MonoBehaviour
             checkRadius = 0.25f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             groundChecker.transform.localPosition = new Vector2(0f, -0.76f);
+            legString = "None";
+            groundedDistance = 0.83f;
+            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
         }
         else if (!hasArms && hasLegs) // need to change collider
         {
@@ -213,6 +306,10 @@ public class Player_Controller : MonoBehaviour
             head.position = thisPos;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
+            armString = "None";
+            groundedDistance = 1.04f;
+            BoxDrop();
+            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
         }
         else if(hasArms && hasLegs) // need to change collider
         {
@@ -229,7 +326,18 @@ public class Player_Controller : MonoBehaviour
             checkRadius = 0.25f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
+            groundedDistance = 1.07f;
+            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
         }
         // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.tag == "Box")
+        {
+            //pickupBox = null;
+            boxInRange = false;
+        }
     }
 }
