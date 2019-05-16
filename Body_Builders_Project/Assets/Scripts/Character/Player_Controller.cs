@@ -2,7 +2,7 @@
 Creator: Daniel
 Created: 09/04/2019
 Laste Edited by: Daniel
-Last Edit: 15/05/2019
+Last Edit: 16/05/2019
 */
 
 
@@ -179,10 +179,13 @@ public class Player_Controller : MonoBehaviour
 
     void BoxDrop()
     {
-        pickupBox.transform.parent = null;
-        pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
-        pickupBox.GetComponent<Collider2D>().enabled = true;
-        holding = false;      
+        if(pickupBox != null)
+        {
+            pickupBox.transform.parent = null;
+            pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
+            pickupBox.GetComponent<Collider2D>().enabled = true;
+            holding = false;   
+        } 
     }
 
     void Flip() // reverses the character sprite when the player turns
@@ -280,7 +283,7 @@ public class Player_Controller : MonoBehaviour
             arms.position = thisPos; 
             partConfiguration = 2;
             movementSpeed = 7.5f;
-            jumpForce = 10f;
+            jumpForce = 8.5f;
             headCol.enabled = false;
             capCol.enabled = true;            
             capCol.size = new Vector2(0.6f , 1.6f);
@@ -295,8 +298,8 @@ public class Player_Controller : MonoBehaviour
         else if (!hasArms && hasLegs) // need to change collider
         {
             partConfiguration = 3;
-            movementSpeed = 10f;
-            jumpForce = 13f;
+            movementSpeed = 8.5f;
+            jumpForce = 11f;
             headCol.enabled = false;
             capCol.enabled = true;
             capCol.size = new Vector2(0.6f , 1.45f);
@@ -317,8 +320,8 @@ public class Player_Controller : MonoBehaviour
             Transform arms = gameObject.transform.Find("Arms");
             arms.position = thisPos;
             partConfiguration = 4;
-            movementSpeed = 10f;
-            jumpForce = 13f;
+            movementSpeed = 8.5f;
+            jumpForce = 11f;
             headCol.enabled = false;
             capCol.enabled = true;
             capCol.size = new Vector2(0.6f , 2.08f);
