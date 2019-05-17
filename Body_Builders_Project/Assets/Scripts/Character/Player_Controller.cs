@@ -33,7 +33,9 @@ public class Player_Controller : MonoBehaviour
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
     public float checkRadius; // radius of the ground checker (for Scaler Augment)
-    public LayerMask groundLayer; // determine what layer the character can actually walk and jump off of
+    public LayerMask JumpLayer1;
+    public LayerMask JumpLayer2;
+    private LayerMask canJumpOn; // combines the 2 layers that can be jumped on
     public float groundedDistance = 0.3f; // distance of the grounded raycast
     public GameObject scalerStar;
 
@@ -55,15 +57,16 @@ public class Player_Controller : MonoBehaviour
         capCol = GetComponent<CapsuleCollider2D>();
         headCol = GetComponentInChildren<CircleCollider2D>();
         extraJumps = numberOfJumps;
-        heldBoxCol.enabled = false;
+        canJumpOn = JumpLayer1 | JumpLayer2;
         UpdateParts();
+        heldBoxCol.enabled = false;
     }
 
     void FixedUpdate()
     {
         
         // the checkRadius is currently too large for the head - it sets up for spider climb though
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, canJumpOn);
         
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
@@ -229,7 +232,7 @@ public class Player_Controller : MonoBehaviour
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down;
         
-        RaycastHit2D hit = Physics2D.Raycast(position, direction, groundedDistance, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(position, direction, groundedDistance, canJumpOn);
         if(hit.collider != null)
         {
             return true;
@@ -322,6 +325,10 @@ public class Player_Controller : MonoBehaviour
             legString = "None";
             groundedDistance = 0.83f;
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
+            if(holding == true)
+            {
+                heldBoxCol.enabled = true;
+            }
         }
         else if (!hasArms && hasLegs) // need to change collider
         {
@@ -359,6 +366,9 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
             groundedDistance = 1.07f;
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
+            {
+                heldBoxCol.enabled = true;
+            }
         }
         // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     }
