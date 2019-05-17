@@ -25,6 +25,7 @@ public class Player_Controller : MonoBehaviour
     public bool boxInRange = false;
     private Vector2 mousePos;
     public bool holding = false;
+    public CircleCollider2D heldBoxCol;
     private Rigidbody2D rb;
     public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
     public CircleCollider2D headCol; // collider used when the player is just a head
@@ -54,6 +55,7 @@ public class Player_Controller : MonoBehaviour
         capCol = GetComponent<CapsuleCollider2D>();
         headCol = GetComponentInChildren<CircleCollider2D>();
         extraJumps = numberOfJumps;
+        heldBoxCol.enabled = false;
         UpdateParts();
     }
 
@@ -81,10 +83,18 @@ public class Player_Controller : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - bandaid fix
     {
-        if(col.tag == "Box") //&& pickupBox == null)
+        if(col.tag == "Box" && holding == false) //&& pickupBox == null)
         {
             pickupBox = col.gameObject;
             boxInRange = true;
+        }
+    }
+
+        void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.tag == "Box")
+        {
+            boxInRange = false;
         }
     }
 
@@ -151,13 +161,11 @@ public class Player_Controller : MonoBehaviour
             if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and throw box
             {
                 if(holding == false && boxInRange == true) // may potentially need to adjust collider to account for box
-                {                
-                    pickupBox.GetComponent<Collider2D>().enabled = false;
+                {
                     pickupBox.transform.parent = this.transform;
                     BoxSnap();
-                    pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
                     holding = true;
-                }
+                } 
                 else
                 {
                     BoxDrop();
@@ -172,9 +180,21 @@ public class Player_Controller : MonoBehaviour
 
     }
 
-    void BoxSnap()
+    void BoxSnap() // when picking up the box
     {
         pickupBox.transform.position = boxHoldPos.position;
+        pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
+        pickupBox.GetComponent<Collider2D>().enabled = false;
+        heldBoxCol.enabled = true;
+
+// Offset x 0.48
+// Size x 1.74
+        //Adjust the player collider
+
+// Standard Offset x 0.3
+// Standard Size x 1.44
+
+        //Destroy(pickupBox.GetComponent<Rigidbody2D>());
     }
 
     void BoxDrop()
@@ -182,6 +202,14 @@ public class Player_Controller : MonoBehaviour
         if(pickupBox != null)
         {
             pickupBox.transform.parent = null;
+            /*
+            pickupBox.AddComponent<Rigidbody2D>();
+            Rigidbody2D pickupRigi = pickupBox.GetComponent<Rigidbody2D>();
+            pickupRigi.isKinematic = false;
+            pickupRigi.mass = 4;
+            pickupRigi.collisionDetectionMode.Continuous;
+            */
+            heldBoxCol.enabled = false;
             pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
             pickupBox.GetComponent<Collider2D>().enabled = true;
             holding = false;   
@@ -333,14 +361,5 @@ public class Player_Controller : MonoBehaviour
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
         }
         // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
-    }
-
-    void OnTriggerExit2D(Collider2D col)
-    {
-        if(col.tag == "Box")
-        {
-            //pickupBox = null;
-            boxInRange = false;
-        }
     }
 }
