@@ -215,7 +215,7 @@ public class Player_Controller : MonoBehaviour
             heldBoxCol.enabled = false;
             pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
             pickupBox.GetComponent<Collider2D>().enabled = true;
-            holding = false;   
+            holding = false;
         } 
     }
 
@@ -304,6 +304,7 @@ public class Player_Controller : MonoBehaviour
             groundedDistance = 0.34f;
             BoxDrop();
             scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f);
+            heldBoxCol.enabled = false;
         }
         else if (hasArms && !hasLegs) // need to change collider
         {
@@ -328,6 +329,10 @@ public class Player_Controller : MonoBehaviour
             if(holding == true)
             {
                 heldBoxCol.enabled = true;
+            }
+            else
+            {
+                heldBoxCol.enabled = false;
             }
         }
         else if (!hasArms && hasLegs) // need to change collider
@@ -366,6 +371,7 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
             groundedDistance = 1.07f;
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
+            if(holding == false)
             {
                 heldBoxCol.enabled = true;
             }
