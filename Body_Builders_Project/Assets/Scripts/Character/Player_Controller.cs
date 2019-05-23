@@ -371,9 +371,13 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
             groundedDistance = 1.07f;
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
-            if(holding == false)
+            if(holding == true)
             {
                 heldBoxCol.enabled = true;
+            }
+            else
+            {
+                heldBoxCol.enabled = false;
             }
         }
         // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
