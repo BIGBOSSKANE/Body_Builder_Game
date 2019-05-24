@@ -12,7 +12,7 @@ public class Banshee_Script : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        spotted = false;
     }
 
     // Update is called once per frame
