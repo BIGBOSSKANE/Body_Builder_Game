@@ -84,7 +84,7 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - bandaid fix
+    void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
     {
         if(col.tag == "Box" && holding == false) //&& pickupBox == null)
         {
@@ -93,7 +93,7 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-        void OnTriggerExit2D(Collider2D col)
+        void OnTriggerExit2D(Collider2D col) // can't grab the box if it's not in range
     {
         if(col.tag == "Box")
         {
@@ -284,12 +284,12 @@ public class Player_Controller : MonoBehaviour
             movementSpeed = 5f;
             if(headString == "Scaler")
             {
-                scalerStar.SetActive(true);
+                //scalerStar.SetActive(true);
                 jumpForce = 5f;
             }
             else
             {
-                scalerStar.SetActive(false);
+                //scalerStar.SetActive(false);
                 jumpForce = 7f;
             }
             capCol.enabled = false;
@@ -371,10 +371,22 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
             groundedDistance = 1.07f;
             scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
-            if(holding == false)
+            if(holding == true)
             {
                 heldBoxCol.enabled = true;
             }
+            else
+            {
+                heldBoxCol.enabled = false;
+            }
+        }
+        if(headString == "Scaler")
+        {
+            scalerStar.SetActive(true);
+        }
+        else
+        {
+            scalerStar.SetActive(false);
         }
         // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     }

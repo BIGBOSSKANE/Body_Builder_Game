@@ -19,6 +19,7 @@ namespace UnityStandardAssets._2D
         // Use this for initialization
         private void Start()
         {
+            target = GameObject.Find("Player").GetComponent<Transform>();
             m_LastTargetPosition = target.position;
             m_OffsetZ = (transform.position - target.position).z;
             transform.parent = null;

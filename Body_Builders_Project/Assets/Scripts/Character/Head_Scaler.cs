@@ -4,32 +4,34 @@ using UnityEngine;
 
 public class Head_Scaler : MonoBehaviour
 {
-    public CircleCollider2D cirCol;
     private bool taken = false;
     private float timer = 0f;
     private Vector2 initialPosition;
     private Vector2 targetPosition;
+    private Rigidbody2D rigi;
     public string identifierHeadString = "Scaler"; // This is used to change what arms the player controller thinks are connected
+
+    public GameObject player;
+    public GameObject head;
+    public Player_Controller playerScript;
+    public Vector2 headPos;
+    float playerDistance;
 
     void Start()
     {
-        cirCol = this.GetComponent<CircleCollider2D>();
+        rigi = gameObject.GetComponent<Rigidbody2D>();
+        player = GameObject.Find("Player");
+        head = player.transform.Find("Head").gameObject;
+        playerScript = player.GetComponent<Player_Controller>();
         taken = false;
         timer = 0f;
-        initialPosition = transform.position;
     }
 
-    void OnCollisionEnter2D(Collision2D player)
+    void OnTriggerEnter2D(Collider2D col)
     {
-        Vector2 thisPos = gameObject.transform.position;
-        if(player.gameObject.tag == "Player")
+        if(col.tag == "Player")
         {
-            Player_Controller playerScript = player.gameObject.GetComponent<Player_Controller>();
-            targetPosition = player.gameObject.transform.position;
-            playerScript.headString = identifierHeadString;
-            player.gameObject.GetComponent<Player_Controller>().UpdateParts();
             taken = true;
-            Destroy(gameObject);
         }
     }
 
@@ -37,10 +39,14 @@ public class Head_Scaler : MonoBehaviour
     {
         if(taken == true)
         {
+            headPos = head.transform.position;
+            playerDistance = Vector2.Distance(head.transform.position , transform.position);
             timer += Time.deltaTime;
-            transform.position = Vector2.Lerp(initialPosition, targetPosition, timer);
-            if(timer > 1f)
+            transform.position = Vector2.Lerp(transform.position, headPos, timer * 2.5f);
+            if(timer > 0.4f || playerDistance < 0.1f)
             {
+                playerScript.headString = identifierHeadString;
+                playerScript.UpdateParts();
                 Destroy(gameObject);
             }
         }
