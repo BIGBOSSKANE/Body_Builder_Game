@@ -97,6 +97,10 @@ MonoBehaviour:
   boxCol: {fileID: 815994233867971976}
   rb: {fileID: 815994233867971979}
   identifierArmString: Basic
+  player: {fileID: 0}
+  head: {fileID: 0}
+  playerScript: {fileID: 0}
+  headPos: {x: 0, y: 0}
 --- !u!61 &815994233867971976
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -135,11 +139,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 2
-  m_LinearDrag: 0
+  m_Mass: 6
+  m_LinearDrag: 3
   m_AngularDrag: 0.05
-  m_GravityScale: 2
-  m_Material: {fileID: 6200000, guid: df5903bf79994bf48b957d7d030afb4d, type: 2}
+  m_GravityScale: 3
+  m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1

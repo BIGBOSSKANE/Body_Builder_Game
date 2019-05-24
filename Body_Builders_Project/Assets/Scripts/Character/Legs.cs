@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Legs : MonoBehaviour
 {
-    // int movementSpeed = 10;
-    // int jumpForce = 10;
-
     bool attached;
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
@@ -51,7 +48,9 @@ public class Legs : MonoBehaviour
         }
         rb = this.GetComponent<Rigidbody2D>();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;   
-        rb.mass = 2;
+        rb.mass = 6f;
+        rb.drag = 3f;
+        rb.gravityScale = 3f;
         rb.isKinematic = false;
     }
 
@@ -62,36 +61,31 @@ public class Legs : MonoBehaviour
         Destroy(rb);
     }
 
-    void OnCollisionEnter2D(Collision2D player)
+    void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(player.gameObject.tag == "Player")
+        if(col.gameObject.tag == "Player")
         {
-            Player_Controller playerScript = player.gameObject.GetComponent<Player_Controller>();
+            Player_Controller playerScript = col.gameObject.GetComponent<Player_Controller>();
             playerScript.legString = identifierLegString;
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {
-                player.gameObject.transform.rotation = Quaternion.identity;
+                col.gameObject.transform.rotation = Quaternion.identity;
                 if(playerParts == 1) // this one needs changing
                 {
                     thisPos.y += 0.014f;
-                    player.gameObject.transform.position = thisPos;                   
+                    col.gameObject.transform.position = thisPos;                   
                 }
                 else if(playerParts == 2)
                 {
                     thisPos.y += 0.014f;
-                    player.gameObject.transform.position = thisPos;
+                    col.gameObject.transform.position = thisPos;
                 }
                 Attached();
-                this.gameObject.transform.parent = player.transform;
-                player.gameObject.GetComponent<Player_Controller>().UpdateParts();
+                this.gameObject.transform.parent = col.transform;
+                col.gameObject.GetComponent<Player_Controller>().UpdateParts();
             }
         }
-    }
-
-    public void Special()
-    {
-
     }
 }

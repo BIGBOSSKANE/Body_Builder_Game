@@ -29,6 +29,7 @@ public class Player_Controller : MonoBehaviour
     private Rigidbody2D rb;
     public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
     public CircleCollider2D headCol; // collider used when the player is just a head
+    public BoxCollider2D pickupBoxCol;
     private bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
@@ -56,6 +57,7 @@ public class Player_Controller : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         capCol = GetComponent<CapsuleCollider2D>();
         headCol = GetComponentInChildren<CircleCollider2D>();
+        pickupBoxCol = GetComponent<BoxCollider2D>();
         extraJumps = numberOfJumps;
         canJumpOn = JumpLayer1 | JumpLayer2;
         UpdateParts();
@@ -281,6 +283,7 @@ public class Player_Controller : MonoBehaviour
         if(!hasArms && !hasLegs)
         {
             partConfiguration = 1;
+            pickupBoxCol.enabled = false;
             movementSpeed = 5f;
             if(headString == "Scaler")
             {
@@ -308,6 +311,7 @@ public class Player_Controller : MonoBehaviour
         }
         else if (hasArms && !hasLegs) // need to change collider
         {
+            pickupBoxCol.enabled = true;
             Transform arms = gameObject.transform.Find("Arms");
             thisPos.y -= 0.24f;  
             head.position = thisPos;
@@ -337,6 +341,7 @@ public class Player_Controller : MonoBehaviour
         }
         else if (!hasArms && hasLegs) // need to change collider
         {
+            pickupBoxCol.enabled = false;
             partConfiguration = 3;
             movementSpeed = 8.5f;
             jumpForce = 11f;
@@ -356,6 +361,7 @@ public class Player_Controller : MonoBehaviour
         }
         else if(hasArms && hasLegs) // need to change collider
         {
+            pickupBoxCol.enabled = true;
             thisPos.y -= 0.755f;
             Transform arms = gameObject.transform.Find("Arms");
             arms.position = thisPos;
