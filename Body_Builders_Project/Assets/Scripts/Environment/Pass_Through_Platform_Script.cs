@@ -47,16 +47,7 @@ public class Pass_Through_Platform_Script : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if(colWaitTime <= 0f)
-            {
-                boxCol.enabled = true;
-                colWaitTime = 0.1f;
-            }
-            else
-            {
-                boxCol.enabled = false;
-                colWaitTime -= Time.deltaTime;
-            }   
+              effector.rotationalOffset = 0f;
         }
     }
 }

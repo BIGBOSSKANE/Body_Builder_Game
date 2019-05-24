@@ -30,6 +30,7 @@ public class Player_Controller : MonoBehaviour
     public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol;
+    bool wasBoxHeld;
     public bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
@@ -62,6 +63,7 @@ public class Player_Controller : MonoBehaviour
         canJumpOn = JumpLayer1 | JumpLayer2;
         UpdateParts();
         heldBoxCol.enabled = false;
+        wasBoxHeld = false;
     }
 
     void FixedUpdate()
@@ -100,6 +102,34 @@ public class Player_Controller : MonoBehaviour
         if(col.tag == "Box")
         {
             boxInRange = false;
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "PassThroughPlatform")
+        {
+            if(heldBoxCol.enabled == true)
+            {
+                wasBoxHeld = true;
+            }
+            else
+            {
+                wasBoxHeld = false;
+            }
+            heldBoxCol.enabled = false;
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "PassThroughPlatform")
+        {
+            if(wasBoxHeld == true)
+            {
+                heldBoxCol.enabled = true;
+            }
+            wasBoxHeld = false;
         }
     }
 
