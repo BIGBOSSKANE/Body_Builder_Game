@@ -9,12 +9,18 @@ public class Legs : MonoBehaviour
     public BoxCollider2D boxCol;
     public Rigidbody2D rb;
     public string identifierLegString = "Basic";
+    public GameObject player;
+    public GameObject head;
+    public Player_Controller playerScript;
 
     void Start()
     {
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
         CheckForParent();
+        player = GameObject.Find("Player");
+        head = player.transform.Find("Head").gameObject;
+        playerScript = player.GetComponent<Player_Controller>();
     }
 
     void Update()
@@ -64,9 +70,8 @@ public class Legs : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player")
+        if(col.gameObject.tag == "Player" && playerScript.isGrounded == false)
         {
-            Player_Controller playerScript = col.gameObject.GetComponent<Player_Controller>();
             playerScript.legString = identifierLegString;
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
@@ -84,8 +89,13 @@ public class Legs : MonoBehaviour
                 }
                 Attached();
                 this.gameObject.transform.parent = col.transform;
-                col.gameObject.GetComponent<Player_Controller>().UpdateParts();
+                playerScript.UpdateParts();
             }
         }
     }
 }
+
+//create a child object with a capsule collider that is on a layer which can't collide with the player
+//set this one as a trigger collider
+
+//

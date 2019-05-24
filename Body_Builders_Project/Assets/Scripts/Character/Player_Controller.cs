@@ -30,7 +30,7 @@ public class Player_Controller : MonoBehaviour
     public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol;
-    private bool isGrounded; //is the character on the ground?
+    public bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
     public float checkRadius; // radius of the ground checker (for Scaler Augment)
@@ -56,7 +56,7 @@ public class Player_Controller : MonoBehaviour
         groundChecker = this.transform.Find("Ground Checker").gameObject;
         rb = GetComponent<Rigidbody2D>();
         capCol = GetComponent<CapsuleCollider2D>();
-        headCol = GetComponentInChildren<CircleCollider2D>();
+        headCol = this.transform.Find("Head").gameObject.GetComponent<CircleCollider2D>();
         pickupBoxCol = GetComponent<BoxCollider2D>();
         extraJumps = numberOfJumps;
         canJumpOn = JumpLayer1 | JumpLayer2;

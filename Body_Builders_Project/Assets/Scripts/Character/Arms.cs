@@ -84,7 +84,7 @@ public class Arms : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player")
+        if(col.gameObject.tag == "Player" && playerScript.isGrounded == false)
         {
             playerScript.armString = identifierArmString;
             int playerParts = playerScript.partConfiguration;
@@ -99,7 +99,7 @@ public class Arms : MonoBehaviour
                 Attached();
                 this.gameObject.transform.parent = col.transform;
                 this.gameObject.transform.position = col.transform.position;
-                col.gameObject.GetComponent<Player_Controller>().UpdateParts();
+                playerScript.UpdateParts();
             }
         }
         else if(col.gameObject.tag == "Legs")
