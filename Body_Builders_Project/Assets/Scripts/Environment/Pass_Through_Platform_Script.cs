@@ -13,26 +13,27 @@ using UnityEngine;
 public class Pass_Through_Platform_Script : MonoBehaviour
 {
     PlatformEffector2D effector;
-    BoxCollider2D boxCol;
+    public BoxCollider2D boxCol;
     float waitTime;
     float colWaitTime;
+    bool playerAbove;
 
     void Start()
     {
         effector = gameObject.GetComponent<PlatformEffector2D>();
-        boxCol = gameObject.GetComponent<BoxCollider2D>();
         waitTime = 0.1f;
         colWaitTime = 0.1f;
+        playerAbove = false;
     }
 
     void Update()
     {
-        if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
+        if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
         {
             waitTime = 0.1f;
         }
 
-        if(Input.GetKey(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
+        if(playerAbove == true && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)))
         {
             if(waitTime <= 0f)
             {
@@ -48,6 +49,22 @@ public class Pass_Through_Platform_Script : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
               effector.rotationalOffset = 0f;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Player")
+        {
+            playerAbove = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.tag == "Player")
+        {
+            playerAbove = false;
         }
     }
 }
