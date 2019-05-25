@@ -76,7 +76,7 @@ public class Legs : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && playerScript.isGrounded == false)
+        if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 2))
         {
             playerScript.legString = identifierLegString;
             int playerParts = playerScript.partConfiguration;

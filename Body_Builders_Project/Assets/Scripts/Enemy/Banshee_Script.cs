@@ -33,9 +33,10 @@ public class Banshee_Script : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D Player)
     {
-        if (Player.gameObject) // if the player's object
+        if (Player.gameObject.tag == "Player") // if the player's object
         {
             Debug.Log("Player has been spotted");
+            target = Player.gameObject;
             spotted = true;
         }
     }

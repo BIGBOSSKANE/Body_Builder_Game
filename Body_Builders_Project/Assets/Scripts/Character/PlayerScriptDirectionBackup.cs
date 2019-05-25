@@ -1,9 +1,4 @@
 ﻿/*
-Creator: Daniel
-Created: 09/04/2019
-Last Edited by: Daniel
-Last Edit: 25/05/2019
-*/
 
 using System.Collections;
 using System.Collections.Generic;
@@ -14,12 +9,7 @@ public class Player_Controller : MonoBehaviour
     public int partConfiguration = 1; // 1 is head, 2 adds arms, 3 adds legs, 4 adds arms and legs
     public float movementSpeedAdjuster = 10f;
     float movementSpeed; // how fast can you move?
-    float moveTimer;
-    public float maxMoveTimer = 0.7f;
-    bool movingLeft;
-    bool movingRight;
     float speed; // current speed
-    float moveSpeedPrior; // used to track movement speed for speed increase Lerp 
     public float jumpForceAdjuster = 10f; // control the level of jumps
     private float jumpForce; // how powerful is your jump? altered from the jumpForceAdjuster by different part combinations
     bool jumpGate; // prevent the character from jumping while this is true (set to disable corner jumps eventually)
@@ -58,7 +48,6 @@ public class Player_Controller : MonoBehaviour
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
     public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
     public bool frozen; // use this when connecting to stop input
-    bool trueGroundCheck; // checks for ground using both the Overlap Circle and the Raycast
 
 
     void Start()
@@ -90,50 +79,8 @@ public class Player_Controller : MonoBehaviour
         }
 
         moveInput = Input.GetAxisRaw("Horizontal"); // left or a is -1 , right or d is +1
-        //rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x , moveInput * speed * Time.deltaTime / moveTimer), rb.velocity.y); // move
+        rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
 
-        if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            movingLeft = true;
-            movingRight = false;
-            moveTimer = 0f;
-        }
-
-        if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            movingLeft = false;
-            movingRight = true;
-            moveTimer = 0f;
-        }
-
-        if(Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            movingLeft = false;
-        }
-
-        if(Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            movingRight = false;
-        }
-
-        if(movingLeft == true || movingRight == true)
-        {
-            if(moveTimer < maxMoveTimer)
-            {
-                moveTimer += Time.deltaTime;
-            }
-            else if(moveTimer > maxMoveTimer)
-            {
-                moveTimer = maxMoveTimer;
-            }
-        }
-
-        Debug.Log(moveTimer);
-
-        rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x , moveInput * speed , moveTimer / maxMoveTimer), rb.velocity.y); // move
-
-
-        // Checks for Ground while in Scaler mode
         if(headString == "Scaler" && partConfiguration == 1) // change ground collision detection if you have the Scaler augment
         {
             isGrounded = Physics2D.OverlapCircle(transform.position, 0.5f , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
@@ -167,7 +114,7 @@ public class Player_Controller : MonoBehaviour
         // Allow the below line of code to check the groundcheck distance
         Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green);
 
-        if(groundCheckRaycast() || (headString == "Scaler" && isGrounded == true)) // used to be isGrounded == true
+        if(TrueGroundCheck()) // || (headString == "Scaler" && isGrounded == true)) // used to be isGrounded == true
         {
             extraJumps = numberOfJumps;
         }
@@ -196,7 +143,7 @@ public class Player_Controller : MonoBehaviour
             rb.velocity = Vector2.up * jumpForce;
             extraJumps --;
         }
-        else if(Input.GetButton("Jump") && extraJumps == 0 && groundCheckRaycast() && jumpGate == false) //&& isGrounded == true)
+        else if(Input.GetButton("Jump") && extraJumps == 0 && TrueGroundCheck() && jumpGate == false) //&& isGrounded == true)
         {
             //rb.velocity = Vector2.up * jumpForce;
             jumpGate = true;
@@ -278,14 +225,10 @@ public class Player_Controller : MonoBehaviour
             isGrounded = true;
             return true;
         }
-        else if(partConfiguration > 1 || (partConfiguration == 1 && headString != "Scaler")) // Scaler augment uses isGrounded, so this ignores the trait when player is in that mode
-        {
-            isGrounded = false;
-        }
         return false;
     }
 
-    public bool TrueGroundCheck()
+    public bool TrueGroundCheck() // checks if either the raycast or the overlap circle is detecting ground
     {
         if(groundCheckRaycast() || isGrounded == true)
         {
@@ -451,3 +394,4 @@ public class Player_Controller : MonoBehaviour
         transform.rotation = Quaternion.identity; // lock rotation to 0;
     }
 }
+*/

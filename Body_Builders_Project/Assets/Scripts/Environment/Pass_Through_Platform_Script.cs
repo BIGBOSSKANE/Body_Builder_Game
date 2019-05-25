@@ -13,16 +13,13 @@ using UnityEngine;
 public class Pass_Through_Platform_Script : MonoBehaviour
 {
     public PlatformEffector2D effector;
-    public BoxCollider2D boxCol;
     float waitTime;
-    float colWaitTime;
     bool playerAbove;
 
     void Start()
     {
         effector = gameObject.GetComponent<PlatformEffector2D>();
         waitTime = 0.1f;
-        colWaitTime = 0.1f;
         playerAbove = false;
     }
 

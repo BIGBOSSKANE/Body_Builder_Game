@@ -50,8 +50,6 @@ public class Arms : MonoBehaviour
             unavailableTimer += Time.deltaTime;
             //maybe add a collision mask that prevents player collisions for the duration
         }
-
-
     }
 
     void CheckForParent()
