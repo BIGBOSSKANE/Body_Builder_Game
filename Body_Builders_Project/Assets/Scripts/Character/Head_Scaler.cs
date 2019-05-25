@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿/*
+Creator: Daniel
+Created: 09/04/2019
+Laste Edited by: Daniel
+Last Edit: 24/05/2019
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +17,6 @@ public class Head_Scaler : MonoBehaviour
     private Vector2 targetPosition;
     private Rigidbody2D rigi;
     public string identifierHeadString = "Scaler"; // This is used to change what arms the player controller thinks are connected
-
     public GameObject player;
     public GameObject head;
     public Player_Controller playerScript;

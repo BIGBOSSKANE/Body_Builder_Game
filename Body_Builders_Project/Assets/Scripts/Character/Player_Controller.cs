@@ -1,8 +1,8 @@
 ﻿/*
 Creator: Daniel
 Created: 09/04/2019
-Laste Edited by: Daniel
-Last Edit: 16/05/2019
+Last Edited by: Daniel
+Last Edit: 25/05/2019
 */
 
 using System.Collections;
@@ -52,7 +52,6 @@ public class Player_Controller : MonoBehaviour
     public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
     public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
-
     public bool frozen; // use this when connecting to stop input
 
 
@@ -392,22 +391,4 @@ public class Player_Controller : MonoBehaviour
         scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
     }
-
-
-
-
-
-/*
-    CHANGE BOX
-
-    HELD COLLIDER TO THE CHILD OBJECT, AND GIVE IT RULES THAT DON"T ALLOW IT TO COLLIDE WITH THE PLAYER
-
-    PASSTHROUGH PLATFORMS ARE ON THE PASSTHROUGH LAYER, disable collisions with that layer
-
-
-
-
-    FIX UP ARMS LIKE I DID WITH THE LEGS
-
-*/
 }
