@@ -5,7 +5,6 @@ Laste Edited by: Daniel
 Last Edit: 16/05/2019
 */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,43 +12,48 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour
 {
     public int partConfiguration = 1; // 1 is head, 2 adds arms, 3 adds legs, 4 adds arms and legs
-    public float movementSpeed = 10f;
+    public float movementSpeedAdjuster = 10f;
+    float movementSpeed; // how fast can you move?
     float speed; // current speed
-    public float jumpForce = 10f;
-    public float jumpsRemaining;
-    bool jumpGate;
-    private float moveInput;
+    public float jumpForceAdjuster = 10f; // control the level of jumps
+    private float jumpForce; // how powerful is your jump? altered from the jumpForceAdjuster by different part combinations
+    bool jumpGate; // prevent the character from jumping while this is true (set to disable corner jumps eventually)
+    private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
     public GameObject pickupBox; // the box that the player is currently picking up
-    public Transform boxHoldPos;
-    public bool boxInRange = false;
-    private Vector2 mousePos;
-    public bool holding = false;
-    public CircleCollider2D heldBoxCol;
-    private Rigidbody2D rb;
+    public Transform boxHoldPos; // determine where the held box is positioned
+    public bool boxInRange = false; // is a box in the pickup range?
+    public bool holding = false; // is the player holding a box?
+    public CircleCollider2D heldBoxCol;  // if the player is holding a box, substitute this collider for it
+    private Rigidbody2D rb; // this object's rigidbody
     public CapsuleCollider2D capCol; // collider used and adjusted when player is more than a head
+    GameObject head; // the head component - make sure the head is called "head"
+    GameObject arms; // the arms component - make sure all legs are called "Legs"
+    GameObject legs; // the legs component - make sure all arms are called "Arms"
     public CircleCollider2D headCol; // collider used when the player is just a head
-    public BoxCollider2D pickupBoxCol;
-    bool wasBoxHeld;
+    public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
+    bool wasBoxHeld; // checks if the player was holding a box before updating parts, so that they continue to hold if they retain their arms
     public bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
-    public float checkRadius; // radius of the ground checker (for Scaler Augment)
-    public LayerMask JumpLayer1;
-    public LayerMask JumpLayer2;
+    public LayerMask JumpLayer1; // what can the player jump on?
+    public LayerMask JumpLayer2; // had 2 layers and combined them, because the Unity editor wasn't allowing multiple selections at an earlier dev stage
     private LayerMask canJumpOn; // combines the 2 layers that can be jumped on
     public float groundedDistance = 0.3f; // distance of the grounded raycast
-    public GameObject scalerStar;
+    public GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
+    public Pass_Through_Platform_Script passThroughScript;
 
-    private int extraJumps;
-    public int numberOfJumps = 1;
+    private int extraJumps; // how many jumps beyond 1 does the player currently have?
+    public int numberOfJumps = 1; // how many jumps does the player have?
 
-    public float fallMultiplier = 2.5f;
-    public float lowJumpMultiplier = 2f;
+    public float fallMultiplier = 2.5f; // increase fall speed on downwards portion of jump arc
+    public float lowJumpMultiplier = 2f; // alters jump height based on duration of the jump button being held
 
-    public string armString; // will be used later to recall arm loadout
-    public string legString; // will be used later to recall leg loadout
-    public string headString; // will be used later to recall head loadout
+    public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
+    public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
+    public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
+
+    public bool frozen; // use this when connecting to stop input
 
 
     void Start()
@@ -57,21 +61,20 @@ public class Player_Controller : MonoBehaviour
         groundChecker = this.transform.Find("Ground Checker").gameObject;
         rb = GetComponent<Rigidbody2D>();
         capCol = GetComponent<CapsuleCollider2D>();
-        headCol = this.transform.Find("Head").gameObject.GetComponent<CircleCollider2D>();
+        head = this.transform.Find("Head").gameObject;
+        headCol = head.GetComponent<CircleCollider2D>();
         pickupBoxCol = GetComponent<BoxCollider2D>();
         extraJumps = numberOfJumps;
         canJumpOn = JumpLayer1 | JumpLayer2;
+        jumpForce = jumpForceAdjuster;
+        movementSpeed = movementSpeedAdjuster;
         UpdateParts();
         heldBoxCol.enabled = false;
         wasBoxHeld = false;
     }
 
     void FixedUpdate()
-    {
-        
-        // the checkRadius is currently too large for the head - it sets up for spider climb though
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, canJumpOn);
-        
+    {        
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
             speed = movementSpeed / 1.2f;
@@ -80,11 +83,13 @@ public class Player_Controller : MonoBehaviour
         {
             speed = movementSpeed;
         }
+
         moveInput = Input.GetAxisRaw("Horizontal"); // left or a is -1 , right or d is +1
         rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
-        if((facingRight == false && moveInput > 0) || (facingRight == true && moveInput < 0))
+
+        if(headString == "Scaler" && partConfiguration == 1) // change ground collision detection if you have the Scaler augment
         {
-            Flip(); // if changing directions, flip sprite
+            isGrounded = Physics2D.OverlapCircle(transform.position, 0.5f , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
         }
     }
 
@@ -97,7 +102,7 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-        void OnTriggerExit2D(Collider2D col) // can't grab the box if it's not in range
+    void OnTriggerExit2D(Collider2D col) // can't grab the box if it's not in range
     {
         if(col.tag == "Box")
         {
@@ -105,36 +110,13 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if(col.gameObject.tag == "PassThroughPlatform")
-        {
-            if(heldBoxCol.enabled == true)
-            {
-                wasBoxHeld = true;
-            }
-            else
-            {
-                wasBoxHeld = false;
-            }
-            heldBoxCol.enabled = false;
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D col)
-    {
-        if(col.gameObject.tag == "PassThroughPlatform")
-        {
-            if(wasBoxHeld == true)
-            {
-                heldBoxCol.enabled = true;
-            }
-            wasBoxHeld = false;
-        }
-    }
-
     void Update()
     {
+        if((facingRight == false && moveInput > 0) || (facingRight == true && moveInput < 0))
+        {
+            Flip(); // if changing directions, flip sprite
+        }
+
         // Allow the below line of code to check the groundcheck distance
         Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green);
 
@@ -144,22 +126,19 @@ public class Player_Controller : MonoBehaviour
         }
 
         if (Input.GetKeyDown("space") && partConfiguration != 1)// && extraJumps > 0)
+        // eventually set this to create prefabs of the part, rather than a detached piece
         {
             if(partConfiguration > 2)
             {
-                Legs legsScript = gameObject.GetComponentInChildren<Legs>();
-                Transform legs = gameObject.transform.Find("Legs");
-                legs.parent = null;
-                legsScript.Detached();
+                legs.transform.parent = null;
+                legs.GetComponent<Legs>().Detached();
                 extraJumps --;
                 UpdateParts();
             }
             else if(partConfiguration == 2)
             {
-                Arms armsScript = gameObject.GetComponentInChildren<Arms>();
-                Transform arms = gameObject.transform.Find("Arms");
-                arms.parent = null;
-                armsScript.Detached();
+                arms.transform.parent = null;
+                arms.GetComponent<Arms>().Detached();
                 extraJumps --;
                 UpdateParts();
             }
@@ -193,57 +172,39 @@ public class Player_Controller : MonoBehaviour
 
         if(pickupBox != null)
         {
-            if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and throw box
+            if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and drop box while you have arms and press "f"
             {
-                if(holding == false && boxInRange == true) // may potentially need to adjust collider to account for box
+                if(holding == false && boxInRange == true)
+                // currently the player character chooses from all boxes in range at random
+                // this will need to be changed if they can have multiple boxes at a time
                 {
                     pickupBox.transform.parent = this.transform;
-                    BoxSnap();
+                    BoxPickup();
                     holding = true;
                 } 
                 else
                 {
                     BoxDrop();
-                    /*
-                    mousePos = Input.mousePosition;
-                    var mouseDir = mousePos - pickupBox.transform.position;
-                    mouseDir.Normalize();
-                    */
+                    // if we eventually do want the box to be thrown, add some alternative code here
                 }
             }
         }
-
     }
 
-    void BoxSnap() // when picking up the box
+    void BoxPickup() // when picking up the box, replace its collider with a substitute and make it kinematic
     {
         pickupBox.transform.position = boxHoldPos.position;
         pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
         pickupBox.GetComponent<Collider2D>().enabled = false;
         heldBoxCol.enabled = true;
-
-// Offset x 0.48
-// Size x 1.74
-        //Adjust the player collider
-
-// Standard Offset x 0.3
-// Standard Size x 1.44
-
-        //Destroy(pickupBox.GetComponent<Rigidbody2D>());
+        holding = true;
     }
 
-    void BoxDrop()
+    void BoxDrop() // when the character drps the box;
     {
         if(pickupBox != null)
         {
             pickupBox.transform.parent = null;
-            /*
-            pickupBox.AddComponent<Rigidbody2D>();
-            Rigidbody2D pickupRigi = pickupBox.GetComponent<Rigidbody2D>();
-            pickupRigi.isKinematic = false;
-            pickupRigi.mass = 4;
-            pickupRigi.collisionDetectionMode.Continuous;
-            */
             heldBoxCol.enabled = false;
             pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
             pickupBox.GetComponent<Collider2D>().enabled = true;
@@ -259,7 +220,7 @@ public class Player_Controller : MonoBehaviour
         transform.localScale = Scaler;
     }
 
-    bool groundCheckRaycast()
+    bool groundCheckRaycast() // instantly returns "true" if raycast hits a layer in the canJumpOn layermask, also sets isGrounded to true
     {
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down;
@@ -267,29 +228,20 @@ public class Player_Controller : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(position, direction, groundedDistance, canJumpOn);
         if(hit.collider != null)
         {
+            isGrounded = true;
             return true;
         }
+        isGrounded = false;
         return false;
     }
 
 
-
-
-
-
-
-
-
-    public void UpdateParts() // set the part configuration value - call when acquiring or detaching part
+    public void UpdateParts()
+    // call when acquiring or detaching part - reconfigures scaling, controls and colliders
     // arms need to have "Arms" tag, and legs must have the "Legs" tag
+    // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
-        /*
-        Legs legs;
-        legs = GameObject.GetComponent<Legs>(); // this is updated by the rocketlegs version of the ability
-        legs.Special();
-        */
-
-        // assume that the robot has neither arms or legs before checking
+        // assume that the robot has neither arms or legs, then check
         bool hasArms = false;
         bool hasLegs = false;
         for(int i = 0; i < transform.childCount; i++)
@@ -304,63 +256,57 @@ public class Player_Controller : MonoBehaviour
             }
         }
 
-        Vector2 thisPos = gameObject.transform.position;
-        thisPos.y += 0.755f;
-        // all other thisPos calculations need to take this into account, probably better to just change the head starting position
-        Transform head = gameObject.transform.Find("Head");
-        head.position = thisPos;
+        Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
+
+
 
         if(!hasArms && !hasLegs)
         {
-            partConfiguration = 1;
-            pickupBoxCol.enabled = false;
-            movementSpeed = 5f;
-            if(headString == "Scaler")
+            partConfiguration = 1; // just a head
+            movementSpeed = movementSpeedAdjuster * 0.5f;
+            if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
-                //scalerStar.SetActive(true);
-                jumpForce = 5f;
+                jumpForce = jumpForceAdjuster * 0.5f;
             }
             else
             {
-                //scalerStar.SetActive(false);
-                jumpForce = 7f;
+                jumpForce = jumpForceAdjuster * 0.7f;
             }
-            capCol.enabled = false;
-            headCol.enabled = true;
-            checkRadius = 0.5f; // this check radius allows for the spider climb
-            rb.constraints = RigidbodyConstraints2D.None;
-            groundChecker.transform.localPosition = new Vector2(0f, 0.47f); // issue if player is rotating, the ground checker should shift to become the entire player rigidbody
-            head.position = gameObject.transform.position;
-            groundChecker.transform.position = gameObject.transform.position;
-            legString = "None";
-            armString = "None";
-            groundedDistance = 0.34f;
-            BoxDrop();
-            scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f);
-            heldBoxCol.enabled = false;
+
+            capCol.enabled = false; // don't use the typical vertical standing collider
+            headCol.enabled = true; // use the circle collider instead
+            rb.constraints = RigidbodyConstraints2D.None; // can roll
+            head.transform.position = gameObject.transform.position; // no need for snapOffsetPos here as it is perfectly centred
+            groundChecker.transform.position = gameObject.transform.position; // centre the groundChecker
+            legString = "None"; // no legs
+            armString = "None"; // no arms
+            groundedDistance = 0.34f; // shorter ground check distance
+            BoxDrop(); // drops any box immediately
+            pickupBoxCol.enabled = false; // can't pick up any more boxes
+            scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
-        else if (hasArms && !hasLegs) // need to change collider
+
+
+        else if (hasArms && !hasLegs)
         {
-            pickupBoxCol.enabled = true;
-            Transform arms = gameObject.transform.Find("Arms");
-            thisPos.y -= 0.24f;  
-            head.position = thisPos;
-            thisPos.y -= 0.76f;
-            arms.position = thisPos; 
-            partConfiguration = 2;
-            movementSpeed = 7.5f;
-            jumpForce = 8.5f;
-            headCol.enabled = false;
-            capCol.enabled = true;            
+            partConfiguration = 2; // just a head and arms
+            movementSpeed = movementSpeedAdjuster * 0.75f;
+            jumpForce = jumpForceAdjuster * 0.85f;     
+
+            NonHeadConfig();
+            arms = gameObject.transform.Find("Arms").gameObject;
+            legString = "None"; // no legs
+           
+            // adjust height of other parts
+            head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
+            arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
+            groundChecker.transform.localPosition = new Vector2(0f, -0.76f);
+            groundedDistance = 0.83f;
+
             capCol.size = new Vector2(0.6f , 1.6f);
             capCol.offset = new Vector2(0f , 0.03f);
-            checkRadius = 0.25f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            groundChecker.transform.localPosition = new Vector2(0f, -0.76f);
-            legString = "None";
-            groundedDistance = 0.83f;
-            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
-            if(holding == true)
+            pickupBoxCol.enabled = true; // the player can now pick up boxes
+            if(holding == true) // keep holding the box if you were
             {
                 heldBoxCol.enabled = true;
             }
@@ -369,45 +315,49 @@ public class Player_Controller : MonoBehaviour
                 heldBoxCol.enabled = false;
             }
         }
+
+
         else if (!hasArms && hasLegs) // need to change collider
         {
-            pickupBoxCol.enabled = false;
             partConfiguration = 3;
-            movementSpeed = 8.5f;
-            jumpForce = 11f;
-            headCol.enabled = false;
-            capCol.enabled = true;
+            movementSpeed = movementSpeedAdjuster * 0.85f;
+            jumpForce = jumpForceAdjuster * 1.1f;            
+            
+            NonHeadConfig();
+            legs = gameObject.transform.Find("Legs").gameObject;
+            armString = "None"; // no arms
+
+            head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
+            groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
+            groundedDistance = 1.04f;
+
             capCol.size = new Vector2(0.6f , 1.45f);
             capCol.offset = new Vector2(0f , -0.27f);
-            checkRadius = 0.25f;
-            thisPos.y -= 0.6f;
-            head.position = thisPos;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
-            armString = "None";
-            groundedDistance = 1.04f;
-            BoxDrop();
-            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
+            pickupBoxCol.enabled = true;
+            BoxDrop(); // no arms, so drop the box
         }
+
+
         else if(hasArms && hasLegs) // need to change collider
         {
-            pickupBoxCol.enabled = true;
-            thisPos.y -= 0.755f;
-            Transform arms = gameObject.transform.Find("Arms");
-            arms.position = thisPos;
             partConfiguration = 4;
-            movementSpeed = 8.5f;
-            jumpForce = 11f;
-            headCol.enabled = false;
-            capCol.enabled = true;
-            capCol.size = new Vector2(0.6f , 2.08f);
-            capCol.offset = new Vector2(0f , 0.03f);
-            checkRadius = 0.25f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            movementSpeed = movementSpeedAdjuster * 0.85f;
+            jumpForce = jumpForceAdjuster * 1.1f;
+
+            NonHeadConfig();
+            arms = gameObject.transform.Find("Arms").gameObject;
+            legs = gameObject.transform.Find("Legs").gameObject;
+
+            head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
+            arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
             groundedDistance = 1.07f;
-            scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f);
-            if(holding == true)
+
+            capCol.size = new Vector2(0.6f , 2.08f);
+            capCol.offset = new Vector2(0f , 0.03f);
+
+            pickupBoxCol.enabled = true;
+            if(holding == true) // keep holding the box if you already were
             {
                 heldBoxCol.enabled = true;
             }
@@ -416,7 +366,10 @@ public class Player_Controller : MonoBehaviour
                 heldBoxCol.enabled = false;
             }
         }
-        if(headString == "Scaler")
+
+// Manage Head Augments Here
+
+        if(headString == "Scaler") // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
             scalerStar.SetActive(true);
         }
@@ -424,6 +377,69 @@ public class Player_Controller : MonoBehaviour
         {
             scalerStar.SetActive(false);
         }
-        // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
+
+        rb.velocity = Vector2.zero; // stops the player from connecting to a part and continuing to jump upwards
     }
+
+    void NonHeadConfig() // Generic changes for non-head part updates (referenced in UpdateParts)
+    {
+        headCol.enabled = false; // disable the rolling head collider
+        capCol.enabled = true; // use the capsule collider instead
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
+        scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
+        transform.rotation = Quaternion.identity; // lock rotation to 0;
+    }
+
+
+
+
+/*
+
+    // This chunk of code disables the held box collider while moving down through passthrough platforms, to prevent the box from getting caught if you jump
+    // halfway through the platform. Currently this has issues where it permanently disables the box collider, so it is disabled for now.
+
+    void OnCollisionEnter2D(Collision2D col) // disables the held box collider so that you can pass through platforms while holding it
+    // currently, this allows it to pass through walls, so if we want to have passthroughplatforms connected to walls later, this will need to be fixed
+    {
+        if(col.gameObject.tag == "PassThroughPlatform")
+        {
+            if(heldBoxCol.enabled == true)
+            {
+                wasBoxHeld = true;
+            }
+            else
+            {
+                wasBoxHeld = false;
+            }
+            heldBoxCol.enabled = false;
+            passThroughScript = col.gameObject.GetComponent<Pass_Through_Platform_Script>();
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D col) // re-enables the held box collider after passing through platforms
+    {
+        if(col.gameObject.tag == "PassThroughPlatform")
+        {
+            if(wasBoxHeld == true)
+            {
+                heldBoxCol.enabled = true;
+            }
+            wasBoxHeld = false;
+        }
+    }
+
+
+
+    CHANGE BOX
+
+    HELD COLLIDER TO THE CHILD OBJECT, AND GIVE IT RULES THAT DON"T ALLOW IT TO COLLIDE WITH THE PLAYER
+
+    PASSTHROUGH PLATFORMS ARE ON THE PASSTHROUGH LAYER, disable collisions with that layer
+
+
+
+
+    FIX UP ARMS LIKE I DID WITH THE LEGS
+
+*/
 }

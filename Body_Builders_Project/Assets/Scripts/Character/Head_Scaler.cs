@@ -40,7 +40,7 @@ public class Head_Scaler : MonoBehaviour
         if(taken == true)
         {
             headPos = head.transform.position;
-            playerDistance = Vector2.Distance(head.transform.position , transform.position);
+            playerDistance = Vector2.Distance(headPos , transform.position);
             timer += Time.deltaTime;
             transform.position = Vector2.Lerp(transform.position, headPos, timer * 2.5f);
             if(timer > 0.4f || playerDistance < 0.1f)

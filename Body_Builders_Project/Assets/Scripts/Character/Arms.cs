@@ -40,6 +40,7 @@ public class Arms : MonoBehaviour
         if(unavailableTimer < 1f)
         {
             unavailableTimer += Time.deltaTime;
+            //maybe add a collision mask that prevents player collisions for the duration
         }
 
 
@@ -62,15 +63,6 @@ public class Arms : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         boxCol.enabled = true;
-        if(rb == null)
-        {
-            Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
-        }
-        rb = this.GetComponent<Rigidbody2D>();
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;   
-        rb.mass = 6f;
-        rb.drag = 3f;
-        rb.gravityScale = 3f;
         rb.isKinematic = false;
     }
 
@@ -78,13 +70,13 @@ public class Arms : MonoBehaviour
     {
         attached = true;
         boxCol.enabled = false;
-        Destroy(rb);
+        rb.isKinematic = true;
     }
 
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && playerScript.isGrounded == false)
+        if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 3)) // if the player has just legs, snap anyway
         {
             playerScript.armString = identifierArmString;
             int playerParts = playerScript.partConfiguration;
@@ -102,9 +94,15 @@ public class Arms : MonoBehaviour
                 playerScript.UpdateParts();
             }
         }
+        else if(col.gameObject.tag == "Player" && playerScript.isGrounded == true)
+        // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
+        {
+            boxCol.enabled = false;
+            boxCol.enabled = true;
+        }
         else if(col.gameObject.tag == "Legs")
         {
-
+            // add options for legs to attach here
         }
     }
 }

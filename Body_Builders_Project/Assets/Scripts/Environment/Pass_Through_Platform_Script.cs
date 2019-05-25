@@ -12,7 +12,7 @@ using UnityEngine;
 
 public class Pass_Through_Platform_Script : MonoBehaviour
 {
-    PlatformEffector2D effector;
+    public PlatformEffector2D effector;
     public BoxCollider2D boxCol;
     float waitTime;
     float colWaitTime;

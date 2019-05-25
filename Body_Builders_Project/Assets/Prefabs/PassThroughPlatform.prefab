@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5311120605386297469}
   - component: {fileID: 5311120605386297457}
   - component: {fileID: 1800980885}
-  m_Layer: 9
+  m_Layer: 14
   m_Name: PassThroughPlatform
   m_TagString: PassThroughPlatform
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ PlatformEffector2D:
   m_UseColliderMask: 1
   m_ColliderMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 32567
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
@@ -141,6 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9d88823ad8cf464e8d616cfdffe4946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effector: {fileID: 0}
   boxCol: {fileID: 5311120605386297470}
 --- !u!61 &1800980885
 BoxCollider2D:
@@ -179,7 +180,7 @@ GameObject:
   - component: {fileID: 5311120605757968925}
   - component: {fileID: 5311120605757968915}
   m_Layer: 13
-  m_Name: PassThroughPlatform (1)
+  m_Name: Secondary_Collider
   m_TagString: PassThroughPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

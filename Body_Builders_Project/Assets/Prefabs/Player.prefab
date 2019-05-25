@@ -185,7 +185,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8442739823171316830}
-  m_Layer: 8
+  - component: {fileID: 41231377}
+  m_Layer: 15
   m_Name: BoxHoldLocation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,6 +207,22 @@ Transform:
   m_Father: {fileID: 8442739823636193073}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &41231377
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8442739823171316831}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: b2792fdbe3d804146aff0f4ccc054a39, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.44
 --- !u!1 &8442739823620078504
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,35 +341,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partConfiguration: 1
-  movementSpeed: 10
-  jumpForce: 10
-  jumpsRemaining: 0
+  movementSpeedAdjuster: 10
+  jumpForceAdjuster: 10
   pickupBox: {fileID: 0}
   boxHoldPos: {fileID: 8442739823171316830}
   boxInRange: 0
   holding: 0
-  heldBoxCol: {fileID: 8442739823700465871}
+  heldBoxCol: {fileID: 41231377}
   capCol: {fileID: 8442739823636193079}
   headCol: {fileID: 8442739823979869885}
   pickupBoxCol: {fileID: 0}
   isGrounded: 0
   groundChecker: {fileID: 8442739823620078504}
   groundCheck: {fileID: 8442739823620078507}
-  checkRadius: 0
   JumpLayer1:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 16896
   JumpLayer2:
     serializedVersion: 2
     m_Bits: 1024
   groundedDistance: 0.3
   scalerStar: {fileID: 8442739822587926352}
+  passThroughScript: {fileID: 0}
   numberOfJumps: 1
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
   armString: None
   legString: None
   headString: Basic
+  frozen: 0
 --- !u!61 &8442739823700465868
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -360,11 +377,11 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8442739823700465856}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_UsedByEffector: 1
+  m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.48, y: -0.15}
   m_SpriteTilingProperty:
@@ -386,7 +403,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8442739823700465856}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 6200000, guid: b2792fdbe3d804146aff0f4ccc054a39, type: 2}
   m_IsTrigger: 0
