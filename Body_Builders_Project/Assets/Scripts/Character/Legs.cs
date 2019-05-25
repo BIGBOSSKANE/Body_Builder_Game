@@ -12,15 +12,20 @@ public class Legs : MonoBehaviour
     public GameObject player;
     public GameObject head;
     public Player_Controller playerScript;
+    GameObject solidCollider;
+    BoxCollider2D solidBoxCollider;
 
     void Start()
     {
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
-        CheckForParent();
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<Player_Controller>();
+        solidCollider = transform.Find("Legs_Solid_Collider").gameObject;
+        solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
+        solidBoxCollider.enabled = true;
+        CheckForParent();
     }
 
     void Update()
@@ -45,26 +50,20 @@ public class Legs : MonoBehaviour
 
     public void Detached()
     {
+        solidBoxCollider.enabled = true;
         attached = false;
         unavailableTimer = 0f;
         boxCol.enabled = true;
-        if(rb == null)
-        {
-            Rigidbody2D Rigidbody2D = this.gameObject.AddComponent<Rigidbody2D>();
-        }
-        rb = this.GetComponent<Rigidbody2D>();
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;   
-        rb.mass = 6f;
-        rb.drag = 3f;
-        rb.gravityScale = 3f;
         rb.isKinematic = false;
     }
 
     public void Attached()
     {
         attached = true;
+        solidBoxCollider.enabled = false;
         boxCol.enabled = false;
-        Destroy(rb);
+        rb.isKinematic = true;
+        //Destroy(rb); // don't need to destroy rigidbody, just make it kinematic and make sure the colliders are disabled
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -92,10 +91,17 @@ public class Legs : MonoBehaviour
                 playerScript.UpdateParts();
             }
         }
+        else if(col.gameObject.tag == "Player" && playerScript.isGrounded == true)
+        // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
+        {
+            boxCol.enabled = false;
+            boxCol.enabled = true;
+        }
     }
 }
 
 //create a child object with a capsule collider that is on a layer which can't collide with the player
 //set this one as a trigger collider
 
-//
+
+//alternatively, create a layermask for collisions with the legs, that references when the player is grounded, when not, the layermask allows the player to come in contact
