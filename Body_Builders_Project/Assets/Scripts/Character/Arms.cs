@@ -24,14 +24,15 @@ public class Arms : MonoBehaviour
     public GameObject player;
     public GameObject head;
     public Player_Controller playerScript;
+    
+    /* - Use this in the future if a Lerp is required
     public Vector2 headPos;
     float playerDistance;
-
     Vector2 snapPoint;
     float snappingToLegsTimer = 0f;
-    float snappingToLegsDistance;
     bool snapToLegs = false;
     bool snappingToLegs = false;
+    */
 
     void Start()
     {

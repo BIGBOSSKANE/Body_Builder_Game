@@ -37,7 +37,6 @@ public class Player_Controller : MonoBehaviour
     GameObject legs; // the legs component - make sure all arms are called "Arms"
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
-    bool wasBoxHeld; // checks if the player was holding a box before updating parts, so that they continue to hold if they retain their arms
     public bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
@@ -48,11 +47,11 @@ public class Player_Controller : MonoBehaviour
     public GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
     public Pass_Through_Platform_Script passThroughScript;
 
-    private int extraJumps; // how many jumps beyond 1 does the player currently have?
-    public int numberOfJumps = 1; // how many jumps does the player have?
+    private int remainingJumps; // how many jumps beyond 1 does the player currently have?
+    public int maximumJumps = 1; // how many jumps does the player have?
 
     public float fallMultiplier = 2.5f; // increase fall speed on downwards portion of jump arc
-    public float lowJumpMultiplier = 2f; // alters jump height based on duration of the jump button being held
+    public float unheldJumpReduction = 2f; // alters jump height based on duration of the jump button being held
 
     public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
@@ -69,16 +68,15 @@ public class Player_Controller : MonoBehaviour
         head = this.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
         pickupBoxCol = GetComponent<BoxCollider2D>();
-        extraJumps = numberOfJumps;
+        remainingJumps = maximumJumps;
         canJumpOn = JumpLayer1 | JumpLayer2;
         jumpForce = jumpForceAdjuster;
         movementSpeed = movementSpeedAdjuster;
         UpdateParts();
         heldBoxCol.enabled = false;
-        wasBoxHeld = false;
     }
 
-    void FixedUpdate()
+    void FixedUpdate() // This covers all movement speed, and "isGrounded" for the Scaler head augment
     {        
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
@@ -118,44 +116,46 @@ public class Player_Controller : MonoBehaviour
 
     void Update()
     {
-        if((facingRight == false && moveInput > 0) || (facingRight == true && moveInput < 0))
+        if((facingRight == false && moveInput > 0) || (facingRight == true && moveInput < 0))  // if changing directions, flip sprite
         {
-            Flip(); // if changing directions, flip sprite
+        facingRight = !facingRight;
+        Vector3 Scaler = transform.localScale;
+        Scaler.x *= -1;
+        transform.localScale = Scaler;
         }
 
-        // Allow the below line of code to check the groundcheck distance
-        Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green);
+        Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green); // visualises the groundCheckRaycast in the editor so you can see it with your face
 
-        if(groundCheckRaycast() || (headString == "Scaler" && isGrounded == true)) // used to be isGrounded == true
+        if(groundCheckRaycast() || (headString == "Scaler" && isGrounded == true)) // reset jumps upon landing
         {
-            extraJumps = numberOfJumps;
+            remainingJumps = maximumJumps;
         }
 
-        if (Input.GetKeyDown("space") && partConfiguration != 1)// && extraJumps > 0)
+        if (Input.GetKeyDown("space") && partConfiguration != 1)// && remainingJumps > 0)
         // eventually set this to create prefabs of the part, rather than a detached piece
         {
             if(partConfiguration > 2)
             {
                 legs.transform.parent = null;
                 legs.GetComponent<Legs>().Detached();
-                extraJumps --;
+                remainingJumps --;
                 UpdateParts();
             }
             else if(partConfiguration == 2)
             {
                 arms.transform.parent = null;
                 arms.GetComponent<Arms>().Detached();
-                extraJumps --;
+                remainingJumps --;
                 UpdateParts();
             }
         } 
 
-        if(Input.GetButton("Jump") && extraJumps > 0 && jumpGate == false)
+        if(Input.GetButton("Jump") && remainingJumps > 0 && jumpGate == false)
         {
             rb.velocity = Vector2.up * jumpForce;
-            extraJumps --;
+            remainingJumps --;
         }
-        else if(Input.GetButton("Jump") && extraJumps == 0 && groundCheckRaycast() && jumpGate == false) //&& isGrounded == true)
+        else if(Input.GetButton("Jump") && remainingJumps == 0 && groundCheckRaycast() && jumpGate == false) //&& isGrounded == true)
         {
             //rb.velocity = Vector2.up * jumpForce;
             jumpGate = true;
@@ -170,19 +170,19 @@ public class Player_Controller : MonoBehaviour
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
-        else if (rb.velocity.y > 0f && !Input.GetButton("Jump"))
+        else if (rb.velocity.y > 0f && !Input.GetButton("Jump")) // reduces jump height when button isn't held
         {
-             rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;           
+             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;           
         }
     
 
-        if(pickupBox != null)
+
+        if(pickupBox != null) // Pick up or drop boxes
         {
             if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and drop box while you have arms and press "f"
             {
                 if(holding == false && boxInRange == true)
-                // currently the player character chooses from all boxes in range at random
-                // this will need to be changed if they can have multiple boxes at a time
+                // currently the player character chooses from all boxes in range at random this may need to be changed if they can have multiple boxes at a time
                 {
                     pickupBox.transform.parent = this.transform;
                     BoxPickup();
@@ -216,14 +216,6 @@ public class Player_Controller : MonoBehaviour
             pickupBox.GetComponent<Collider2D>().enabled = true;
             holding = false;
         } 
-    }
-
-    void Flip() // reverses the character sprite when the player turns
-    {
-        facingRight = !facingRight;
-        Vector3 Scaler = transform.localScale;
-        Scaler.x *= -1;
-        transform.localScale = Scaler;
     }
 
     bool groundCheckRaycast() // instantly returns "true" if raycast hits a layer in the canJumpOn layermask, also sets isGrounded to true
