@@ -231,7 +231,10 @@ public class Player_Controller : MonoBehaviour
             isGrounded = true;
             return true;
         }
-        isGrounded = false;
+        else if(partConfiguration == 1 && headString != "Scaler")
+        {
+            isGrounded = false;
+        }
         return false;
     }
 
@@ -393,43 +396,8 @@ public class Player_Controller : MonoBehaviour
 
 
 
+
 /*
-
-    // This chunk of code disables the held box collider while moving down through passthrough platforms, to prevent the box from getting caught if you jump
-    // halfway through the platform. Currently this has issues where it permanently disables the box collider, so it is disabled for now.
-
-    void OnCollisionEnter2D(Collision2D col) // disables the held box collider so that you can pass through platforms while holding it
-    // currently, this allows it to pass through walls, so if we want to have passthroughplatforms connected to walls later, this will need to be fixed
-    {
-        if(col.gameObject.tag == "PassThroughPlatform")
-        {
-            if(heldBoxCol.enabled == true)
-            {
-                wasBoxHeld = true;
-            }
-            else
-            {
-                wasBoxHeld = false;
-            }
-            heldBoxCol.enabled = false;
-            passThroughScript = col.gameObject.GetComponent<Pass_Through_Platform_Script>();
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D col) // re-enables the held box collider after passing through platforms
-    {
-        if(col.gameObject.tag == "PassThroughPlatform")
-        {
-            if(wasBoxHeld == true)
-            {
-                heldBoxCol.enabled = true;
-            }
-            wasBoxHeld = false;
-        }
-    }
-
-
-
     CHANGE BOX
 
     HELD COLLIDER TO THE CHILD OBJECT, AND GIVE IT RULES THAT DON"T ALLOW IT TO COLLIDE WITH THE PLAYER
