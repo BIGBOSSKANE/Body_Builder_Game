@@ -89,49 +89,8 @@ public class Player_Controller : MonoBehaviour
             speed = movementSpeed;
         }
 
-        moveInput = Input.GetAxisRaw("Horizontal"); // left or a is -1 , right or d is +1
-        //rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x , moveInput * speed * Time.deltaTime / moveTimer), rb.velocity.y); // move
-
-        if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            movingLeft = true;
-            movingRight = false;
-            moveTimer = 0f;
-        }
-
-        if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            movingLeft = false;
-            movingRight = true;
-            moveTimer = 0f;
-        }
-
-        if(Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            movingLeft = false;
-        }
-
-        if(Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            movingRight = false;
-        }
-
-        if(movingLeft == true || movingRight == true)
-        {
-            if(moveTimer < maxMoveTimer)
-            {
-                moveTimer += Time.deltaTime;
-            }
-            else if(moveTimer > maxMoveTimer)
-            {
-                moveTimer = maxMoveTimer;
-            }
-        }
-
-        Debug.Log(moveTimer);
-
-        rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x , moveInput * speed , moveTimer / maxMoveTimer), rb.velocity.y); // move
-
+        moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
+        rb.velocity = new Vector2(moveInput * speed , rb.velocity.y);
 
         // Checks for Ground while in Scaler mode
         if(headString == "Scaler" && partConfiguration == 1) // change ground collision detection if you have the Scaler augment
