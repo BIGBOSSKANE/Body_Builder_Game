@@ -18,14 +18,17 @@ public class Arms : MonoBehaviour
     bool attached = false;
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
+    float boxColTimer;
     public Rigidbody2D rb;
     public string identifierArmString = "Basic"; // This is used to change what arms the player controller thinks are connected
 
     public GameObject player;
     public GameObject head;
     public Player_Controller playerScript;
+    GameObject solidCollider;
+    BoxCollider2D solidBoxCollider;
     
-    /* - Use this in the future if a Lerp is required
+    /* - Use these in the future if a Lerp is required
     public Vector2 headPos;
     float playerDistance;
     Vector2 snapPoint;
@@ -41,6 +44,9 @@ public class Arms : MonoBehaviour
         playerScript = player.GetComponent<Player_Controller>();
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
+        solidCollider = transform.Find("Arms_Solid_Collider").gameObject;
+        solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
+        solidBoxCollider.enabled = true;
         CheckForParent();
     }
 
@@ -50,6 +56,15 @@ public class Arms : MonoBehaviour
         {
             unavailableTimer += Time.deltaTime;
             //maybe add a collision mask that prevents player collisions for the duration
+        }
+
+        if(boxColTimer < 0.2f)
+        {
+            boxColTimer += Time.deltaTime;
+        }
+        else
+        {
+            boxCol.enabled = true;
         }
     }
 
@@ -67,10 +82,12 @@ public class Arms : MonoBehaviour
 
     public void Detached()
     {
+        transform.parent = null;
+        solidBoxCollider.enabled = true;
         attached = false;
         unavailableTimer = 0f;
-        boxCol.enabled = true;
         rb.isKinematic = false;
+        boxColTimer = 0f;
     }
 
     public void Attached()
@@ -78,6 +95,7 @@ public class Arms : MonoBehaviour
         attached = true;
         boxCol.enabled = false;
         rb.isKinematic = true;
+        solidBoxCollider.enabled = false;
     }
 
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D

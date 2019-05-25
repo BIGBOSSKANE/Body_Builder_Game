@@ -2,7 +2,7 @@
 Creator: Daniel
 Created: 09/04/2019
 Last Edited by: Daniel
-Last Edit: 25/05/2019
+Last Edit: 26/05/2019
 */
 
 using System.Collections;
@@ -23,6 +23,10 @@ public class Player_Controller : MonoBehaviour
     public float jumpForceAdjuster = 10f; // control the level of jumps
     private float jumpForce; // how powerful is your jump? altered from the jumpForceAdjuster by different part combinations
     bool jumpGate; // prevent the character from jumping while this is true (set to disable corner jumps eventually)
+    bool cutJump; // removes a jump when you leave a platform
+    float jumpGateTimer; // timer for jump gate
+    bool leftGround; // did the player just leave a platform? - used to allow a short window to jump after the player falls off of a ledge
+    float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
     public GameObject pickupBox; // the box that the player is currently picking up
@@ -39,7 +43,9 @@ public class Player_Controller : MonoBehaviour
     public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
     public bool isGrounded; //is the character on the ground?
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
-    public Transform groundCheck; // transform of the ground checker object (used for the Scaler Augment)
+    float groundCheckerRadius;
+    float rayCastOffset; // alters raycast position based on character position
+    Vector2 rayCastPos; // alters raycast origin based on player part configuration - good for stopping pass through platform jumps
     public LayerMask JumpLayer1; // what can the player jump on?
     public LayerMask JumpLayer2; // had 2 layers and combined them, because the Unity editor wasn't allowing multiple selections at an earlier dev stage
     private LayerMask canJumpOn; // combines the 2 layers that can be jumped on
@@ -47,7 +53,7 @@ public class Player_Controller : MonoBehaviour
     public GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
     public Pass_Through_Platform_Script passThroughScript;
 
-    private int remainingJumps; // how many jumps beyond 1 does the player currently have?
+    public int remainingJumps; // how many jumps beyond 1 does the player currently have?
     public int maximumJumps = 1; // how many jumps does the player have?
 
     public float fallMultiplier = 2.5f; // increase fall speed on downwards portion of jump arc
@@ -56,7 +62,7 @@ public class Player_Controller : MonoBehaviour
     public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
     public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
-    public bool frozen; // use this when connecting to stop input
+    public bool freezeJumps; // use this when connecting to stop input
     bool trueGroundCheck; // checks for ground using both the Overlap Circle and the Raycast
 
 
@@ -74,10 +80,14 @@ public class Player_Controller : MonoBehaviour
         movementSpeed = movementSpeedAdjuster;
         UpdateParts();
         heldBoxCol.enabled = false;
+        groundedDistance = 0.34f;
+        cutJump = false;
     }
 
     void FixedUpdate() // This covers all movement speed, and "isGrounded" for the Scaler head augment
-    {        
+    {
+        rayCastPos = new Vector2(transform.position.x , transform.position.y + rayCastOffset);
+
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
             speed = movementSpeed / 1.2f;
@@ -91,10 +101,8 @@ public class Player_Controller : MonoBehaviour
         rb.velocity = new Vector2(moveInput * speed , rb.velocity.y);
 
         // Checks for Ground while in Scaler mode
-        if(headString == "Scaler" && partConfiguration == 1) // change ground collision detection if you have the Scaler augment
-        {
-            isGrounded = Physics2D.OverlapCircle(transform.position, 0.5f , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
-        }
+
+        isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
     }
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
@@ -124,58 +132,122 @@ public class Player_Controller : MonoBehaviour
         transform.localScale = Scaler;
         }
 
-        Debug.DrawRay(transform.position, Vector2.down * groundedDistance, Color.green); // visualises the groundCheckRaycast in the editor so you can see it with your face
+        Debug.DrawRay(rayCastPos, Vector2.down * groundedDistance, Color.green);
+        // visualises the groundCheckRaycast in the editor so you can see it with your face
 
-        if(groundCheckRaycast() || (headString == "Scaler" && isGrounded == true)) // reset jumps upon landing
+
+        if(jumpGate == true && jumpGateTimer < 0.4f) // the player can't jump again while this is true
+        // this prevents jumping twice when moving through pass through platforms, and also stops edge jumping
         {
-            remainingJumps = maximumJumps;
+            jumpGateTimer += Time.deltaTime;
         }
-
-        if (Input.GetKeyDown("space") && partConfiguration != 1)// && remainingJumps > 0)
-        // eventually set this to create prefabs of the part, rather than a detached piece
-        {
-            if(partConfiguration > 2)
-            {
-                legs.transform.parent = null;
-                legs.GetComponent<Legs>().Detached();
-                remainingJumps --;
-                UpdateParts();
-            }
-            else if(partConfiguration == 2)
-            {
-                arms.transform.parent = null;
-                arms.GetComponent<Arms>().Detached();
-                remainingJumps --;
-                UpdateParts();
-            }
-        } 
-
-        if(Input.GetButton("Jump") && remainingJumps > 0 && jumpGate == false)
-        {
-            rb.velocity = Vector2.up * jumpForce;
-            remainingJumps --;
-        }
-        else if(Input.GetButton("Jump") && remainingJumps == 0 && groundCheckRaycast() && jumpGate == false) //&& isGrounded == true)
-        {
-            //rb.velocity = Vector2.up * jumpForce;
-            jumpGate = true;
-        }
-
-        if(Input.GetButtonUp("Jump"))
+        else
         {
             jumpGate = false;
+            if(TrueGroundCheck()) // won't automatically check for ground for the first 0.4 seconds after jumping
+            {
+                remainingJumps = maximumJumps;
+                leftGround = false;
+                cutJump = false;
+            }
+            else
+            {
+                leftGround = true;
+                leftGroundTimer = 0f;
+            }
         }
 
-        if(rb.velocity.y < 0f) // fast fall for nice jumping
+        if(leftGround == true) // if the timer is below a number, the player can still jump as though they were on the platform
         {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            leftGroundTimer += Time.deltaTime;
+
+            if(leftGroundTimer < 0.1f && cutJump == false)
+            {
+                remainingJumps --;
+
+                remainingJumps --;
+                cutJump = true;
+
+            }
+        }
+
+
+        if(partConfiguration == 1 && headString == "Scaler") // different rules for Scaler Script
+        {
+            if(Input.GetButton("Jump") && leftGroundTimer < 0.2f && remainingJumps > 0f)
+            {
+                rb.velocity = Vector2.up * jumpForce;
+                remainingJumps --;
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown("space") && partConfiguration != 1)// && remainingJumps > 0)
+            // eventually set this to create prefabs of the part, rather than a detached piece
+            {
+                if(partConfiguration > 2)
+                {
+                    legs.GetComponent<Legs>().Detached();
+                    legs.transform.parent = null;
+                    remainingJumps --; // consumes jumps but doesn't require them to be used
+                    UpdateParts();
+                    rb.velocity = Vector2.up * jumpForce * 1.2f;
+                }
+                else if(partConfiguration == 2)
+                {
+                    arms.GetComponent<Arms>().Detached();
+                    arms.transform.parent = null;
+                    remainingJumps --; // consumes jumps but doesn't require them to be used
+                    UpdateParts();
+                    rb.velocity = Vector2.up * jumpForce * 1.2f;
+                }
+            } 
+
+            
+            if(Input.GetButton("Jump") && TrueGroundCheck() && jumpGate == false) // jumping from a platform
+            {
+                rb.velocity = Vector2.up * jumpForce;
+                jumpGateTimer = 0f;
+                jumpGate = true;
+                
+                // remaining jumps is not reduced here, as it would just reset on the next frame's ground check, it is reduced by the leftGroundTimer instead
+            }
+            else if(Input.GetButton("Jump") && !TrueGroundCheck() && remainingJumps == maximumJumps && jumpGate == false && leftGroundTimer > 0.3f) // if jumping after leftGround off of a ledge
+            {
+                remainingJumps --;
+                if(remainingJumps > 0f)
+                {
+                    rb.velocity = Vector2.up * jumpForce;
+                    jumpGateTimer = 0f;
+                    remainingJumps --;
+                    jumpGate = true;
+                }
+            }
+            else if(Input.GetButton("Jump") && !TrueGroundCheck() && remainingJumps > 0f && jumpGate == false)
+            {
+                rb.velocity = Vector2.up * jumpForce;
+                jumpGateTimer = 0f;
+                remainingJumps --;
+                jumpGate = true;
+            }
+
+            if(Input.GetButtonUp("Jump"))
+            {
+                jumpGate = false;
+            }    
+        }
+
+
+    // Jump tuning
+        if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier) * Time.deltaTime;
         }
         else if (rb.velocity.y > 0f && !Input.GetButton("Jump")) // reduces jump height when button isn't held
         {
              rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;           
         }
     
-
 
         if(pickupBox != null) // Pick up or drop boxes
         {
@@ -219,19 +291,13 @@ public class Player_Controller : MonoBehaviour
     }
 
     bool groundCheckRaycast() // instantly returns "true" if raycast hits a layer in the canJumpOn layermask, also sets isGrounded to true
+    // for the player in rolling head (non-scaler) mode
     {
-        Vector2 position = transform.position;
-        Vector2 direction = Vector2.down;
-        
-        RaycastHit2D hit = Physics2D.Raycast(position, direction, groundedDistance, canJumpOn);
+        RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance, canJumpOn);
         if(hit.collider != null)
         {
             isGrounded = true;
             return true;
-        }
-        else if(partConfiguration > 1 || (partConfiguration == 1 && headString != "Scaler")) // Scaler augment uses isGrounded, so this ignores the trait when player is in that mode
-        {
-            isGrounded = false;
         }
         return false;
     }
@@ -276,13 +342,18 @@ public class Player_Controller : MonoBehaviour
         {
             partConfiguration = 1; // just a head
             movementSpeed = movementSpeedAdjuster * 0.5f;
+            jumpForce = jumpForceAdjuster * 0.7f;
             if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
-                jumpForce = jumpForceAdjuster * 0.5f;
+                jumpForce = jumpForceAdjuster * 0.6f;
+                groundCheckerRadius = 0.4f;
+                fallMultiplier = 1f;
             }
             else
             {
                 jumpForce = jumpForceAdjuster * 0.7f;
+                groundCheckerRadius = 0.2f;
+                fallMultiplier = 3f;
             }
 
             capCol.enabled = false; // don't use the typical vertical standing collider
@@ -292,7 +363,8 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.position = gameObject.transform.position; // centre the groundChecker
             legString = "None"; // no legs
             armString = "None"; // no arms
-            groundedDistance = 0.34f; // shorter ground check distance
+            rayCastOffset = 0f;
+
             BoxDrop(); // drops any box immediately
             pickupBoxCol.enabled = false; // can't pick up any more boxes
             scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
@@ -313,7 +385,8 @@ public class Player_Controller : MonoBehaviour
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
             groundChecker.transform.localPosition = new Vector2(0f, -0.76f);
-            groundedDistance = 0.83f;
+            groundCheckerRadius = 0.25f;
+            rayCastOffset = -0.59f;
 
             capCol.size = new Vector2(0.6f , 1.6f);
             capCol.offset = new Vector2(0f , 0.03f);
@@ -341,7 +414,8 @@ public class Player_Controller : MonoBehaviour
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
-            groundedDistance = 1.04f;
+            groundCheckerRadius = 0.25f;
+            rayCastOffset = -0.7f;
 
             capCol.size = new Vector2(0.6f , 1.45f);
             capCol.offset = new Vector2(0f , -0.27f);
@@ -363,7 +437,8 @@ public class Player_Controller : MonoBehaviour
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
             groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
-            groundedDistance = 1.07f;
+            groundCheckerRadius = 0.25f;
+            rayCastOffset = -0.73f;
 
             capCol.size = new Vector2(0.6f , 2.08f);
             capCol.offset = new Vector2(0f , 0.03f);
@@ -390,7 +465,10 @@ public class Player_Controller : MonoBehaviour
             scalerStar.SetActive(false);
         }
 
-        rb.velocity = Vector2.zero; // stops the player from connecting to a part and continuing to jump upwards
+        rb.velocity = Vector2.zero;
+        moveInput = 0f;
+        jumpGate = true;
+        jumpGateTimer = 0f;
     }
 
     void NonHeadConfig() // Generic changes for non-head part updates (referenced in UpdateParts)
@@ -400,5 +478,7 @@ public class Player_Controller : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
         scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
+        isGrounded = false;
+        fallMultiplier = 3f;
     }
 }

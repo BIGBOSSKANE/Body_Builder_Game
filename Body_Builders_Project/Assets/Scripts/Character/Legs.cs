@@ -57,10 +57,11 @@ public class Legs : MonoBehaviour
 
     public void Detached()
     {
+        transform.parent = null;
         solidBoxCollider.enabled = true;
+        boxCol.enabled = true;
         attached = false;
         unavailableTimer = 0f;
-        boxCol.enabled = true;
         rb.isKinematic = false;
     }
 
@@ -70,13 +71,17 @@ public class Legs : MonoBehaviour
         solidBoxCollider.enabled = false;
         boxCol.enabled = false;
         rb.isKinematic = true;
-        //Destroy(rb); // don't need to destroy rigidbody, just make it kinematic and make sure the colliders are disabled
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 2))
+        if(col.gameObject.tag == "Player" && playerScript.isGrounded == true) // reset the collider if the player is not jumping
+        {
+            boxCol.enabled = false;
+            boxCol.enabled = true;
+        }
+        else if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 2))
         {
             playerScript.legString = identifierLegString;
             int playerParts = playerScript.partConfiguration;
@@ -97,12 +102,6 @@ public class Legs : MonoBehaviour
                 this.gameObject.transform.parent = col.transform;
                 playerScript.UpdateParts();
             }
-        }
-        else if(col.gameObject.tag == "Player" && playerScript.isGrounded == true)
-        // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
-        {
-            boxCol.enabled = false;
-            boxCol.enabled = true;
         }
     }
 }

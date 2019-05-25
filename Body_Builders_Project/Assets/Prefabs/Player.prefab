@@ -342,6 +342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   partConfiguration: 1
   movementSpeedAdjuster: 10
+  maxMoveTimer: 0.5
   jumpForceAdjuster: 10
   pickupBox: {fileID: 0}
   boxHoldPos: {fileID: 8442739823171316830}
@@ -353,7 +354,6 @@ MonoBehaviour:
   pickupBoxCol: {fileID: 0}
   isGrounded: 0
   groundChecker: {fileID: 8442739823620078504}
-  groundCheck: {fileID: 8442739823620078507}
   JumpLayer1:
     serializedVersion: 2
     m_Bits: 16896
@@ -363,13 +363,14 @@ MonoBehaviour:
   groundedDistance: 0.3
   scalerStar: {fileID: 8442739822587926352}
   passThroughScript: {fileID: 0}
-  numberOfJumps: 1
-  fallMultiplier: 2.5
-  lowJumpMultiplier: 2
+  remainingJumps: 0
+  maximumJumps: 1
+  fallMultiplier: 3
+  unheldJumpReduction: 1.5
   armString: None
   legString: None
   headString: Basic
-  frozen: 0
+  freezeJumps: 0
 --- !u!61 &8442739823700465868
 BoxCollider2D:
   m_ObjectHideFlags: 0

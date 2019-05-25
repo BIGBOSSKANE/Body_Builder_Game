@@ -147,3 +147,26 @@ public class Legs : MonoBehaviour
 //create a child object with a capsule collider that is on a layer which can't collide with the player
 //set this one as a trigger collider
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
