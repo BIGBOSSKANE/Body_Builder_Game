@@ -82,6 +82,14 @@ public class Player_Controller : MonoBehaviour
         heldBoxCol.enabled = false;
         groundedDistance = 0.34f;
         cutJump = false;
+        leftGroundTimer = 0f;
+    }
+
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(groundChecker.transform.position, groundCheckerRadius);
     }
 
     void FixedUpdate() // This covers all movement speed, and "isGrounded" for the Scaler head augment
@@ -164,17 +172,15 @@ public class Player_Controller : MonoBehaviour
             if(leftGroundTimer < 0.1f && cutJump == false)
             {
                 remainingJumps --;
-
-                remainingJumps --;
                 cutJump = true;
-
             }
+            groundChecker.SetActive(false);
         }
 
 
-        if(partConfiguration == 1 && headString == "Scaler") // different rules for Scaler Script
+        if(partConfiguration == 1 && headString == "Scaler" && Input.GetButton("Jump")) // different rules for Scaler Script
         {
-            if(Input.GetButton("Jump") && leftGroundTimer < 0.2f && remainingJumps > 0f)
+            if((TrueGroundCheck() || leftGroundTimer < 0.3f ) && remainingJumps > 0f)
             {
                 rb.velocity = Vector2.up * jumpForce;
                 remainingJumps --;
@@ -264,6 +270,7 @@ public class Player_Controller : MonoBehaviour
                 {
                     BoxDrop();
                     // if we eventually do want the box to be thrown, add some alternative code here
+
                 }
             }
         }
@@ -304,6 +311,7 @@ public class Player_Controller : MonoBehaviour
 
     public bool TrueGroundCheck()
     {
+        groundChecker.SetActive(true);
         if(groundCheckRaycast() || isGrounded == true)
         {
             return true;
@@ -346,7 +354,7 @@ public class Player_Controller : MonoBehaviour
             if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
                 jumpForce = jumpForceAdjuster * 0.6f;
-                groundCheckerRadius = 0.4f;
+                groundCheckerRadius = 0.45f;
                 fallMultiplier = 1f;
             }
             else
@@ -465,8 +473,8 @@ public class Player_Controller : MonoBehaviour
             scalerStar.SetActive(false);
         }
 
-        rb.velocity = Vector2.zero;
         moveInput = 0f;
+        rb.velocity = Vector2.zero;
         jumpGate = true;
         jumpGateTimer = 0f;
     }

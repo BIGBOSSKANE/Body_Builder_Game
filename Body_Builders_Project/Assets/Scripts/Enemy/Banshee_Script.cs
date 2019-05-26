@@ -8,36 +8,79 @@ public class Banshee_Script : MonoBehaviour
     public GameObject target;
     public float laserCharge = 1.5f;
     public float laserFireTime = 3f;
+    public LayerMask collideableLayers;
+    public LineRenderer lineRenderer;
+    public GameObject laserOriginPoint;
+    public Vector3 laserOrigin;
+    public Vector3 laserTarget;
+    CircleCollider2D circleCol;
+    float laserRange = 100f;
+    bool windUp;
 
     // Start is called before the first frame update
     void Start()
     {
         spotted = false;
+        laserOriginPoint = gameObject.transform.Find("Laser_Origin").gameObject;
+        windUp = false;
+        circleCol = gameObject.GetComponent<CircleCollider2D>();
+        laserRange = circleCol.radius;
     }
 
     // Update is called once per frame
     void Update()
     {
+        lineRenderer = gameObject.GetComponent<LineRenderer>();
+
         if (spotted == true)
         {
-            Vector3 targ = target.transform.position;
-            targ.z = 0f;
+            laserOrigin = laserOriginPoint.transform.position;
+            laserOrigin.z = 0f;
 
-            Vector3 objectPos = transform.position;
+            Vector2 targ = target.transform.position;
+
+            Vector2 objectPos = transform.position;
             targ.x = targ.x - objectPos.x;
             targ.y = targ.y - objectPos.y;
 
             float angle = Mathf.Atan2(targ.y, targ.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+            lineRenderer.SetPosition (0 , laserOrigin);
+
+            RaycastHit hit;
+            if(Physics.Raycast(laserOrigin , transform.right , out hit , collideableLayers))
+            {
+                laserTarget = hit.point;
+                laserTarget.z = 0f;
+                lineRenderer.SetPosition(1 , laserTarget);
+                Debug.Log("Hit");
+            }
+            else
+            {
+                laserTarget = laserOrigin + transform.right * laserRange;
+                laserTarget.z = 0f;
+                lineRenderer.SetPosition(1 , laserTarget);
+            }
         }
     }
-    void OnTriggerEnter2D(Collider2D Player)
+
+    void OnTriggerEnter2D(Collider2D col)
     {
-        if (Player.gameObject.tag == "Player") // if the player's object
+        if (col.gameObject.tag == "Player") // if the player's object
         {
-            Debug.Log("Player has been spotted");
-            target = Player.gameObject;
+            target = col.gameObject;
             spotted = true;
+            lineRenderer.enabled = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "Player") // if the player's object
+        {
+            spotted = false;
+            lineRenderer.enabled = false;
         }
     }
 }

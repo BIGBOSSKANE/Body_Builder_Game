@@ -8,7 +8,7 @@ public class Daniel_Pressure_Button_Script : MonoBehaviour
     Vector2 manipulatedObjectOriginalPos;
     public GameObject target1;
     Vector2 targetPos1;
-    int triggerCounter;
+    bool triggered;
     public float moveTimeTotal = 1f;
     float moveTime;
 
@@ -16,23 +16,22 @@ public class Daniel_Pressure_Button_Script : MonoBehaviour
     {
         manipulatedObjectOriginalPos = manipulatedObject.transform.position;
         targetPos1 = target1.transform.position;
-        triggerCounter = 0;
         moveTime = 0f;
-    }
-
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        triggerCounter ++;
     }
 
     void OnTriggerExit2D(Collider2D col)
     {
-        triggerCounter --;
+        triggered = false;
+    }
+
+    void OnTriggerStay2D(Collider2D col)
+    {
+        triggered = true;
     }
 
     void Update()
     {
-        if(triggerCounter > 0)
+        if(triggered == true)
         {
             moveTime += Time.deltaTime;
             if(moveTime > moveTimeTotal)
@@ -42,7 +41,7 @@ public class Daniel_Pressure_Button_Script : MonoBehaviour
             manipulatedObject.transform.position = Vector2.Lerp(manipulatedObjectOriginalPos , targetPos1 , moveTime/moveTimeTotal);
 
         }
-        else if(triggerCounter == 0)
+        else if(triggered == false)
         {
             moveTime -= Time.deltaTime;
             if(moveTime < 0f)
