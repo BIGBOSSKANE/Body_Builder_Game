@@ -312,6 +312,7 @@ public class Player_Controller : MonoBehaviour
     public bool TrueGroundCheck()
     {
         groundChecker.SetActive(true);
+        isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn);
         if(groundCheckRaycast() || isGrounded == true)
         {
             return true;
@@ -472,11 +473,6 @@ public class Player_Controller : MonoBehaviour
         {
             scalerStar.SetActive(false);
         }
-
-        moveInput = 0f;
-        rb.velocity = Vector2.zero;
-        jumpGate = true;
-        jumpGateTimer = 0f;
     }
 
     void NonHeadConfig() // Generic changes for non-head part updates (referenced in UpdateParts)
@@ -488,5 +484,9 @@ public class Player_Controller : MonoBehaviour
         transform.rotation = Quaternion.identity; // lock rotation to 0;
         isGrounded = false;
         fallMultiplier = 3f;
+        rb.velocity = Vector2.zero;
+        moveInput = 0f;
+        jumpGate = true;
+        jumpGateTimer = 0f;
     }
 }
