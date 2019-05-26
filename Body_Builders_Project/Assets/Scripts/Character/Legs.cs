@@ -81,7 +81,7 @@ public class Legs : MonoBehaviour
             boxCol.enabled = false;
             boxCol.enabled = true;
         }
-        else if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 2))
+        else if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 2))
         {
             playerScript.legString = identifierLegString;
             int playerParts = playerScript.partConfiguration;

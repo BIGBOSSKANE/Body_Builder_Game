@@ -101,7 +101,7 @@ public class Arms : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && (playerScript.isGrounded == false || playerScript.partConfiguration == 3)) // if the player has just legs, snap anyway
+        if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 3)) // if the player has just legs, snap anyway
         {
             playerScript.armString = identifierArmString;
             int playerParts = playerScript.partConfiguration;
