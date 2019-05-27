@@ -25,6 +25,7 @@ public class Player_Controller : MonoBehaviour
     bool jumpGate; // prevent the character from jumping while this is true (set to disable corner jumps eventually)
     bool cutJump; // removes a jump when you leave a platform
     float jumpGateTimer; // timer for jump gate
+    float jumpGateLimit = 0.6f;
     bool leftGround; // did the player just leave a platform? - used to allow a short window to jump after the player falls off of a ledge
     float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
@@ -144,7 +145,7 @@ public class Player_Controller : MonoBehaviour
         // visualises the groundCheckRaycast in the editor so you can see it with your face
 
 
-        if(jumpGate == true && jumpGateTimer < 0.4f) // the player can't jump again while this is true
+        if(jumpGate == true && jumpGateTimer < jumpGateLimit) // the player can't jump again while this is true
         // this prevents jumping twice when moving through pass through platforms, and also stops edge jumping
         {
             jumpGateTimer += Time.deltaTime;
@@ -352,6 +353,8 @@ public class Player_Controller : MonoBehaviour
             partConfiguration = 1; // just a head
             movementSpeed = movementSpeedAdjuster * 0.5f;
             jumpForce = jumpForceAdjuster * 0.7f;
+            jumpGateLimit = 0.4f;
+
             if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
                 jumpForce = jumpForceAdjuster * 0.6f;
@@ -393,8 +396,8 @@ public class Player_Controller : MonoBehaviour
             // adjust height of other parts
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
-            groundChecker.transform.localPosition = new Vector2(0f, -0.76f);
-            groundCheckerRadius = 0.25f;
+            groundChecker.transform.localPosition = new Vector2(0f, -0.50f);
+            groundCheckerRadius = 0.292f;
             rayCastOffset = -0.59f;
 
             capCol.size = new Vector2(0.6f , 1.6f);
@@ -422,8 +425,8 @@ public class Player_Controller : MonoBehaviour
             armString = "None"; // no arms
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
-            groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
-            groundCheckerRadius = 0.25f;
+            groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
+            groundCheckerRadius = 0.292f;
             rayCastOffset = -0.7f;
 
             capCol.size = new Vector2(0.6f , 1.45f);
@@ -445,8 +448,8 @@ public class Player_Controller : MonoBehaviour
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
-            groundChecker.transform.localPosition = new Vector2(0f, -0.97f);
-            groundCheckerRadius = 0.25f;
+            groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
+            groundCheckerRadius = 0.292f;
             rayCastOffset = -0.73f;
 
             capCol.size = new Vector2(0.6f , 2.08f);
@@ -487,6 +490,7 @@ public class Player_Controller : MonoBehaviour
         rb.velocity = Vector2.zero;
         moveInput = 0f;
         jumpGate = true;
-        jumpGateTimer = 0f;
+        jumpGateLimit = 0.6f;
+        jumpGateTimer = jumpGateLimit - 0.1f;
     }
 }
