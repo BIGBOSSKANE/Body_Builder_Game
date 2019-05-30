@@ -28,7 +28,7 @@ public class Banshee_Script : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         lineRenderer = gameObject.GetComponent<LineRenderer>();
 

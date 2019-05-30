@@ -343,8 +343,6 @@ public class Player_Controller : MonoBehaviour
 
         Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
 
-
-
         if(!hasArms && !hasLegs)
         {
             partConfiguration = 1; // just a head
