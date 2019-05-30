@@ -30,7 +30,7 @@ public class Player_Controller : MonoBehaviour
     float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
-    public GameObject pickupBox; // the box that the player is currently picking up
+    GameObject pickupBox; // the box that the player is currently picking up
     public Transform boxHoldPos; // determine where the held box is positioned
     public bool boxInRange = false; // is a box in the pickup range?
     public bool holding = false; // is the player holding a box?
@@ -50,9 +50,8 @@ public class Player_Controller : MonoBehaviour
     public LayerMask JumpLayer1; // what can the player jump on?
     public LayerMask JumpLayer2; // had 2 layers and combined them, because the Unity editor wasn't allowing multiple selections at an earlier dev stage
     private LayerMask canJumpOn; // combines the 2 layers that can be jumped on
-    public float groundedDistance = 0.3f; // distance of the grounded raycast
+    float groundedDistance = 0.3f; // distance of the grounded raycast
     public GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
-    public Pass_Through_Platform_Script passThroughScript;
 
     public int remainingJumps; // how many jumps beyond 1 does the player currently have?
     public int maximumJumps = 1; // how many jumps does the player have?
@@ -62,9 +61,7 @@ public class Player_Controller : MonoBehaviour
 
     public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
-    public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
-    public bool freezeJumps; // use this when connecting to stop input
-    bool trueGroundCheck; // checks for ground using both the Overlap Circle and the Raycast
+    public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints\
 
 
     void Start()
@@ -246,11 +243,11 @@ public class Player_Controller : MonoBehaviour
 
 
     // Jump tuning
-        if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though
+        if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier) * Time.deltaTime;
+            rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
         }
-        else if (rb.velocity.y > 0f && !Input.GetButton("Jump")) // reduces jump height when button isn't held
+        else if (rb.velocity.y > 0f && !Input.GetButton("Jump")) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
              rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;           
         }
@@ -365,7 +362,7 @@ public class Player_Controller : MonoBehaviour
             {
                 jumpForce = jumpForceAdjuster * 0.7f;
                 groundCheckerRadius = 0.2f;
-                fallMultiplier = 3f;
+                fallMultiplier = 2.5f;
             }
 
             capCol.enabled = false; // don't use the typical vertical standing collider
@@ -390,6 +387,7 @@ public class Player_Controller : MonoBehaviour
             jumpForce = jumpForceAdjuster * 0.85f;     
 
             NonHeadConfig();
+            fallMultiplier = 3f;
             arms = gameObject.transform.Find("Arms").gameObject;
             legString = "None"; // no legs
            
@@ -486,7 +484,7 @@ public class Player_Controller : MonoBehaviour
         scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
         isGrounded = false;
-        fallMultiplier = 3f;
+        fallMultiplier = 4f;
         rb.velocity = Vector2.zero;
         moveInput = 0f;
         jumpGate = true;
