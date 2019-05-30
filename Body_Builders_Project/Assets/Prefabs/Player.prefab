@@ -186,7 +186,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8442739823171316830}
   - component: {fileID: 41231377}
-  - component: {fileID: 229558705}
   m_Layer: 15
   m_Name: BoxHoldLocation
   m_TagString: Untagged
@@ -224,20 +223,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.44
---- !u!114 &229558705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8442739823171316831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981647f87b512104a9340c2a75f11485, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  popUp: {fileID: 0}
-  popIm: {fileID: 0}
 --- !u!1 &8442739823620078504
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +267,6 @@ GameObject:
   - component: {fileID: 8442739823700465858}
   - component: {fileID: 8442739823700465868}
   - component: {fileID: 8442739823700465871}
-  - component: {fileID: 24976226}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -425,20 +409,3 @@ CircleCollider2D:
   m_Offset: {x: 0.83, y: 0.36}
   serializedVersion: 2
   m_Radius: 0.44
---- !u!114 &24976226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8442739823700465856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61bdb3ae157973e499ec5c1912939a56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  popUp: {fileID: 0}
-  popIm: {fileID: 0}
-  hasArms: 0
-  boxHere: 0
-  uiLocat: {fileID: 0}
