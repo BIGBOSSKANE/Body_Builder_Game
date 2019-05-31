@@ -7,9 +7,8 @@ public class UI_PickUp_PopUp : MonoBehaviour
 {
     public Text popUp;
     public Image popIm;
-    public bool hasArms = false;
-    public bool boxHere = false;
     public GameObject uiLocat;
+    int playerParts;
 
     void Start()
     {
@@ -17,42 +16,35 @@ public class UI_PickUp_PopUp : MonoBehaviour
         popIm.enabled = false;
     }
 
-    void Update()
+    void OnTriggerEnter2D(Collider2D col)
     {
-        if (hasArms && boxHere == true)
+        if (col.tag == "Player")
+        {
+            playerParts = col.GetComponent<Player_Controller>().partConfiguration;
+        }
+
+        if (playerParts == 2 || playerParts == 4)
         {
             popUp.enabled = true;
             popIm.enabled = true;
             Vector2 poppos = Camera.main.WorldToScreenPoint(uiLocat.transform.position);
             popUp.transform.position = poppos;
+            StartCoroutine("PopUpActive");
         }
         else
-        {
-            popUp.enabled = false;
+        {   popUp.enabled = false;
             popIm.enabled = false;
         }
     }
-
-    void OnTriggerEnter2D(Collider2D other)
+    private IEnumerator PopUpActive()
     {
-        if (other.gameObject.tag == "Arms")
+        while (true)
         {
-            hasArms = true;
-        }
-        if (other.gameObject.tag == "Box")
-        {
-            boxHere = true;
-        }
-    }
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.tag == "Arms")
-        {
-            hasArms = false;
-        }
-        if (other.gameObject.tag == "Box")
-        {
-            boxHere = false;
+            yield return new WaitForSeconds(2.5f); // wait a selected amount of time
+            Debug.Log("UI popped up");
+            Destroy(popUp);
+            Destroy(popIm);
+            yield break;
         }
     }
-    }
+}
