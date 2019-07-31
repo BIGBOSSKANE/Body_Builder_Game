@@ -16,8 +16,6 @@ public class Player_Controller : MonoBehaviour
     float movementSpeed; // how fast can you move?
     float moveTimer;
     public float maxMoveTimer = 0.7f;
-    bool movingLeft;
-    bool movingRight;
     float speed; // current speed
     float moveSpeedPrior; // used to track movement speed for speed increase Lerp 
     public float jumpForceAdjuster = 10f; // control the level of jumps
@@ -66,12 +64,12 @@ public class Player_Controller : MonoBehaviour
 
     void Start()
     {
-        groundChecker = this.transform.Find("Ground Checker").gameObject;
+        groundChecker = this.transform.Find("GroundChecker").gameObject;
         rb = GetComponent<Rigidbody2D>();
         capCol = GetComponent<CapsuleCollider2D>();
         head = this.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
-        pickupBoxCol = GetComponent<BoxCollider2D>();
+        pickupBoxCol = this.transform.Find("BoxHoldLocation").gameObject.GetComponent<BoxCollider2D>();
         remainingJumps = maximumJumps;
         canJumpOn = JumpLayer1 | JumpLayer2;
         jumpForce = jumpForceAdjuster;

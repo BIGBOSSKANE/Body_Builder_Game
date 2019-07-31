@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Daniel_Timer_Button_Script : MonoBehaviour
 {
-    public GameObject manipulatedObject; // the first childed object
+    public GameObject manipulatedObject;
     Vector2 manipulatedObjectOriginalPos;
     public GameObject target1;
     Vector2 targetPos1;
