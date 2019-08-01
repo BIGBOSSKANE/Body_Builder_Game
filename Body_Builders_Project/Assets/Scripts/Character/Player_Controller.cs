@@ -59,7 +59,14 @@ public class Player_Controller : MonoBehaviour
 
     public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
     public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
-    public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints\
+    public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
+
+
+    // Augment related variables are listed here
+
+    private bool afterburner = false;
+    GameObject boostSprites;
+
 
 
     void Start()
@@ -227,10 +234,18 @@ public class Player_Controller : MonoBehaviour
             }
             else if(Input.GetButton("Jump") && !TrueGroundCheck() && remainingJumps > 0f && jumpGate == false)
             {
-                rb.velocity = Vector2.up * jumpForce;
-                jumpGateTimer = 0f;
                 remainingJumps --;
+                jumpGateTimer = 0f;
                 jumpGate = true;
+                if(afterburner == false)
+                {
+                    rb.velocity = Vector2.up * jumpForce;
+                }
+                else if(remainingJumps == 0f && afterburner == true)
+                {
+                    boostSprites.SetActive(true);
+                    rb.velocity = Vector2.up * jumpForce * 1.1f;
+                }
             }
 
             if(Input.GetButtonUp("Jump"))
@@ -241,13 +256,29 @@ public class Player_Controller : MonoBehaviour
 
 
     // Jump tuning
-        if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
+        if(rb.velocity.y < 0f && afterburner == true && Input.GetButton("Jump")) // afterburner glide
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(true);
+            }
+        }
+        else if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
         }
         else if (rb.velocity.y > 0f && !Input.GetButton("Jump")) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
-             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;           
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }       
         }
     
 
@@ -348,6 +379,15 @@ public class Player_Controller : MonoBehaviour
             jumpForce = jumpForceAdjuster * 0.7f;
             jumpGateLimit = 0.4f;
 
+            // upgrades
+            maximumJumps = 1;
+            afterburner = false;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+                boostSprites = null;
+            }
+
             if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
                 jumpForce = jumpForceAdjuster * 0.6f;
@@ -386,6 +426,13 @@ public class Player_Controller : MonoBehaviour
             fallMultiplier = 3f;
             arms = gameObject.transform.Find(armString).gameObject;
             legString = "None"; // no legs
+                maximumJumps = 1;
+                afterburner = false;
+                if(boostSprites != null)
+                {
+                    boostSprites.SetActive(false);
+                    boostSprites = null;
+                }
            
             // adjust height of other parts
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
@@ -417,6 +464,22 @@ public class Player_Controller : MonoBehaviour
             NonHeadConfig();
             legs = gameObject.transform.Find(legString).gameObject;
             armString = "None"; // no arms
+                if(legString == "AfterburnerLegs")
+                {
+                    maximumJumps = 2;
+                    afterburner = true;
+                    boostSprites = legs.transform.Find("BoostSprites").gameObject;
+                }
+                else
+                {
+                    maximumJumps = 1;
+                    afterburner = false;
+                    if(boostSprites != null)
+                    {
+                        boostSprites.SetActive(false);
+                        boostSprites = null;
+                    }
+                }
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
@@ -439,6 +502,22 @@ public class Player_Controller : MonoBehaviour
             NonHeadConfig();
             arms = gameObject.transform.Find(armString).gameObject;
             legs = gameObject.transform.Find(legString).gameObject;
+                if(legString == "AfterburnerLegs")
+                {
+                    maximumJumps = 2;
+                    afterburner = true;
+                    boostSprites = legs.transform.Find("BoostSprites").gameObject;
+                }
+                else
+                {
+                    maximumJumps = 1;
+                    afterburner = false;
+                    if(boostSprites != null)
+                    {
+                        boostSprites.SetActive(false);
+                        boostSprites = null;
+                    }
+                }
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
