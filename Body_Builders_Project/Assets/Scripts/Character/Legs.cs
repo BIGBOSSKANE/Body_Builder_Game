@@ -15,7 +15,10 @@ public class Legs : MonoBehaviour
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
     public Rigidbody2D rb;
-    public string identifierLegString = "Basic";
+
+    public enum legIdentifier{ Basic, Afterburner, Groundbreaker} // sets up for the dropdown menu of options
+    public legIdentifier legType;
+
     public GameObject player;
     public GameObject head;
     public Player_Controller playerScript;
@@ -32,6 +35,7 @@ public class Legs : MonoBehaviour
         solidCollider = transform.Find("Legs_Solid_Collider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
         solidBoxCollider.enabled = true;
+        this.name = legType + "Legs";
         CheckForParent();
     }
 
@@ -83,7 +87,7 @@ public class Legs : MonoBehaviour
         }
         else if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 2))
         {
-            playerScript.legString = identifierLegString;
+            playerScript.legString = this.name;
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {

@@ -384,7 +384,7 @@ public class Player_Controller : MonoBehaviour
 
             NonHeadConfig();
             fallMultiplier = 3f;
-            arms = gameObject.transform.Find("Arms").gameObject;
+            arms = gameObject.transform.Find(armString).gameObject;
             legString = "None"; // no legs
            
             // adjust height of other parts
@@ -415,7 +415,7 @@ public class Player_Controller : MonoBehaviour
             jumpForce = jumpForceAdjuster * 1.1f;            
             
             NonHeadConfig();
-            legs = gameObject.transform.Find("Legs").gameObject;
+            legs = gameObject.transform.Find(legString).gameObject;
             armString = "None"; // no arms
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
@@ -437,8 +437,8 @@ public class Player_Controller : MonoBehaviour
             jumpForce = jumpForceAdjuster * 1.1f;
 
             NonHeadConfig();
-            arms = gameObject.transform.Find("Arms").gameObject;
-            legs = gameObject.transform.Find("Legs").gameObject;
+            arms = gameObject.transform.Find(armString).gameObject;
+            legs = gameObject.transform.Find(legString).gameObject;
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin

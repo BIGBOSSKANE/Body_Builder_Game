@@ -20,7 +20,8 @@ public class Arms : MonoBehaviour
     public BoxCollider2D boxCol;
     float boxColTimer;
     public Rigidbody2D rb;
-    public string identifierArmString = "Basic"; // This is used to change what arms the player controller thinks are connected
+    public enum armIdentifier{ Basic, Lifter, Shield} // sets up for the dropdown menu of options
+    public armIdentifier armType;
 
     public GameObject player;
     public GameObject head;
@@ -47,6 +48,7 @@ public class Arms : MonoBehaviour
         solidCollider = transform.Find("Arms_Solid_Collider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
         solidBoxCollider.enabled = true;
+        this.name = armType + "Arms";
         CheckForParent();
     }
 
@@ -103,7 +105,7 @@ public class Arms : MonoBehaviour
         Vector2 thisPos = gameObject.transform.position;
         if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 3)) // if the player has just legs, snap anyway
         {
-            playerScript.armString = identifierArmString;
+            playerScript.armString = this.name;
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 2 && playerParts != 4 && unavailableTimer > 0.3f)
             {
