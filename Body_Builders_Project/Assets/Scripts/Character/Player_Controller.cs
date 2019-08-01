@@ -66,6 +66,9 @@ public class Player_Controller : MonoBehaviour
 
     private bool afterburner = false;
     GameObject boostSprites;
+    private bool groundbreaker = false;
+    private LayerMask groundbreakable; // NEEDS TO BE DEFINED !!!!!!!!!!!!!!!!!!!!!!!!!!!1
+    public float groundbreakerWaitTime = 1f; // the fall duration before groundbreakers activate
 
 
 
@@ -297,7 +300,6 @@ public class Player_Controller : MonoBehaviour
                 {
                     BoxDrop();
                     // if we eventually do want the box to be thrown, add some alternative code here
-
                 }
             }
         }
@@ -331,10 +333,30 @@ public class Player_Controller : MonoBehaviour
         if(hit.collider != null)
         {
             isGrounded = true;
+
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+
             return true;
         }
         return false;
     }
+
+
+    public void groundBreakCheckRaycast()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance + 0.1f, groundbreakable);
+        if(hit.collider != null)
+        {
+            if(groundbreaker == true && leftGroundTimer >= groundbreakerWaitTime)
+            {
+                Destroy(hit.transform.gameObject); // destroy breakable ground
+            }
+        }
+    }
+
 
     public bool TrueGroundCheck()
     {
@@ -381,6 +403,7 @@ public class Player_Controller : MonoBehaviour
 
             // upgrades
             maximumJumps = 1;
+            groundbreaker = false;
             afterburner = false;
             if(boostSprites != null)
             {
@@ -427,6 +450,7 @@ public class Player_Controller : MonoBehaviour
             arms = gameObject.transform.Find(armString).gameObject;
             legString = "None"; // no legs
                 maximumJumps = 1;
+                groundbreaker = false;
                 afterburner = false;
                 if(boostSprites != null)
                 {
@@ -517,6 +541,15 @@ public class Player_Controller : MonoBehaviour
                         boostSprites.SetActive(false);
                         boostSprites = null;
                     }
+                }
+
+                if(legString == "GroundbreakerLegs")
+                {
+                    groundbreaker = true;
+                }
+                else
+                {
+                    groundbreaker = false;
                 }
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
