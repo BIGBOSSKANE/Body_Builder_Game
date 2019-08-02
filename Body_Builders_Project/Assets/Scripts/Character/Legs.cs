@@ -92,7 +92,7 @@ public class Legs : MonoBehaviour
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {
                 col.gameObject.transform.rotation = Quaternion.identity;
-                if(playerParts == 1) // this one needs changing
+                if(playerParts == 1)
                 {
                     thisPos.y += 0.014f;
                     col.gameObject.transform.position = thisPos;                   

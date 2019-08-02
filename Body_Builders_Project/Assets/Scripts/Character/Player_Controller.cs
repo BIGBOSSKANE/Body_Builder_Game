@@ -25,7 +25,7 @@ public class Player_Controller : MonoBehaviour
     float jumpGateTimer; // timer for jump gate
     float jumpGateLimit = 0.6f;
     bool leftGround; // did the player just leave a platform? - used to allow a short window to jump after the player falls off of a ledge
-    float leftGroundTimer; // how long ago did they leave the platform?
+    public float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
     GameObject pickupBox; // the box that the player is currently picking up
@@ -57,8 +57,8 @@ public class Player_Controller : MonoBehaviour
     public float fallMultiplier = 2.5f; // increase fall speed on downwards portion of jump arc
     public float unheldJumpReduction = 2f; // alters jump height based on duration of the jump button being held
 
-    public string armString; // will be used later to recall arm loadout - will be using later to instantiate prefabs for checkpoints
-    public string legString; // will be used later to recall leg loadout - will be using later to instantiate prefabs for checkpoints
+    public string armString; // this is referenced from the name of the arm prefab the player collides with
+    public string legString; // this is referenced from the name of the leg prefab the player collides with
     public string headString; // will be used later to recall head loadout - will be using later to instantiate prefabs for checkpoints
 
 
@@ -67,8 +67,7 @@ public class Player_Controller : MonoBehaviour
     private bool afterburner = false;
     GameObject boostSprites;
     private bool groundbreaker = false;
-    private LayerMask groundbreakable; // NEEDS TO BE DEFINED !!!!!!!!!!!!!!!!!!!!!!!!!!!1
-    public float groundbreakerWaitTime = 1f; // the fall duration before groundbreakers activate
+    public float groundbreakerWaitTime = 0.4f; // the fall duration before groundbreakers activate
 
 
 
@@ -104,7 +103,7 @@ public class Player_Controller : MonoBehaviour
 
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
-            speed = movementSpeed / 1.2f;
+            speed = movementSpeed / 1.1f;
         }
         else
         {
@@ -167,7 +166,6 @@ public class Player_Controller : MonoBehaviour
             else
             {
                 leftGround = true;
-                leftGroundTimer = 0f;
             }
         }
 
@@ -332,7 +330,14 @@ public class Player_Controller : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance, canJumpOn);
         if(hit.collider != null)
         {
-            isGrounded = true;
+            if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable") // && leftGroundTimer >= groundbreakerWaitTime)
+            {
+                hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+            }
+            else
+            {
+                isGrounded = true;
+            }
 
             if(boostSprites != null)
             {
@@ -345,25 +350,13 @@ public class Player_Controller : MonoBehaviour
     }
 
 
-    public void groundBreakCheckRaycast()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance + 0.1f, groundbreakable);
-        if(hit.collider != null)
-        {
-            if(groundbreaker == true && leftGroundTimer >= groundbreakerWaitTime)
-            {
-                Destroy(hit.transform.gameObject); // destroy breakable ground
-            }
-        }
-    }
-
-
     public bool TrueGroundCheck()
     {
         groundChecker.SetActive(true);
         isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn);
         if(groundCheckRaycast() || isGrounded == true)
         {
+            leftGroundTimer = 0f;
             return true;
         }
         else
@@ -505,6 +498,15 @@ public class Player_Controller : MonoBehaviour
                     }
                 }
 
+                if(legString == "GroundbreakerLegs")
+                {
+                    groundbreaker = true;
+                }
+                else
+                {
+                    groundbreaker = false;
+                }
+
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
             groundCheckerRadius = 0.292f;
@@ -519,7 +521,7 @@ public class Player_Controller : MonoBehaviour
 
         else if(hasArms && hasLegs) // need to change collider
         {
-            partConfiguration = 4;
+            partConfiguration = 4; // has all parts
             movementSpeed = movementSpeedAdjuster * 0.85f;
             jumpForce = jumpForceAdjuster * 1.1f;
 
