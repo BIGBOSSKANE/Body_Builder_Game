@@ -41,6 +41,7 @@ public class Player_Controller : MonoBehaviour
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
     public bool isGrounded; //is the character on the ground?
+    public GameObject camera; // the scene's camera
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     float groundCheckerRadius;
     float rayCastOffset; // alters raycast position based on character position
@@ -88,6 +89,7 @@ public class Player_Controller : MonoBehaviour
         groundedDistance = 0.34f;
         cutJump = false;
         leftGroundTimer = 0f;
+        camera = GameObject.Find("Main Camera");
     }
 
 
@@ -584,6 +586,8 @@ public class Player_Controller : MonoBehaviour
         {
             scalerStar.SetActive(false);
         }
+
+        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
     }
 
     void NonHeadConfig() // Generic changes for non-head part updates (referenced in UpdateParts)

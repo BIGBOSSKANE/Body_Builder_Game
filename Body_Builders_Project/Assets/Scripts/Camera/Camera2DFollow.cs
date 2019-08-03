@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets._2D
-{
     public class Camera2DFollow : MonoBehaviour
     {
         public Transform target;
@@ -16,7 +14,25 @@ namespace UnityStandardAssets._2D
         private Vector3 m_CurrentVelocity;
         private Vector3 m_LookAheadPos;
 
+        int playerPartConfiguration;
+        bool resize;
+        float resizeTimer;
+
+        Camera camera;
+        float initialCameraSize;
+        float targetCameraSize;
+        public float headSize = 5f;
+        public float torsoSize = 5.5f;
+        public float legSize = 6f;
+        public float completeSize = 6.5f;
+
         // Use this for initialization
+
+        private void Awake()
+        {
+            camera = gameObject.GetComponent<Camera>(); // locates the camera immediately before player calls for a resize
+        }
+
         private void Start()
         {
             target = GameObject.Find("Player").GetComponent<Transform>();
@@ -49,6 +65,40 @@ namespace UnityStandardAssets._2D
             transform.position = newPos;
 
             m_LastTargetPosition = target.position;
+
+            if(resize == true && resizeTimer < 1f)
+            {
+                camera.orthographicSize = Mathf.Lerp(initialCameraSize , targetCameraSize , resizeTimer);
+                resizeTimer += Time.deltaTime;
+            }
+            else
+            {
+                resize = false;
+                resizeTimer = 0f;
+            }
+        }
+
+        public void Resize(int updatedPlayerParts)
+        {
+            initialCameraSize = camera.orthographicSize;
+            playerPartConfiguration = updatedPlayerParts;
+            if(playerPartConfiguration == 1)
+            {
+                targetCameraSize = headSize;
+            }
+            else if(playerPartConfiguration == 2)
+            {
+                targetCameraSize = torsoSize;
+            }
+            else if (playerPartConfiguration == 3)
+            {
+                targetCameraSize = legSize;
+            }
+            else if(playerPartConfiguration == 4)
+            {
+                targetCameraSize = completeSize;
+            }
+            resize = true;
+            resizeTimer = 0f;
         }
     }
-}
