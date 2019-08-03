@@ -25,7 +25,9 @@ public class Player_Controller : MonoBehaviour
     float jumpGateTimer; // timer for jump gate
     float jumpGateLimit = 0.6f;
     bool leftGround; // did the player just leave a platform? - used to allow a short window to jump after the player falls off of a ledge
-    public float leftGroundTimer; // how long ago did they leave the platform?
+    public float lastGroundHeight;
+    float slowMoTimer = 0f;
+    float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
     GameObject pickupBox; // the box that the player is currently picking up
@@ -68,7 +70,7 @@ public class Player_Controller : MonoBehaviour
     private bool afterburner = false;
     GameObject boostSprites;
     private bool groundbreaker = false;
-    public float groundbreakerWaitTime = 0.4f; // the fall duration before groundbreakers activate
+    public float groundbreakerWaitTime = 0.4f; // the fall duration after the beginning of activation before groundbreakers activate
 
 
 
@@ -118,6 +120,36 @@ public class Player_Controller : MonoBehaviour
         // Checks for Ground while in Scaler mode
 
         isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
+
+
+        // An attempt to create slow mo when the groundbreakers shapeshift
+        if(groundbreaker == true && gameObject.transform.position.y < (lastGroundHeight - 1f))
+        {
+            slowMoTimer += Time.deltaTime;
+            if(slowMoTimer < groundbreakerWaitTime)
+            {
+                Time.timeScale = Mathf.Lerp(1f, 0.05f, slowMoTimer * 15f);
+            }
+            else
+            {
+                Time.timeScale = Mathf.Lerp(0.05f , 1f, slowMoTimer * 3f);
+                groundChecker.SetActive(true);
+                RaycastHit2D raycastShot = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance + 0.3f, canJumpOn);
+                if(raycastShot.collider != null)
+                {
+                    Debug.Log("hit");
+                    if(raycastShot.collider.gameObject.tag == "Groundbreakable")
+                    {
+                        raycastShot.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                    }
+                }
+            }
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            slowMoTimer = 0f;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
@@ -164,6 +196,7 @@ public class Player_Controller : MonoBehaviour
                 remainingJumps = maximumJumps;
                 leftGround = false;
                 cutJump = false;
+                lastGroundHeight = gameObject.transform.position.y;
             }
             else
             {
@@ -182,18 +215,6 @@ public class Player_Controller : MonoBehaviour
             }
             groundChecker.SetActive(false);
         }
-
- // An attempt to create slow mo when the groundbreakers shapeshift
-        if(leftGroundTimer >= groundbreakerWaitTime - 0.1f && leftGroundTimer <= groundbreakerWaitTime + 0.1f && groundbreaker == true)
-        {
-            Time.timeScale = 0.2f;
-            //Time.fixedDeltaTime *= 0.2f;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-        }
-
 
         if(partConfiguration == 1 && headString == "Scaler" && Input.GetButton("Jump")) // different rules for Scaler Script
         {
@@ -341,23 +362,20 @@ public class Player_Controller : MonoBehaviour
     // for the player in rolling head (non-scaler) mode
     {
         RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance, canJumpOn);
-        if(hit.collider != null)
+        if(hit.collider != null && (hit.collider.gameObject.tag != "Groundbreakable" && groundbreaker == true))
         {
-            if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable" && leftGroundTimer >= groundbreakerWaitTime) // left ground time is not working
+            /*if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable" && groundbreakerActive == true) // left ground time is not working
             {
                 hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                Debug.Log("Groundbroken");
                 return false;
             }
-            else
-            {
+            */
                 isGrounded = true;
                 if(boostSprites != null)
                 {
                     boostSprites.SetActive(false);
                 }
                 return true;
-            }
         }
         else
         {
