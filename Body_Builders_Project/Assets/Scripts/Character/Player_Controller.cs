@@ -41,7 +41,7 @@ public class Player_Controller : MonoBehaviour
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
     public bool isGrounded; //is the character on the ground?
-    public GameObject camera; // the scene's camera
+    new public GameObject camera; // the scene's camera
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     float groundCheckerRadius;
     float rayCastOffset; // alters raycast position based on character position
@@ -181,6 +181,17 @@ public class Player_Controller : MonoBehaviour
                 cutJump = true;
             }
             groundChecker.SetActive(false);
+        }
+
+ // An attempt to create slow mo when the groundbreakers shapeshift
+        if(leftGroundTimer >= groundbreakerWaitTime - 0.1f && leftGroundTimer <= groundbreakerWaitTime + 0.1f && groundbreaker == true)
+        {
+            Time.timeScale = 0.2f;
+            //Time.fixedDeltaTime *= 0.2f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
         }
 
 
@@ -332,28 +343,32 @@ public class Player_Controller : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance, canJumpOn);
         if(hit.collider != null)
         {
-            if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable") // && leftGroundTimer >= groundbreakerWaitTime)
+            if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable" && leftGroundTimer >= groundbreakerWaitTime) // left ground time is not working
             {
                 hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                Debug.Log("Groundbroken");
+                return false;
             }
             else
             {
                 isGrounded = true;
+                if(boostSprites != null)
+                {
+                    boostSprites.SetActive(false);
+                }
+                return true;
             }
-
-            if(boostSprites != null)
-            {
-                boostSprites.SetActive(false);
-            }
-
-            return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
 
     public bool TrueGroundCheck()
     {
+        groundCheckRaycast();
         groundChecker.SetActive(true);
         isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn);
         if(groundCheckRaycast() || isGrounded == true)

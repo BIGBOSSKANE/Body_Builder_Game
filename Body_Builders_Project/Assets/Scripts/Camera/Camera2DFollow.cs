@@ -17,8 +17,9 @@ using UnityEngine;
         int playerPartConfiguration;
         bool resize;
         float resizeTimer;
+        public float resizeDuration = 0.8f;
 
-        Camera camera;
+        new Camera camera;
         float initialCameraSize;
         float targetCameraSize;
         public float headSize = 5f;
@@ -66,7 +67,7 @@ using UnityEngine;
 
             m_LastTargetPosition = target.position;
 
-            if(resize == true && resizeTimer < 1f)
+            if(resize == true && resizeTimer < resizeDuration)
             {
                 camera.orthographicSize = Mathf.Lerp(initialCameraSize , targetCameraSize , resizeTimer);
                 resizeTimer += Time.deltaTime;
