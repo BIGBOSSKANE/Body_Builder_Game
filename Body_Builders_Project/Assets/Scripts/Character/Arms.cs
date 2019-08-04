@@ -25,7 +25,7 @@ public class Arms : MonoBehaviour
 
     public GameObject player;
     public GameObject head;
-    public Player_Controller playerScript;
+    public playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
     
@@ -42,7 +42,7 @@ public class Arms : MonoBehaviour
     {
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
-        playerScript = player.GetComponent<Player_Controller>();
+        playerScript = player.GetComponent<playerScript>();
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
         solidCollider = transform.Find("Arms_Solid_Collider").gameObject;
@@ -103,7 +103,7 @@ public class Arms : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 3) && playerScript.partConfiguration != 2 && playerScript.partConfiguration != 4) // if the player has just legs, snap anyway
+        if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 3) && playerScript.partConfiguration != 2 && playerScript.partConfiguration != 4) // if the player has just legs, snap anyway
         {
             playerScript.armString = this.name;
             int playerParts = playerScript.partConfiguration;

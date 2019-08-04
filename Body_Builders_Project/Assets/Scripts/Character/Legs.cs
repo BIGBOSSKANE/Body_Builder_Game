@@ -21,7 +21,7 @@ public class Legs : MonoBehaviour
 
     public GameObject player;
     public GameObject head;
-    public Player_Controller playerScript;
+    public playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
 
@@ -31,7 +31,7 @@ public class Legs : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
-        playerScript = player.GetComponent<Player_Controller>();
+        playerScript = player.GetComponent<playerScript>();
         solidCollider = transform.Find("Legs_Solid_Collider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
         solidBoxCollider.enabled = true;
@@ -80,12 +80,12 @@ public class Legs : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && playerScript.isGrounded == true) // reset the collider if the player is not jumping
+        if(col.gameObject.tag == "Player" && playerScript.partConfiguration != 2 && playerScript.isGrounded == true) // reset the collider if the player is not jumping
         {
             boxCol.enabled = false;
             boxCol.enabled = true;
         }
-        else if(col.gameObject.tag == "Player" && (!playerScript.TrueGroundCheck() || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
+        else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
         {
             playerScript.legString = this.name;
             int playerParts = playerScript.partConfiguration;

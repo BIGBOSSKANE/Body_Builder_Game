@@ -16,10 +16,10 @@ public class Head_Scaler : MonoBehaviour
     private Vector2 initialPosition;
     private Vector2 targetPosition;
     private Rigidbody2D rigi;
-    public string identifierHeadString = "Scaler"; // This is used to change what arms the player controller thinks are connected
+    public string identifierHeadString = "ScalerHead"; // This is used to change what arms the player controller thinks are connected
     public GameObject player;
     public GameObject head;
-    public Player_Controller playerScript;
+    public playerScript playerScript;
     public Vector2 headPos;
     float playerDistance;
 
@@ -28,7 +28,7 @@ public class Head_Scaler : MonoBehaviour
         rigi = gameObject.GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
-        playerScript = player.GetComponent<Player_Controller>();
+        playerScript = player.GetComponent<playerScript>();
         taken = false;
         timer = 0f;
     }
