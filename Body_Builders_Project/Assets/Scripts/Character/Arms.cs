@@ -90,6 +90,7 @@ public class Arms : MonoBehaviour
         unavailableTimer = 0f;
         rb.isKinematic = false;
         boxColTimer = 0f;
+        gameObject.layer = 18;
     }
 
     public void Attached()
@@ -98,6 +99,7 @@ public class Arms : MonoBehaviour
         boxCol.enabled = false;
         rb.isKinematic = true;
         solidBoxCollider.enabled = false;
+        gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
     }
 
     void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D

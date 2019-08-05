@@ -15,14 +15,14 @@ public class Banshee_Script : MonoBehaviour
     public Vector3 laserTarget;
     CircleCollider2D circleCol;
     float laserRange = 100f;
-    bool windUp;
+    //bool windUp;
 
     // Start is called before the first frame update
     void Start()
     {
         spotted = false;
         laserOriginPoint = gameObject.transform.Find("Laser_Origin").gameObject;
-        windUp = false;
+        //windUp = false;
         circleCol = gameObject.GetComponent<CircleCollider2D>();
         laserRange = circleCol.radius;
     }

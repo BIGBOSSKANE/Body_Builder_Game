@@ -67,6 +67,7 @@ public class Legs : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
+        gameObject.layer = 18;
     }
 
     public void Attached()
@@ -75,6 +76,7 @@ public class Legs : MonoBehaviour
         solidBoxCollider.enabled = false;
         boxCol.enabled = false;
         rb.isKinematic = true;
+        gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground
     }
 
     void OnCollisionEnter2D(Collision2D col)

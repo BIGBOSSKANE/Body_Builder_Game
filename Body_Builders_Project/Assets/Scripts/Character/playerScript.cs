@@ -8,12 +8,8 @@ Last Edit 04/08/2019
 /*
 Still need to fix:
 
-    spacebar disconnect
-    jumpgating
-    jump hold and fast fall
-    box pickup
-    afterburners
     time slow on groundbreakers
+    shorten raycasts to prevent early jumping through fallthroughplatforms
 
 Still need to add:
 
@@ -21,6 +17,9 @@ Still need to add:
     shield arms
     hookshot head
     expander head
+
+    animations
+    particle effects on impact
 */
 
 
@@ -43,14 +42,14 @@ public class playerScript : MonoBehaviour
 
 
 // JUMPING
-
-    float jumpForce = 10f; // the max jump force
-    float augmentedJumpForce = 1f; // scales the jump force with parts
+    float jumpPower; // the current jump force based on augments
+    public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
     bool slipCatch; // if the player just fell of a platform, create a short jump window
     float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
     public bool isGrounded; // is the player on the ground?
+    float maxHeight; // the maximum height of the jump
     bool jumpGate; // prevent jumping while this is true
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
@@ -61,7 +60,6 @@ public class playerScript : MonoBehaviour
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
     float unheldJumpReduction = 2f; // reduces jump power if jump button isn't held
 
-    float groundcheckerRadius = 0.4f; // radius of the groundchecker overlap circle
     float raycastXOffset; // alters the distance between groundchecker raycasts based on part configuration
     float raycastYOffset; // alters raycast length based on character part configuration, this should be combined with "raycastPos"
     Vector2 raycastPos; // controls where groundcheckers come from
@@ -93,16 +91,19 @@ public class playerScript : MonoBehaviour
     public bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
-    float groundbreakerDistance = 2.5f; // have you fallen far enough to break through ground
-    float timeSlowdownFactor = 0.05f; // time speed while shapeshifting to use Groundbreakers
-    float timeSlowDownLength = 3f; // time of the slowdown period
-    bool timeSlow = true; // are groundbreakers currently able to destroy
+    float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
+
+
+    float timeSlowdownFactor = 0.001f; // time speed while shapeshifting to use Groundbreakers
+    float timeSlowDownLength = 1.5f; // time of the slowdown period
+    bool timeSlow; // is the time slow active?
+    bool groundBreakerActivate; // are the groundbreakers activated?
 
 
 // ATTACHABLES AND PARTS
 
     Rigidbody2D rb; // this object's rigidbody
-    CapsuleCollider2D capCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
+    BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
     public new GameObject camera; // the scene's camera
@@ -113,6 +114,7 @@ public class playerScript : MonoBehaviour
     BoxCollider2D pickupBoxCol; // the area in which a player can pick up boxes (and later climb)
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
+    ScreenShake screenShake; // screen shake script
 
 
 
@@ -120,15 +122,17 @@ public class playerScript : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         startingAngularDrag = rb.angularDrag;
-        capCol = gameObject.GetComponent<CapsuleCollider2D>();
-        capCol.enabled = false;
+        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        boxCol.enabled = false;
         head = gameObject.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
         scalerStar = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerStar").gameObject;
         scalerStar.SetActive(false);
         pickupBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<BoxCollider2D>();
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
+        boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
+        screenShake = camera.GetComponent<ScreenShake>();
         canJumpOn = JumpLayer; // | JumpLayer2;
         groundedDistance = 0.34f;
         leftGroundTimer = 0f;
@@ -154,29 +158,42 @@ public class playerScript : MonoBehaviour
         if(GroundCheck())
         {
             isGrounded = true;
+
+            if(maxHeight > (1f + transform.position.y))
+            {
+                float shakeAmount = (maxHeight - transform.position.y)/10f;
+                screenShake.TriggerShake(shakeAmount);
+            }
+
+            maxHeight = transform.position.y;
             lastGroundedHeight = transform.position.y;
             leftGroundTimer = 0f;
-            remainingJumps = maximumJumps;
+            if(jumpGate != true)
+            {
+                remainingJumps = maximumJumps;
+            }
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
         }
         else
         {
             isGrounded = false;
             climbing = false;
             leftGroundTimer += Time.deltaTime;
+            if(transform.position.y > maxHeight)
+            {
+                maxHeight = transform.position.y;
+            }
+            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
         }
 
-        if(isGrounded == false) // slow player movement in the air
-        {
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f);
-        }
-
-        /*
-        if(groundbreaker == true && transform.position.y == (lastGroundedHeight - (groundbreakerDistance - 1f)) && timeSlow == false)
+        if(groundbreaker == true && transform.position.y <= (maxHeight - (groundbreakerDistance - 1f)) && timeSlow == false)
         {
             GroundbreakerTimeShift();
             timeSlow = true;
         }
-        */
     }
 
     void Update()
@@ -208,45 +225,129 @@ public class playerScript : MonoBehaviour
             transform.localScale = Scaler;
         }
 
+
         // for groundbreakers
         if(timeSlow == true)
         {
             Time.timeScale += (1f / timeSlowDownLength) * Time.unscaledDeltaTime;
             Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
-            if(Time.timeScale == 1f)
+            if(Time.timeScale >= 1f || isGrounded == true)
             {
+                Time.timeScale = 1f;
+                Time.fixedDeltaTime = Time.timeScale;
+                groundBreakerActivate = true;
                 timeSlow = false;
             }
         }
 
-        // jumping
-        if(/*partConfiguration == 1 && headString == "Scaler" && */ Input.GetButton("Jump") && jumpGate != true) // scaler jump
+
+
+// JUMPING
+        if(Input.GetButton("Jump") && jumpGate != true && remainingJumps > 0f) // scaler jump
         {
-            if((isGrounded == true || leftGroundTimer < 0.3f) && remainingJumps > 0f)
+            remainingJumps --;
+            jumpGateTimer = 0f;
+            jumpGate = true;
+            if(isGrounded == true || leftGroundTimer < 0.3f)
             {
-                rb.velocity = Vector2.up * jumpForce;
-                remainingJumps --;
+                rb.velocity = Vector2.up * jumpPower;
+            }
+            else if(afterburner == true)
+            {
+                boostSprites.SetActive(true);
+                rb.velocity = Vector2.up * jumpPower * 1.1f;
             }
         }
 
-        if(jumpGate == true)
+        if(jumpGate == true) // stops repeat jumping
         {
             jumpGateTimer += Time.deltaTime;
             if(jumpGateTimer > jumpGateDuration)
             {
                 jumpGate = false;
             }
+            if(Input.GetButtonUp("Jump"))
+            {
+                jumpGate = false;
+            }
+        }
+
+// JUMP TUNING
+        rb.gravityScale = 2f;
+
+        if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
+        {
+            rb.gravityScale = 1f;
+            rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
+
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(true);
+            }
+        }
+        else if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+        }
+        else if (rb.velocity.y > 0f && !Input.GetButton("Jump") && !Input.GetKey("space")) // reduces jump height when button isn't held (gravity inputs a negative value)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }       
+        }
+
+        BoxInteract(); // check for box pickup or drop prompts
+
+        DetachPart(); // detach part on "space" press
+    }
+
+    void DetachPart()
+    {
+        if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
+        {
+            if(partConfiguration > 2)
+            {
+                legs.GetComponent<Legs>().Detached();
+                legs.transform.parent = null;
+                remainingJumps --; // consumes jumps but doesn't require them to be used
+                UpdateParts();
+                rb.velocity = Vector2.up * jumpForce * 8f;
+            }
+            else if(partConfiguration == 2)
+            {
+                arms.GetComponent<Arms>().Detached();
+                arms.transform.parent = null;
+                remainingJumps --; // consumes jumps but doesn't require them to be used
+                UpdateParts();
+                rb.velocity = Vector2.up * jumpForce * 6f;
+            }
         }
     }
 
     bool GroundCheck()
     {
+        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
+        Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
+
         if(scaler == true && partConfiguration == 1)
         {
             climbing = false;
-            if(Physics2D.OverlapCircle(gameObject.transform.position, groundcheckerRadius , canJumpOn))
+            if(hitC.collider != null)
             {
-                climbing = true;
+                if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && transform.position.y > (0.1f + lastGroundedHeight))
+                {
+                    return false;
+                }
+            }
+
+            if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , canJumpOn))
+            {
                 return true;
             }
         }
@@ -259,6 +360,10 @@ public class playerScript : MonoBehaviour
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
+                    if(rb.velocity.y < 0f)
+                    {
+                        rb.gravityScale = 0.2f;
+                    }
                     return true;
                 }
             } 
@@ -271,6 +376,10 @@ public class playerScript : MonoBehaviour
                     if(sideHitL.collider.gameObject.tag == "Climbable")
                     {
                         climbing = true;
+                        if(rb.velocity.y < 0f)
+                        {
+                            rb.gravityScale = 0.2f;
+                        }
                         return true;
                     }
                 }
@@ -282,13 +391,9 @@ public class playerScript : MonoBehaviour
         }
 
         RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
-        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
         RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
         Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
-        Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
-
-        //float dropHeight = lastGroundedHeight - groundbreakerDistance;
 
         if(groundbreaker == true && transform.position.y <= (lastGroundedHeight - groundbreakerDistance)) // - groundbreakerDistance))
         {
@@ -309,9 +414,42 @@ public class playerScript : MonoBehaviour
                 return false;
             }
         }
-        else if (hitL.collider != null || hitC.collider != null || hitR.collider != null)
+        // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
+        else if(hitL.collider != null)
         {
-            return true;
+            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
+        }
+        else if(hitC.collider != null)
+        {
+            if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
+        }
+        else if(hitR.collider != null)
+        {
+            if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
         }
         else
         {
@@ -320,11 +458,9 @@ public class playerScript : MonoBehaviour
     }
 
     public void UpdateParts()
-    // call when acquiring or detaching part - reconfigures scaling, controls and colliders
-    // arms need to have "Arms" tag, and legs must have the "Legs" tag
-    // 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
+    // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
-        // assume that the robot has neither arms or legs, then check
+        // assume that the robot has neither arms or legs, then check for them
         bool hasArms = false;
         bool hasLegs = false;
         for(int i = 0; i < transform.childCount; i++)
@@ -345,7 +481,7 @@ public class playerScript : MonoBehaviour
         {
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
-            jumpForce = augmentedJumpForce * 7f;
+            jumpPower = jumpForce * 6f;
             jumpGateDuration = 0.4f;
             canJumpOn = JumpLayer;
 
@@ -363,23 +499,23 @@ public class playerScript : MonoBehaviour
             if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
             {
                 scaler = true;
-                jumpForce = augmentedJumpForce * 6f;
+                jumpPower = jumpForce * 6f;
                 fallMultiplier = 1f;
             }
             else
             {
                 scaler = false;
-                jumpForce = augmentedJumpForce * 7f;
+                jumpPower = jumpForce * 7f;
                 fallMultiplier = 2.5f;
             }
 
-            capCol.enabled = false; // don't use the typical vertical standing collider
+            boxCol.enabled = false; // don't use the typical vertical standing collider
             headCol.enabled = true; // use the circle collider instead
             rb.constraints = RigidbodyConstraints2D.None; // can roll
             head.transform.position = gameObject.transform.position; // no need for snapOffsetPos here as it is perfectly centred
             legString = "None"; // no legs
             armString = "None"; // no arms
-            raycastXOffset = 0.2f;
+            raycastXOffset = 0.1f;
             raycastYOffset = 0f;
 
             BoxDrop(); // drops any box immediately
@@ -392,7 +528,7 @@ public class playerScript : MonoBehaviour
         {
             partConfiguration = 2; // just a head and arms
             movementSpeed = augmentedMovementSpeed * 7.5f;
-            jumpForce = augmentedJumpForce * 8.5f;
+            jumpPower = jumpForce * 8.5f;
             canJumpOn = JumpLayer;
 
             NonHeadConfig();
@@ -422,8 +558,8 @@ public class playerScript : MonoBehaviour
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
             raycastYOffset = -0.59f;
 
-            capCol.size = new Vector2(0.6f , 1.6f);
-            capCol.offset = new Vector2(0f , 0.03f);
+            boxCol.size = new Vector2(0.6f , 1.6f);
+            boxCol.offset = new Vector2(0f , 0.03f);
             pickupBoxCol.enabled = true; // the player can now pick up boxes
             if(holding == true) // keep holding the box if you were
             {
@@ -440,7 +576,7 @@ public class playerScript : MonoBehaviour
         {
             partConfiguration = 3;
             movementSpeed = augmentedMovementSpeed * 8.5f;
-            jumpForce = augmentedJumpForce * 11f;  
+            jumpPower = jumpForce * 11f;  
             canJumpOn = JumpLayer;
             
             NonHeadConfig();
@@ -476,8 +612,8 @@ public class playerScript : MonoBehaviour
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             raycastYOffset = -0.7f;
 
-            capCol.size = new Vector2(0.6f , 1.45f);
-            capCol.offset = new Vector2(0f , -0.27f);
+            boxCol.size = new Vector2(0.6f , 1.45f);
+            boxCol.offset = new Vector2(0f , -0.27f);
             pickupBoxCol.enabled = true;
             BoxDrop(); // no arms, so drop the box
         }
@@ -487,7 +623,7 @@ public class playerScript : MonoBehaviour
         {
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;
-            jumpForce = augmentedJumpForce * 11f;
+            jumpPower = jumpForce * 11f;
             canJumpOn = JumpLayer;
 
             NonHeadConfig();
@@ -531,8 +667,8 @@ public class playerScript : MonoBehaviour
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
             raycastYOffset = -0.73f;
 
-            capCol.size = new Vector2(0.6f , 2.08f);
-            capCol.offset = new Vector2(0f , 0.03f);
+            boxCol.size = new Vector2(0.6f , 2.08f);
+            boxCol.offset = new Vector2(0f , 0.03f);
 
             pickupBoxCol.enabled = true;
             if(holding == true) // keep holding the box if you already were
@@ -563,7 +699,7 @@ public class playerScript : MonoBehaviour
     void NonHeadConfig()
     {
         headCol.enabled = false; // disable the rolling head collider
-        capCol.enabled = true; // use the capsule collider instead
+        boxCol.enabled = true; // use the capsule collider instead
         rb.constraints = RigidbodyConstraints2D.FreezePositionY;
         rb.constraints = RigidbodyConstraints2D.FreezePositionX;
         jumpGate = true;
@@ -584,7 +720,7 @@ public class playerScript : MonoBehaviour
     void GroundbreakerTimeShift()
     {
         Time.timeScale = timeSlowdownFactor;
-        Time.fixedDeltaTime = Time.timeScale * 0.02f;
+        Time.fixedDeltaTime = Time.timeScale * 0.001f;
     }
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
@@ -604,15 +740,31 @@ public class playerScript : MonoBehaviour
         }
     }
 
-    void BoxPickup() // when picking up the box, replace its collider with a substitute and make it kinematic
+    void BoxInteract()
     {
-        pickupBox.transform.position = boxHoldPos.position;
-        pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
-        pickupBox.GetComponent<Collider2D>().enabled = false;
-        heldBoxCol.enabled = true;
-        holding = true;
+        if(pickupBox != null) // Pick up or drop boxes
+        {
+            if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and drop box while you have arms and press "f"
+            {
+                if(holding == false && boxInRange == true)
+                // currently the player character chooses from all boxes in range at random this may need to be changed if they can have multiple boxes at a time
+                {
+                    pickupBox.transform.parent = this.transform;
+                    pickupBox.transform.position = boxHoldPos.position;
+                    pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
+                    pickupBox.GetComponent<Collider2D>().enabled = false;
+                    heldBoxCol.enabled = true;
+                    holding = true;
+                } 
+                else
+                {
+                    BoxDrop();
+                    // if we eventually do want the box to be thrown, add some alternative code here
+                }
+            }
+        }
     }
-
+    
     void BoxDrop() // when the character drps the box;
     {
         if(pickupBox != null)

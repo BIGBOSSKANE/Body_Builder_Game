@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 815994233867971976}
   - component: {fileID: 1438537649}
   - component: {fileID: 815994233867971979}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Arms
   m_TagString: Arms
   m_Icon: {fileID: 0}
@@ -98,11 +98,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxCol: {fileID: 815994233867971976}
   rb: {fileID: 815994233867971979}
-  identifierArmString: Basic
+  armType: 0
   player: {fileID: 0}
   head: {fileID: 0}
   playerScript: {fileID: 0}
-  headPos: {x: 0, y: 0}
 --- !u!61 &815994233867971976
 BoxCollider2D:
   m_ObjectHideFlags: 0
