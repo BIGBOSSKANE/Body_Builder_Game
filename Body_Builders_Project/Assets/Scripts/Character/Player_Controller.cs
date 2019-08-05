@@ -11,13 +11,13 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
-    
     public int partConfiguration = 1; // 1 is head, 2 adds arms, 3 adds legs, 4 adds arms and legs
     public float movementSpeedAdjuster = 10f;
     float movementSpeed; // how fast can you move?
     float moveTimer;
     public float maxMoveTimer = 0.7f;
     float speed; // current speed
+    float moveSpeedPrior; // used to track movement speed for speed increase Lerp 
     public float jumpForceAdjuster = 10f; // control the level of jumps
     private float jumpForce; // how powerful is your jump? altered from the jumpForceAdjuster by different part combinations
     bool jumpGate; // prevent the character from jumping while this is true (set to disable corner jumps eventually)
@@ -25,9 +25,7 @@ public class Player_Controller : MonoBehaviour
     float jumpGateTimer; // timer for jump gate
     float jumpGateLimit = 0.6f;
     bool leftGround; // did the player just leave a platform? - used to allow a short window to jump after the player falls off of a ledge
-    public float lastGroundHeight;
-    float slowMoTimer = 0f;
-    float leftGroundTimer; // how long ago did they leave the platform?
+    public float leftGroundTimer; // how long ago did they leave the platform?
     private float moveInput; // get player Input value
     private bool facingRight = true; // used for flipping the character visuals (and arm interaction area)
     GameObject pickupBox; // the box that the player is currently picking up
@@ -43,13 +41,12 @@ public class Player_Controller : MonoBehaviour
     public CircleCollider2D headCol; // collider used when the player is just a head
     public BoxCollider2D pickupBoxCol; // area in which a player can pick up boxes (and later climb walls)
     public bool isGrounded; //is the character on the ground?
-    new public GameObject camera; // the scene's camera
     public GameObject groundChecker; // the ground checker object (used for the Scaler Augment)
     float groundCheckerRadius;
     float rayCastOffset; // alters raycast position based on character position
     Vector2 rayCastPos; // alters raycast origin based on player part configuration - good for stopping pass through platform jumps
     public LayerMask JumpLayer1; // what can the player jump on?
-    public LayerMask JumpLayer2; // layers you can only jump on while you have leg augments
+    public LayerMask JumpLayer2; // had 2 layers and combined them, because the Unity editor wasn't allowing multiple selections at an earlier dev stage
     private LayerMask canJumpOn; // combines the 2 layers that can be jumped on
     float groundedDistance = 0.3f; // distance of the grounded raycast
     public GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
@@ -70,8 +67,7 @@ public class Player_Controller : MonoBehaviour
     private bool afterburner = false;
     GameObject boostSprites;
     private bool groundbreaker = false;
-    public float groundbreakerWaitTime = 0.4f; // the fall duration after the beginning of activation before groundbreakers activate
-    public bool lifter = false;
+    public float groundbreakerWaitTime = 0.4f; // the fall duration before groundbreakers activate
 
 
 
@@ -84,7 +80,7 @@ public class Player_Controller : MonoBehaviour
         headCol = head.GetComponent<CircleCollider2D>();
         pickupBoxCol = this.transform.Find("BoxHoldLocation").gameObject.GetComponent<BoxCollider2D>();
         remainingJumps = maximumJumps;
-        canJumpOn = JumpLayer1; // | JumpLayer2;
+        canJumpOn = JumpLayer1 | JumpLayer2;
         jumpForce = jumpForceAdjuster;
         movementSpeed = movementSpeedAdjuster;
         UpdateParts();
@@ -92,7 +88,6 @@ public class Player_Controller : MonoBehaviour
         groundedDistance = 0.34f;
         cutJump = false;
         leftGroundTimer = 0f;
-        camera = GameObject.Find("Main Camera");
     }
 
 
@@ -104,6 +99,8 @@ public class Player_Controller : MonoBehaviour
 
     void FixedUpdate() // This covers all movement speed, and "isGrounded" for the Scaler head augment
     {
+        rayCastPos = new Vector2(transform.position.x , transform.position.y + rayCastOffset);
+
         if(!groundCheckRaycast()) // slow the player's horizontal movement in the air
         {
             speed = movementSpeed / 1.1f;
@@ -117,38 +114,8 @@ public class Player_Controller : MonoBehaviour
         rb.velocity = new Vector2(moveInput * speed , rb.velocity.y);
 
         // Checks for Ground while in Scaler mode
-        if(scalerStar == true)
-        {
-            isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
-        }
 
-        // An attempt to create slow mo when the groundbreakers shapeshift
-        if(groundbreaker == true && gameObject.transform.position.y < (lastGroundHeight - 1f))
-        {
-            slowMoTimer += Time.deltaTime;
-            if(slowMoTimer < groundbreakerWaitTime)
-            {
-                Time.timeScale = Mathf.Lerp(1f, 0.05f, slowMoTimer * 15f);
-            }
-            else
-            {
-                Time.timeScale = Mathf.Lerp(0.05f , 1f, slowMoTimer * 3f);
-                groundChecker.SetActive(true);
-                RaycastHit2D raycastShot = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance + 0.3f, canJumpOn);
-                if(raycastShot.collider != null)
-                {
-                    if(raycastShot.collider.gameObject.tag == "Groundbreakable")
-                    {
-                        raycastShot.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                    }
-                }
-            }
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            slowMoTimer = 0f;
-        }
+        isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn); // returns true if circular ground checker overlaps a jumpable layer
     }
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
@@ -195,7 +162,6 @@ public class Player_Controller : MonoBehaviour
                 remainingJumps = maximumJumps;
                 leftGround = false;
                 cutJump = false;
-                lastGroundHeight = gameObject.transform.position.y;
             }
             else
             {
@@ -211,9 +177,10 @@ public class Player_Controller : MonoBehaviour
             {
                 remainingJumps --;
                 cutJump = true;
-                groundChecker.SetActive(false);
             }
+            groundChecker.SetActive(false);
         }
+
 
         if(partConfiguration == 1 && headString == "Scaler" && Input.GetButton("Jump")) // different rules for Scaler Script
         {
@@ -298,7 +265,7 @@ public class Player_Controller : MonoBehaviour
                 boostSprites.SetActive(true);
             }
         }
-        else if(rb.velocity.y < 0f && !(afterburner == true && Input.GetButton("Jump"))) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
+        else if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
             if(boostSprites != null)
@@ -361,31 +328,30 @@ public class Player_Controller : MonoBehaviour
     // for the player in rolling head (non-scaler) mode
     {
         RaycastHit2D hit = Physics2D.Raycast(rayCastPos, Vector2.down, groundedDistance, canJumpOn);
-        if(hit.collider != null && (hit.collider.gameObject.tag != "Groundbreakable" && groundbreaker == true))
+        if(hit.collider != null)
         {
-                if(partConfiguration == 3 && hit.collider.gameObject.tag == "Legs")
-                {
-                    isGrounded = false;
-                    return false;
-                }
-                
+            if(groundbreaker == true && hit.collider.gameObject.tag == "Groundbreakable") // && leftGroundTimer >= groundbreakerWaitTime)
+            {
+                hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+            }
+            else
+            {
                 isGrounded = true;
-                if(boostSprites != null)
-                {
-                    boostSprites.SetActive(false);
-                }
-                return true;
+            }
+
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+
+            return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
 
     public bool TrueGroundCheck()
     {
-        groundCheckRaycast();
         groundChecker.SetActive(true);
         isGrounded = Physics2D.OverlapCircle(groundChecker.transform.position, groundCheckerRadius , canJumpOn);
         if(groundCheckRaycast() || isGrounded == true)
@@ -427,13 +393,11 @@ public class Player_Controller : MonoBehaviour
             movementSpeed = movementSpeedAdjuster * 0.5f;
             jumpForce = jumpForceAdjuster * 0.7f;
             jumpGateLimit = 0.4f;
-            canJumpOn = JumpLayer1;
 
             // upgrades
             maximumJumps = 1;
             groundbreaker = false;
             afterburner = false;
-            lifter = false;
             if(boostSprites != null)
             {
                 boostSprites.SetActive(false);
@@ -460,8 +424,7 @@ public class Player_Controller : MonoBehaviour
             groundChecker.transform.position = gameObject.transform.position; // centre the groundChecker
             legString = "None"; // no legs
             armString = "None"; // no arms
-            rayCastPos = new Vector2(transform.position.x , transform.position.y);
-            groundChecker.SetActive(true);
+            rayCastOffset = 0f;
 
             BoxDrop(); // drops any box immediately
             pickupBoxCol.enabled = false; // can't pick up any more boxes
@@ -473,21 +436,11 @@ public class Player_Controller : MonoBehaviour
         {
             partConfiguration = 2; // just a head and arms
             movementSpeed = movementSpeedAdjuster * 0.75f;
-            jumpForce = jumpForceAdjuster * 0.85f;
-            canJumpOn = JumpLayer1 | JumpLayer2;
+            jumpForce = jumpForceAdjuster * 0.85f;     
 
             NonHeadConfig();
             fallMultiplier = 3f;
             arms = gameObject.transform.Find(armString).gameObject;
-            if(armString == "LifterArms")
-            {
-                lifter = true;
-            }
-            else
-            {
-                lifter = false;
-            }
-
             legString = "None"; // no legs
                 maximumJumps = 1;
                 groundbreaker = false;
@@ -503,7 +456,7 @@ public class Player_Controller : MonoBehaviour
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
             groundChecker.transform.localPosition = new Vector2(0f, -0.50f);
             groundCheckerRadius = 0.292f;
-            rayCastPos = new Vector2(transform.position.x , transform.position.y -0.59f);
+            rayCastOffset = -0.59f;
 
             capCol.size = new Vector2(0.6f , 1.6f);
             capCol.offset = new Vector2(0f , 0.03f);
@@ -523,13 +476,11 @@ public class Player_Controller : MonoBehaviour
         {
             partConfiguration = 3;
             movementSpeed = movementSpeedAdjuster * 0.85f;
-            jumpForce = jumpForceAdjuster * 1.1f;  
-            canJumpOn = JumpLayer1 | JumpLayer2;
+            jumpForce = jumpForceAdjuster * 1.1f;            
             
             NonHeadConfig();
-            armString = "None"; // no arms
-            lifter = false;
             legs = gameObject.transform.Find(legString).gameObject;
+            armString = "None"; // no arms
                 if(legString == "AfterburnerLegs")
                 {
                     maximumJumps = 2;
@@ -559,7 +510,7 @@ public class Player_Controller : MonoBehaviour
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
             groundCheckerRadius = 0.292f;
-            rayCastPos = new Vector2(transform.position.x , transform.position.y -0.7f);
+            rayCastOffset = -0.7f;
 
             capCol.size = new Vector2(0.6f , 1.45f);
             capCol.offset = new Vector2(0f , -0.27f);
@@ -573,19 +524,9 @@ public class Player_Controller : MonoBehaviour
             partConfiguration = 4; // has all parts
             movementSpeed = movementSpeedAdjuster * 0.85f;
             jumpForce = jumpForceAdjuster * 1.1f;
-            canJumpOn = JumpLayer1 | JumpLayer2;
 
             NonHeadConfig();
             arms = gameObject.transform.Find(armString).gameObject;
-            if(armString == "LifterArms")
-            {
-                lifter = true;
-            }
-            else
-            {
-                lifter = false;
-            }
-
             legs = gameObject.transform.Find(legString).gameObject;
                 if(legString == "AfterburnerLegs")
                 {
@@ -603,6 +544,7 @@ public class Player_Controller : MonoBehaviour
                         boostSprites = null;
                     }
                 }
+
                 if(legString == "GroundbreakerLegs")
                 {
                     groundbreaker = true;
@@ -616,7 +558,7 @@ public class Player_Controller : MonoBehaviour
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
             groundChecker.transform.localPosition = new Vector2(0f, -0.75f);
             groundCheckerRadius = 0.292f;
-            rayCastPos = new Vector2(transform.position.x , transform.position.y -0.73f);
+            rayCastOffset = -0.73f;
 
             capCol.size = new Vector2(0.6f , 2.08f);
             capCol.offset = new Vector2(0f , 0.03f);
@@ -642,8 +584,6 @@ public class Player_Controller : MonoBehaviour
         {
             scalerStar.SetActive(false);
         }
-
-        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
     }
 
     void NonHeadConfig() // Generic changes for non-head part updates (referenced in UpdateParts)
