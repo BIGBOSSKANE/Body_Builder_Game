@@ -85,7 +85,9 @@ public class playerScript : MonoBehaviour
     bool boxInRange = false; // is a box in the pickup range?
     bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
-    bool climbing = false; // are you climbing?
+    public bool climbing = false; // are you climbing?
+    bool climbingRight = false; // what side are you climbing on?
+    float climbSpeed = 5f; // climbing speed
 
     // Legs
     GameObject legs; // the legs component
@@ -183,7 +185,6 @@ public class playerScript : MonoBehaviour
         else
         {
             isGrounded = false;
-            climbing = false;
             leftGroundTimer += Time.deltaTime;
             if(transform.position.y > maxHeight)
             {
@@ -203,12 +204,35 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
-        raycastPos = transform.position;
+        raycastPos = transform.position; // this can be altered later if you would like it to change
 
-        if(climbing == true && !(Input.GetAxis("Vertical") != 0 || Input.GetKey("w")))
+        if(climbing == true)
         {
-            rb.constraints = RigidbodyConstraints2D.FreezePositionY;
-            rb.gravityScale = 10f;
+            if((climbingRight && Input.GetAxis("Horizontal") >= 0f) || (!climbingRight && Input.GetAxis("Horizontal") <= 0f))
+            {
+                jumpGate = true;
+                //rb.gravityScale = 0f;
+            }
+
+            if (Input.GetAxis("Vertical") == 0f)
+            {
+                rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+            }
+            else
+            {
+                rb.constraints = RigidbodyConstraints2D.None;
+                jumpGate = true;
+                if(Input.GetKey("w"))
+                {
+                    //transform.Translate(Vector2.up * climbSpeed * Time.deltaTime);
+                    rb.MovePosition(transform.position + Vector2.up * climbSpeed * Time.fixedDeltaTime);
+                }
+                else if(Input.GetKey("s"))
+                {
+                    //transform.Translate(Vector2.up * -climbSpeed * Time.deltaTime);
+                    rb.MovePosition(transform.position + Vector2.up * -climbSpeed * Time.fixedDeltaTime);
+                }
+            }
         }
         else
         {
@@ -248,7 +272,7 @@ public class playerScript : MonoBehaviour
 
 
 // JUMPING
-        if(Input.GetButton("Jump") && jumpGate != true && remainingJumps > 0f) // scaler jump
+        if(Input.GetButton("Jump") && jumpGate != true && remainingJumps > 0f && !climbing) // scaler jump
         {
             remainingJumps --;
             jumpGateTimer = 0f;
@@ -257,7 +281,7 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = Vector2.up * jumpPower;
             }
-            else if(afterburner == true)
+            else if(afterburner == true && !climbing)
             {
                 boostSprites.SetActive(true);
                 rb.velocity = Vector2.up * jumpPower * 1.1f;
@@ -368,11 +392,16 @@ public class playerScript : MonoBehaviour
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
+                    climbingRight = true;
                     if(rb.velocity.y < 0f)
                     {
                         rb.gravityScale = 0.2f;
                     }
                     return true;
+                }
+                else
+                {
+                    climbing = false;
                 }
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
@@ -384,6 +413,7 @@ public class playerScript : MonoBehaviour
                     if(sideHitL.collider.gameObject.tag == "Climbable")
                     {
                         climbing = true;
+                        climbingRight = false;
                         if(rb.velocity.y < 0f)
                         {
                             rb.gravityScale = 0.2f;
