@@ -90,6 +90,7 @@ public class Legs : MonoBehaviour
         else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
         {
             playerScript.legString = this.name;
+            Debug.Log("why?");
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {

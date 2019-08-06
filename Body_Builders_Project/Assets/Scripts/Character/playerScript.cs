@@ -8,7 +8,10 @@ Last Edit 04/08/2019
 /*
 Still need to fix:
 
+    fix ladder dynamics
     time slow on groundbreakers
+    try to get animations in from > sprites > V's Animations
+    box pickup proximity prioritisation to boxHoldPoscol
 
 Still need to add:
 
@@ -137,6 +140,7 @@ public class playerScript : MonoBehaviour
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseTimer = 0f;
+        isGrounded = false;
         UpdateParts();
     }
 
@@ -359,8 +363,8 @@ public class playerScript : MonoBehaviour
         {
             if(moveInput > 0 || (facingRight == true && moveInput == 0))
             {
-                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, (groundedDistance + 0.1f) , canJumpOn);
-                Debug.DrawRay(raycastPos, Vector2.right * (groundedDistance + 0.1f), Color.green);
+                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, (0.4f) , canJumpOn);
+                Debug.DrawRay(raycastPos, Vector2.right * (0.4f), Color.green);
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
@@ -373,8 +377,8 @@ public class playerScript : MonoBehaviour
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
             {
-                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, (groundedDistance + 0.1f) , canJumpOn);
-                Debug.DrawRay(raycastPos, Vector2.left * (groundedDistance + 0.1f), Color.green);
+                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, (0.4f) , canJumpOn);
+                Debug.DrawRay(raycastPos, Vector2.left * (0.4f), Color.green);
                 if(sideHitL.collider != null) //&& sideHitL.collider.gameObject.tag == "Climbable")
                 {
                     if(sideHitL.collider.gameObject.tag == "Climbable")
@@ -520,7 +524,8 @@ public class playerScript : MonoBehaviour
             legString = "None"; // no legs
             armString = "None"; // no arms
             raycastXOffset = 0.1f;
-            raycastYOffset = -0.15f;
+            raycastYOffset = 0f;
+            groundedDistance = 0.4f;
 
             BoxDrop(); // drops any box immediately
             pickupBoxCol.enabled = false; // can't pick up any more boxes
@@ -719,6 +724,7 @@ public class playerScript : MonoBehaviour
         jumpGateDuration = 0.6f;
         jumpGateTimer = jumpGateDuration - 0.1f;
         raycastXOffset = 0.27f;
+        groundedDistance = 0.15f;
     }
 /*
     void GroundbreakerTimeShift()
