@@ -8,8 +8,6 @@ Last Edit 04/08/2019
 /*
 Still need to fix:
 
-
-    fix ladder dynamics
     time slow on groundbreakers
     try to get animations in from > sprites > V's Animations
     box pickup proximity prioritisation to boxHoldPoscol - use a foreach loop

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6145001861340463342}
+  - component: {fileID: 8569953965331451140}
   - component: {fileID: 3191522912754705032}
   - component: {fileID: 3933924056576139374}
   m_Layer: 15
@@ -32,6 +33,18 @@ Transform:
   m_Father: {fileID: 5693107249989477923}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8569953965331451140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3933924056576139363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f662260dd22cbde41bc21de1bfeddb1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!58 &3191522912754705032
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -55,7 +68,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3933924056576139363}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -185,7 +198,7 @@ GameObject:
   - component: {fileID: 7366464798927738177}
   - component: {fileID: 3787395916754752069}
   m_Layer: 8
-  m_Name: PlayerCharacter
+  m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,18 +233,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 1
+  slipCatch: 1
+  lastGroundedHeight: 0
   isGrounded: 0
-  remainingJumps: 0
-  maximumJumps: 1
-  JumpLayer:
+  jumpLayer:
     serializedVersion: 2
-    m_Bits: 280064
-  alternateJumpLayer:
+    m_Bits: 935425
+  ladderLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 524288
   partConfiguration: 1
   headString: 
   armString: 
+  climbing: 0
   legString: 
   groundbreaker: 0
   camera: {fileID: 0}
