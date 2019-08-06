@@ -9,7 +9,6 @@ Last Edit 04/08/2019
 Still need to fix:
 
     time slow on groundbreakers
-    shorten raycasts to prevent early jumping through fallthroughplatforms
 
 Still need to add:
 
@@ -54,8 +53,8 @@ public class playerScript : MonoBehaviour
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
-    public int remainingJumps; // how many jumps does the player have left?
-    public int maximumJumps = 1; // how many jumps does the player have?
+    int remainingJumps; // how many jumps does the player have left?
+    int maximumJumps = 1; // how many jumps does the player have?
 
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
     float unheldJumpReduction = 2f; // reduces jump power if jump button isn't held
@@ -65,7 +64,7 @@ public class playerScript : MonoBehaviour
     Vector2 raycastPos; // controls where groundcheckers come from
     float augmentedRaycastPosX; // alters the raycast position based on the player part configuration
     float augmentedRaycastPosY; // alters the raycast position based on the player part configuration
-    float groundedDistance = 0.3f; // raycast distance;
+    float groundedDistance = 0.15f; // raycast distance;
     public LayerMask JumpLayer; // what layers can the player jump on?
     public LayerMask alternateJumpLayer; // other layers the player can jump on
     private LayerMask canJumpOn; // combined layers that the player can jump on
@@ -129,12 +128,12 @@ public class playerScript : MonoBehaviour
         scalerStar = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerStar").gameObject;
         scalerStar.SetActive(false);
         pickupBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<BoxCollider2D>();
+        pickupBoxCol.enabled = true;
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
         screenShake = camera.GetComponent<ScreenShake>();
         canJumpOn = JumpLayer; // | JumpLayer2;
-        groundedDistance = 0.34f;
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseTimer = 0f;
@@ -189,11 +188,13 @@ public class playerScript : MonoBehaviour
             speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
         }
 
+/*
         if(groundbreaker == true && transform.position.y <= (maxHeight - (groundbreakerDistance - 1f)) && timeSlow == false)
         {
             GroundbreakerTimeShift();
             timeSlow = true;
         }
+*/
     }
 
     void Update()
@@ -225,7 +226,7 @@ public class playerScript : MonoBehaviour
             transform.localScale = Scaler;
         }
 
-
+/*
         // for groundbreakers
         if(timeSlow == true)
         {
@@ -234,12 +235,12 @@ public class playerScript : MonoBehaviour
             if(Time.timeScale >= 1f || isGrounded == true)
             {
                 Time.timeScale = 1f;
-                Time.fixedDeltaTime = Time.timeScale;
+                //Time.fixedDeltaTime = Time.timeScale;
                 groundBreakerActivate = true;
                 timeSlow = false;
             }
         }
-
+*/
 
 
 // JUMPING
@@ -335,7 +336,7 @@ public class playerScript : MonoBehaviour
         RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
-        if(scaler == true && partConfiguration == 1)
+        if(partConfiguration == 1)
         {
             climbing = false;
             if(hitC.collider != null)
@@ -346,9 +347,12 @@ public class playerScript : MonoBehaviour
                 }
             }
 
-            if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , canJumpOn))
+            if(scaler == true)
             {
-                return true;
+                if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , canJumpOn))
+                {
+                    return true;
+                }
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
@@ -457,7 +461,7 @@ public class playerScript : MonoBehaviour
         }
     }
 
-    public void UpdateParts()
+    public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
         // assume that the robot has neither arms or legs, then check for them
@@ -516,7 +520,7 @@ public class playerScript : MonoBehaviour
             legString = "None"; // no legs
             armString = "None"; // no arms
             raycastXOffset = 0.1f;
-            raycastYOffset = 0f;
+            raycastYOffset = -0.15f;
 
             BoxDrop(); // drops any box immediately
             pickupBoxCol.enabled = false; // can't pick up any more boxes
@@ -556,7 +560,7 @@ public class playerScript : MonoBehaviour
             // adjust height of other parts
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
-            raycastYOffset = -0.59f;
+            raycastYOffset = -0.7f;
 
             boxCol.size = new Vector2(0.6f , 1.6f);
             boxCol.offset = new Vector2(0f , 0.03f);
@@ -610,7 +614,7 @@ public class playerScript : MonoBehaviour
                 }
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
-            raycastYOffset = -0.7f;
+            raycastYOffset = -0.95f;
 
             boxCol.size = new Vector2(0.6f , 1.45f);
             boxCol.offset = new Vector2(0f , -0.27f);
@@ -665,7 +669,7 @@ public class playerScript : MonoBehaviour
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
-            raycastYOffset = -0.73f;
+            raycastYOffset = -0.95f;
 
             boxCol.size = new Vector2(0.6f , 2.08f);
             boxCol.offset = new Vector2(0f , 0.03f);
@@ -716,12 +720,13 @@ public class playerScript : MonoBehaviour
         jumpGateTimer = jumpGateDuration - 0.1f;
         raycastXOffset = 0.27f;
     }
-
+/*
     void GroundbreakerTimeShift()
     {
         Time.timeScale = timeSlowdownFactor;
-        Time.fixedDeltaTime = Time.timeScale * 0.001f;
+        //Time.fixedDeltaTime = Time.timeScale * 0.001f;
     }
+*/
 
     void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
     {
