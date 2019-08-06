@@ -373,7 +373,7 @@ public class playerScript : MonoBehaviour
             climbing = false;
             if(hitC.collider != null)
             {
-                if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && transform.position.y > (0.1f + lastGroundedHeight))
+                if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
                 {
                     return false;
                 }
@@ -432,45 +432,39 @@ public class playerScript : MonoBehaviour
         Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
-        if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance)) // - groundbreakerDistance))
+        if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance) && hitC.collider != null) // - groundbreakerDistance))
         {
-            if (hitC.collider != null)
+            if(hitC.collider.gameObject.tag == "Groundbreakable")
             {
-                if(hitC.collider.gameObject.tag == "Groundbreakable")
-                {
-                    hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                return false;
             }
             else
             {
-                return false;
+                return true;
             }
         }
         // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
         else if(hitC.collider != null)
         {
-            if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
-            else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
             return true; // if not a part, or a non-attachable part, then act as though it is normal ground
         }
         else if(hitL.collider != null)
-        {
-            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+        {   
+            Debug.Log(hitL.collider.gameObject.name);
+            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
-            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
@@ -478,11 +472,11 @@ public class playerScript : MonoBehaviour
         }
         else if(hitR.collider != null)
         {
-            if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
-            else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
             }
@@ -554,7 +548,7 @@ public class playerScript : MonoBehaviour
             armString = "None"; // no arms
             raycastXOffset = 0.1f;
             raycastYOffset = 0f;
-            groundedDistance = 0.4f;
+            groundedDistance = 0.33f;
 
             BoxDrop(); // drops any box immediately
             pickupBoxCol.enabled = false; // can't pick up any more boxes

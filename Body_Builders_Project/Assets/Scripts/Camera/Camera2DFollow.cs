@@ -37,6 +37,7 @@ using UnityEngine;
         private void Start()
         {
             target = GameObject.Find("Player").GetComponent<Transform>();
+            transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
             m_LastTargetPosition = target.position;
             m_OffsetZ = (transform.position - target.position).z;
             transform.parent = null;
