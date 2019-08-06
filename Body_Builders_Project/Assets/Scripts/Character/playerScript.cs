@@ -8,19 +8,19 @@ Last Edit 04/08/2019
 /*
 Still need to fix:
 
+
     fix ladder dynamics
     time slow on groundbreakers
     try to get animations in from > sprites > V's Animations
-    box pickup proximity prioritisation to boxHoldPoscol
+    box pickup proximity prioritisation to boxHoldPoscol - use a foreach loop
 
 Still need to add:
 
     lifter arms
     shield arms
-    hookshot head
+    hookshot head - open mouth and shoot it out
     expander head
 
-    animations
     particle effects on impact
 */
 
@@ -35,7 +35,7 @@ public class playerScript : MonoBehaviour
 
     private float moveInput; // get player Input value
     private bool facingRight = true; // used to flip the character when turning
-    private float reverseTimer = 0f;
+    private float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
     float speed; // current movement speed
@@ -47,7 +47,7 @@ public class playerScript : MonoBehaviour
     float jumpPower; // the current jump force based on augments
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
     bool slipCatch; // if the player just fell of a platform, create a short jump window
-    float lastGroundedHeight; // the height you were at when you were last grounded
+    public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
     public bool isGrounded; // is the player on the ground?
@@ -141,8 +141,10 @@ public class playerScript : MonoBehaviour
         canJumpOn = JumpLayer; // | JumpLayer2;
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
-        reverseTimer = 0f;
+        reverseDirectionTimer = 0f;
         isGrounded = false;
+        raycastPos = transform.position;
+        lastGroundedHeight = -1000f;
         UpdateParts();
     }
 
@@ -150,17 +152,17 @@ public class playerScript : MonoBehaviour
     {
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(reverseTimer < 1f && partConfiguration == 1)
+        if(reverseDirectionTimer < 1f && partConfiguration == 1)
         {
-            reverseTimer += Time.deltaTime;
-            rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseTimer/1f), rb.velocity.y);
+            reverseDirectionTimer += Time.deltaTime;
+            rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
         }
         else
         {
             rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
         }
 
-        if(GroundCheck())
+        if(GroundCheck() == true)
         {
             isGrounded = true;
 
@@ -208,10 +210,10 @@ public class playerScript : MonoBehaviour
 
         if(climbing == true)
         {
+            rb.gravityScale = 0f;
             if((climbingRight && Input.GetAxis("Horizontal") >= 0f) || (!climbingRight && Input.GetAxis("Horizontal") <= 0f))
             {
                 jumpGate = true;
-                //rb.gravityScale = 0f;
             }
 
             if (Input.GetAxis("Vertical") == 0f)
@@ -221,16 +223,18 @@ public class playerScript : MonoBehaviour
             else
             {
                 rb.constraints = RigidbodyConstraints2D.None;
+                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 jumpGate = true;
+                Vector2 climbVector = new Vector2(0f , climbSpeed);
                 if(Input.GetKey("w"))
                 {
                     //transform.Translate(Vector2.up * climbSpeed * Time.deltaTime);
-                    rb.MovePosition(transform.position + Vector2.up * climbSpeed * Time.fixedDeltaTime);
+                    rb.MovePosition(rb.position + climbVector * Time.fixedDeltaTime);
                 }
                 else if(Input.GetKey("s"))
                 {
                     //transform.Translate(Vector2.up * -climbSpeed * Time.deltaTime);
-                    rb.MovePosition(transform.position + Vector2.up * -climbSpeed * Time.fixedDeltaTime);
+                    rb.MovePosition(rb.position - climbVector * Time.fixedDeltaTime);
                 }
             }
         }
@@ -248,7 +252,7 @@ public class playerScript : MonoBehaviour
         if((facingRight == false && moveInput > 0) || facingRight == true && moveInput < 0)
         {
             facingRight = !facingRight;
-            reverseTimer = 0f;
+            reverseDirectionTimer = 0f;
             Vector3 Scaler = transform.localScale;
             Scaler.x *= -1;
             transform.localScale = Scaler;
@@ -309,7 +313,7 @@ public class playerScript : MonoBehaviour
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
 
-            if(boostSprites != null)
+            if(boostSprites != null && climbing == false)
             {
                 boostSprites.SetActive(true);
             }
@@ -374,8 +378,7 @@ public class playerScript : MonoBehaviour
                     return false;
                 }
             }
-
-            if(scaler == true)
+            else if(scaler == true)
             {
                 if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , canJumpOn))
                 {
@@ -387,8 +390,8 @@ public class playerScript : MonoBehaviour
         {
             if(moveInput > 0 || (facingRight == true && moveInput == 0))
             {
-                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, (0.4f) , canJumpOn);
-                Debug.DrawRay(raycastPos, Vector2.right * (0.4f), Color.green);
+                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, 0.6f , canJumpOn);
+                Debug.DrawRay(raycastPos, Vector2.right * 0.6f, Color.green);
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
@@ -399,15 +402,11 @@ public class playerScript : MonoBehaviour
                     }
                     return true;
                 }
-                else
-                {
-                    climbing = false;
-                }
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
             {
-                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, (0.4f) , canJumpOn);
-                Debug.DrawRay(raycastPos, Vector2.left * (0.4f), Color.green);
+                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, 0.6f , canJumpOn);
+                Debug.DrawRay(raycastPos, Vector2.left * 0.6f, Color.green);
                 if(sideHitL.collider != null) //&& sideHitL.collider.gameObject.tag == "Climbable")
                 {
                     if(sideHitL.collider.gameObject.tag == "Climbable")
@@ -433,7 +432,7 @@ public class playerScript : MonoBehaviour
         Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
-        if(groundbreaker == true && transform.position.y <= (lastGroundedHeight - groundbreakerDistance)) // - groundbreakerDistance))
+        if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance)) // - groundbreakerDistance))
         {
             if (hitC.collider != null)
             {
@@ -453,18 +452,6 @@ public class playerScript : MonoBehaviour
             }
         }
         // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
-        else if(hitL.collider != null)
-        {
-            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
-            {
-                return false;
-            }
-            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
-            {
-                return false;
-            }
-            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
-        }
         else if(hitC.collider != null)
         {
             if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
@@ -472,6 +459,18 @@ public class playerScript : MonoBehaviour
                 return false;
             }
             else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
+        }
+        else if(hitL.collider != null)
+        {
+            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && transform.position.y > (0.1f + lastGroundedHeight))
+            {
+                return false;
+            }
+            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && transform.position.y > (0.1f + lastGroundedHeight))
             {
                 return false;
             }
@@ -752,7 +751,7 @@ public class playerScript : MonoBehaviour
         moveInput = 0f;
         jumpGate = true;
         jumpGateDuration = 0.6f;
-        jumpGateTimer = jumpGateDuration - 0.1f;
+        jumpGateTimer = jumpGateDuration - 0.12f;
         raycastXOffset = 0.27f;
         groundedDistance = 0.15f;
     }

@@ -50,6 +50,7 @@ public class Arms : MonoBehaviour
         solidBoxCollider.enabled = true;
         this.name = armType + "Arms";
         CheckForParent();
+        unavailableTimer = 1f;
     }
 
     void Update()
@@ -64,7 +65,7 @@ public class Arms : MonoBehaviour
         {
             boxColTimer += Time.deltaTime;
         }
-        else
+        else if(!attached)
         {
             boxCol.enabled = true;
         }

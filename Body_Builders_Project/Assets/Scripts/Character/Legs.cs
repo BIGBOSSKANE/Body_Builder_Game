@@ -37,6 +37,7 @@ public class Legs : MonoBehaviour
         solidBoxCollider.enabled = true;
         this.name = legType + "Legs";
         CheckForParent();
+        unavailableTimer = 1f;
     }
 
     void Update()
@@ -90,7 +91,6 @@ public class Legs : MonoBehaviour
         else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
         {
             playerScript.legString = this.name;
-            Debug.Log("why?");
             int playerParts = playerScript.partConfiguration;
             if(attached == false && playerParts != 3 && playerParts != 4 && unavailableTimer > 0.3f)
             {
@@ -112,9 +112,3 @@ public class Legs : MonoBehaviour
         }
     }
 }
-
-//create a child object with a capsule collider that is on a layer which can't collide with the player
-//set this one as a trigger collider
-
-
-//alternatively, create a layermask for collisions with the legs, that references when the player is grounded, when not, the layermask allows the player to come in contact
