@@ -5,6 +5,7 @@ using UnityEngine;
 public class ScreenShake : MonoBehaviour
 {
     public float shakeLimit = 7f;
+    public float shakeDivider = 12f;
     Transform transformPos;
     private float shakeDuration = 0f;
     private float shakeMagnitude = 0.7f;
@@ -41,6 +42,7 @@ public class ScreenShake : MonoBehaviour
 
     public void TriggerShake(float shakeAmount)
     {
+        shakeAmount = shakeAmount/shakeDivider;
         if(shakeAmount > shakeLimit)
         {
             shakeAmount = shakeLimit;

@@ -46,7 +46,7 @@ public class playerScript : MonoBehaviour
 // JUMPING
     float jumpPower; // the current jump force based on augments
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
-    bool slipCatch; // if the player just fell of a platform, create a short jump window
+    public bool slipCatch; // if the player just fell of a platform, they can still use their first jump in mid air
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
@@ -68,9 +68,8 @@ public class playerScript : MonoBehaviour
     float augmentedRaycastPosX; // alters the raycast position based on the player part configuration
     float augmentedRaycastPosY; // alters the raycast position based on the player part configuration
     float groundedDistance = 0.15f; // raycast distance;
-    public LayerMask JumpLayer; // what layers can the player jump on?
-    public LayerMask alternateJumpLayer; // other layers the player can jump on
-    private LayerMask canJumpOn; // combined layers that the player can jump on
+    public LayerMask jumpLayer; // what layers can the player jump on?
+    public LayerMask ladderLayer; // other layers the player can jump on
 
 
 // AUGMENTS AND PARTS
@@ -87,7 +86,7 @@ public class playerScript : MonoBehaviour
     bool lifter = false; // do you have the lifter augment?
     public bool climbing = false; // are you climbing?
     bool climbingRight = false; // what side are you climbing on?
-    float climbSpeed = 5f; // climbing speed
+    float climbSpeed = 10f; // climbing speed
 
     // Legs
     GameObject legs; // the legs component
@@ -138,7 +137,6 @@ public class playerScript : MonoBehaviour
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
         screenShake = camera.GetComponent<ScreenShake>();
-        canJumpOn = JumpLayer; // | JumpLayer2;
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseDirectionTimer = 0f;
@@ -168,17 +166,14 @@ public class playerScript : MonoBehaviour
 
             if(maxHeight > (1f + transform.position.y))
             {
-                float shakeAmount = (maxHeight - transform.position.y)/10f;
+                float shakeAmount = maxHeight - transform.position.y;
                 screenShake.TriggerShake(shakeAmount);
             }
 
             maxHeight = transform.position.y;
             lastGroundedHeight = transform.position.y;
             leftGroundTimer = 0f;
-            if(jumpGate != true)
-            {
-                remainingJumps = maximumJumps;
-            }
+            remainingJumps = maximumJumps;
             if(boostSprites != null)
             {
                 boostSprites.SetActive(false);
@@ -188,11 +183,15 @@ public class playerScript : MonoBehaviour
         {
             isGrounded = false;
             leftGroundTimer += Time.deltaTime;
+            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
             if(transform.position.y > maxHeight)
             {
                 maxHeight = transform.position.y;
             }
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+            if(remainingJumps == maximumJumps && !slipCatch)
+            {
+                remainingJumps --;
+            }
         }
 
 /*
@@ -210,32 +209,22 @@ public class playerScript : MonoBehaviour
 
         if(climbing == true)
         {
-            rb.gravityScale = 0f;
-            if((climbingRight && Input.GetAxis("Horizontal") >= 0f) || (!climbingRight && Input.GetAxis("Horizontal") <= 0f))
+            if((climbingRight && Input.GetAxis("Horizontal") >= -0.05f) || (!climbingRight && Input.GetAxis("Horizontal") <= 0.05f))
             {
                 jumpGate = true;
+                rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             }
 
-            if (Input.GetAxis("Vertical") == 0f)
+            if(Input.GetAxis("Vertical") == 0f)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
             }
             else
             {
-                rb.constraints = RigidbodyConstraints2D.None;
+                rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                jumpGate = true;
-                Vector2 climbVector = new Vector2(0f , climbSpeed);
-                if(Input.GetKey("w"))
-                {
-                    //transform.Translate(Vector2.up * climbSpeed * Time.deltaTime);
-                    rb.MovePosition(rb.position + climbVector * Time.fixedDeltaTime);
-                }
-                else if(Input.GetKey("s"))
-                {
-                    //transform.Translate(Vector2.up * -climbSpeed * Time.deltaTime);
-                    rb.MovePosition(rb.position - climbVector * Time.fixedDeltaTime);
-                }
+                rb.velocity = new Vector2(rb.position.x , Input.GetAxis("Vertical") * climbSpeed);
+                rb.gravityScale = 0f;
             }
         }
         else
@@ -276,7 +265,7 @@ public class playerScript : MonoBehaviour
 
 
 // JUMPING
-        if(Input.GetButton("Jump") && jumpGate != true && remainingJumps > 0f && !climbing) // scaler jump
+        if(Input.GetButton("Jump") && (jumpGate != true || (scaler && partConfiguration == 1)) && remainingJumps > 0f && !climbing) // scaler jump
         {
             remainingJumps --;
             jumpGateTimer = 0f;
@@ -285,7 +274,7 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = Vector2.up * jumpPower;
             }
-            else if(afterburner == true && !climbing)
+            else if(afterburner == true && !climbing && remainingJumps == 1f)
             {
                 boostSprites.SetActive(true);
                 rb.velocity = Vector2.up * jumpPower * 1.1f;
@@ -295,11 +284,11 @@ public class playerScript : MonoBehaviour
         if(jumpGate == true) // stops repeat jumping
         {
             jumpGateTimer += Time.deltaTime;
-            if(jumpGateTimer > jumpGateDuration)
+            if(Input.GetButtonUp("Jump"))
             {
                 jumpGate = false;
             }
-            if(Input.GetButtonUp("Jump"))
+            else if(jumpGateTimer > jumpGateDuration)
             {
                 jumpGate = false;
             }
@@ -340,32 +329,9 @@ public class playerScript : MonoBehaviour
         DetachPart(); // detach part on "space" press
     }
 
-    void DetachPart()
-    {
-        if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
-        {
-            if(partConfiguration > 2)
-            {
-                legs.GetComponent<Legs>().Detached();
-                legs.transform.parent = null;
-                remainingJumps --; // consumes jumps but doesn't require them to be used
-                UpdateParts();
-                rb.velocity = Vector2.up * jumpForce * 8f;
-            }
-            else if(partConfiguration == 2)
-            {
-                arms.GetComponent<Arms>().Detached();
-                arms.transform.parent = null;
-                remainingJumps --; // consumes jumps but doesn't require them to be used
-                UpdateParts();
-                rb.velocity = Vector2.up * jumpForce * 6f;
-            }
-        }
-    }
-
     bool GroundCheck()
     {
-        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
+        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
         if(partConfiguration == 1)
@@ -380,7 +346,7 @@ public class playerScript : MonoBehaviour
             }
             else if(scaler == true)
             {
-                if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , canJumpOn))
+                if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
                 {
                     return true;
                 }
@@ -390,7 +356,7 @@ public class playerScript : MonoBehaviour
         {
             if(moveInput > 0 || (facingRight == true && moveInput == 0))
             {
-                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, 0.6f , canJumpOn);
+                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, 0.6f , ladderLayer);
                 Debug.DrawRay(raycastPos, Vector2.right * 0.6f, Color.green);
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
@@ -402,33 +368,28 @@ public class playerScript : MonoBehaviour
                     }
                     return true;
                 }
+                climbing = false;
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
             {
-                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, 0.6f , canJumpOn);
+                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, 0.6f , ladderLayer);
                 Debug.DrawRay(raycastPos, Vector2.left * 0.6f, Color.green);
-                if(sideHitL.collider != null) //&& sideHitL.collider.gameObject.tag == "Climbable")
+                if(sideHitL.collider != null && sideHitL.collider.gameObject.tag == "Climbable")
                 {
-                    if(sideHitL.collider.gameObject.tag == "Climbable")
+                    climbing = true;
+                    climbingRight = false;
+                    if(rb.velocity.y < 0f)
                     {
-                        climbing = true;
-                        climbingRight = false;
-                        if(rb.velocity.y < 0f)
-                        {
-                            rb.gravityScale = 0.2f;
-                        }
-                        return true;
+                        rb.gravityScale = 0.2f;
                     }
+                    return true;
                 }
-            }
-            else
-            {
                 climbing = false;
             }
         }
 
-        RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
-        RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, canJumpOn);
+        RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
+        RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
@@ -458,8 +419,7 @@ public class playerScript : MonoBehaviour
             return true; // if not a part, or a non-attachable part, then act as though it is normal ground
         }
         else if(hitL.collider != null)
-        {   
-            Debug.Log(hitL.collider.gameObject.name);
+        {
             if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
             {
                 return false;
@@ -488,6 +448,31 @@ public class playerScript : MonoBehaviour
         }
     }
 
+
+    void DetachPart()
+    {
+        if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
+        {
+            if(partConfiguration > 2)
+            {
+                legs.GetComponent<Legs>().Detached();
+                legs.transform.parent = null;
+                remainingJumps --; // consumes jumps but doesn't require them to be used
+                UpdateParts();
+                rb.velocity = Vector2.up * jumpForce * 8f;
+            }
+            else if(partConfiguration == 2)
+            {
+                arms.GetComponent<Arms>().Detached();
+                arms.transform.parent = null;
+                remainingJumps --; // consumes jumps but doesn't require them to be used
+                UpdateParts();
+                rb.velocity = Vector2.up * jumpForce * 9f;
+            }
+        }
+    }
+
+
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
@@ -514,7 +499,7 @@ public class playerScript : MonoBehaviour
             movementSpeed = augmentedMovementSpeed * 5f;
             jumpPower = jumpForce * 6f;
             jumpGateDuration = 0.4f;
-            canJumpOn = JumpLayer;
+            jumpLayer = jumpLayer;
 
             // upgrades
             maximumJumps = 1;
@@ -561,7 +546,7 @@ public class playerScript : MonoBehaviour
             partConfiguration = 2; // just a head and arms
             movementSpeed = augmentedMovementSpeed * 7.5f;
             jumpPower = jumpForce * 8.5f;
-            canJumpOn = JumpLayer;
+            jumpLayer = jumpLayer;
 
             NonHeadConfig();
             fallMultiplier = 3f;
@@ -609,7 +594,7 @@ public class playerScript : MonoBehaviour
             partConfiguration = 3;
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;  
-            canJumpOn = JumpLayer;
+            jumpLayer = jumpLayer;
             
             NonHeadConfig();
             armString = "None"; // no arms
@@ -656,7 +641,7 @@ public class playerScript : MonoBehaviour
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
-            canJumpOn = JumpLayer;
+            jumpLayer = jumpLayer;
 
             NonHeadConfig();
             arms = gameObject.transform.Find(armString).gameObject;
