@@ -11,6 +11,7 @@ Still need to fix:
     time slow on groundbreakers
     try to get animations in from > sprites > V's Animations
     box pickup proximity prioritisation to boxHoldPoscol - use a foreach loop
+    currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
 Still need to add:
 
@@ -54,7 +55,7 @@ public class playerScript : MonoBehaviour
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
-    int remainingJumps; // how many jumps does the player have left?
+    public int remainingJumps; // how many jumps does the player have left?
     int maximumJumps = 1; // how many jumps does the player have?
 
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
@@ -82,7 +83,8 @@ public class playerScript : MonoBehaviour
     bool boxInRange = false; // is a box in the pickup range?
     bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
-    public bool climbing = false; // are you climbing?
+    bool climbing = false; // are you climbing?
+    float climbingDismountTimer = 0f; // wall jump boost timer
     bool climbingRight = false; // what side are you climbing on?
     float climbSpeed = 10f; // climbing speed
 
@@ -141,6 +143,7 @@ public class playerScript : MonoBehaviour
         isGrounded = false;
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
+        climbingDismountTimer = 1f;
         UpdateParts();
     }
 
@@ -263,12 +266,9 @@ public class playerScript : MonoBehaviour
 
 
 // JUMPING
-        if(Input.GetButton("Jump") && (jumpGate != true || (scaler && partConfiguration == 1)) && remainingJumps > 0f && !climbing) // scaler jump
+        if(Input.GetButton("Jump") && remainingJumps > 0f && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // jump
         {
-            remainingJumps --;
-            jumpGateTimer = 0f;
-            jumpGate = true;
-            if(isGrounded == true || leftGroundTimer < 0.3f)
+            if(isGrounded == true || (leftGroundTimer < 0.3f))
             {
                 rb.velocity = Vector2.up * jumpPower;
             }
@@ -277,16 +277,15 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(true);
                 rb.velocity = Vector2.up * jumpPower * 1.1f;
             }
+            remainingJumps --;
+            jumpGateTimer = 0f;
+            jumpGate = true;
         }
 
         if(jumpGate == true) // stops repeat jumping
         {
             jumpGateTimer += Time.deltaTime;
-            if(Input.GetButtonUp("Jump"))
-            {
-                jumpGate = false;
-            }
-            else if(jumpGateTimer > jumpGateDuration)
+            if(jumpGateTimer > jumpGateDuration)
             {
                 jumpGate = false;
             }
@@ -335,27 +334,22 @@ public class playerScript : MonoBehaviour
         if(partConfiguration == 1)
         {
             climbing = false;
-            if(hitC.collider != null)
+            if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
             {
-                if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
-                {
-                    return false;
-                }
+                return false;
             }
-            else if(scaler == true)
+            else if(scaler == true && Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
             {
-                if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
-                {
-                    return true;
-                }
+                return true;
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
         {
             if(moveInput > 0 || (facingRight == true && moveInput == 0))
             {
-                RaycastHit2D sideHitR = Physics2D.Raycast(raycastPos , Vector2.right, 0.6f , ladderLayer);
-                Debug.DrawRay(raycastPos, Vector2.right * 0.6f, Color.green);
+                Vector2 raycastAltPosR = new Vector2(raycastPos.x , raycastPos.y - 0.75f);
+                RaycastHit2D sideHitR = Physics2D.Raycast(raycastAltPosR , Vector2.right, 0.6f , ladderLayer);
+                Debug.DrawRay(raycastAltPosR, Vector2.right * 0.6f, Color.green);
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
@@ -370,8 +364,9 @@ public class playerScript : MonoBehaviour
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
             {
-                RaycastHit2D sideHitL = Physics2D.Raycast(raycastPos , Vector2.left, 0.6f , ladderLayer);
-                Debug.DrawRay(raycastPos, Vector2.left * 0.6f, Color.green);
+                Vector2 raycastAltPosL = new Vector2(raycastPos.x , raycastPos.y - 0.75f);
+                RaycastHit2D sideHitL = Physics2D.Raycast(raycastAltPosL , Vector2.left, 0.6f , ladderLayer);
+                Debug.DrawRay(raycastAltPosL, Vector2.left * 0.6f, Color.green);
                 if(sideHitL.collider != null && sideHitL.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
@@ -386,59 +381,66 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
-        RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
-        Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
-        Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
-
-        if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance) && hitC.collider != null) // - groundbreakerDistance))
+        if(!jumpGate)
         {
-            if(hitC.collider.gameObject.tag == "Groundbreakable")
+            RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
+            RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
+            Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
+            Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
+
+            if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance) && hitC.collider != null) // - groundbreakerDistance))
             {
-                hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                return false;
+                if(hitC.collider.gameObject.tag == "Groundbreakable")
+                {
+                    hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
+            else if(hitC.collider != null)
+            {
+                if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                return true; // if not a part, or a non-attachable part, then act as though it is normal ground
+            }
+            else if(hitL.collider != null)
+            {
+                if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                return true; // if not a part, or a non-attachable part, then act as though it is normal ground
+            }
+            else if(hitR.collider != null)
+            {
+                if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
+                {
+                    return false;
+                }
+                return true; // if not a part, or a non-attachable part, then act as though it is normal ground
             }
             else
             {
-                return true;
-            }
-        }
-        // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
-        else if(hitC.collider != null)
-        {
-            if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
                 return false;
             }
-            else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
-                return false;
-            }
-            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
-        }
-        else if(hitL.collider != null)
-        {
-            if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
-                return false;
-            }
-            else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
-                return false;
-            }
-            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
-        }
-        else if(hitR.collider != null)
-        {
-            if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
-                return false;
-            }
-            else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
-            {
-                return false;
-            }
-            return true; // if not a part, or a non-attachable part, then act as though it is normal ground
         }
         else
         {
@@ -496,8 +498,7 @@ public class playerScript : MonoBehaviour
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
             jumpPower = jumpForce * 6f;
-            jumpGateDuration = 0.4f;
-            jumpLayer = jumpLayer;
+            jumpGateDuration = 0.2f;
 
             // upgrades
             maximumJumps = 1;
@@ -544,7 +545,6 @@ public class playerScript : MonoBehaviour
             partConfiguration = 2; // just a head and arms
             movementSpeed = augmentedMovementSpeed * 7.5f;
             jumpPower = jumpForce * 8.5f;
-            jumpLayer = jumpLayer;
 
             NonHeadConfig();
             fallMultiplier = 3f;
@@ -591,8 +591,7 @@ public class playerScript : MonoBehaviour
         {
             partConfiguration = 3;
             movementSpeed = augmentedMovementSpeed * 8.5f;
-            jumpPower = jumpForce * 11f;  
-            jumpLayer = jumpLayer;
+            jumpPower = jumpForce * 11f;
             
             NonHeadConfig();
             armString = "None"; // no arms
@@ -639,7 +638,6 @@ public class playerScript : MonoBehaviour
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
-            jumpLayer = jumpLayer;
 
             NonHeadConfig();
             arms = gameObject.transform.Find(armString).gameObject;
