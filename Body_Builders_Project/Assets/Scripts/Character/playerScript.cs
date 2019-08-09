@@ -9,6 +9,7 @@ Last Edit 09/08/2019
 Still need to fix:
 
     time slow on groundbreakers
+    enhanced jump from ladders
     try to get animations in from > sprites > V's Animations
     currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
@@ -80,10 +81,11 @@ public class playerScript : MonoBehaviour
     // Arms
     GameObject arms; // the arms component
     public string armString; // this is referenced from the name of the arm prefab
-    bool boxInRange = false; // is a box in the pickup range?
     public bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
     bool climbing = false; // are you climbing?
+    bool wallJump = false; // are you on a wall-jumpable surface
+    bool wasClimbing = false; // did you just stop climbing?
     float climbingDismountTimer = 0f; // wall jump boost timer
     bool climbingRight = false; // what side are you climbing on?
     float climbSpeed = 10f; // climbing speed
@@ -104,11 +106,11 @@ public class playerScript : MonoBehaviour
 
 
 // ATTACHABLES AND PARTS
-    public float boxDetectorOffsetX = 0.68f;
-    public float boxDetectorOffsetY = 0.05f;
+    float boxDetectorOffsetX = 0.68f;
+    float boxDetectorOffsetY = 0.05f;
     Vector2 boxDetectorCentre;
-    public float boxDetectorHeight = 1.96f;
-    public float boxDetectorWidth = 1.93f;
+    float boxDetectorHeight = 1.96f;
+    float boxDetectorWidth = 1.93f;
     Vector2 boxDetectorSize;
     float direction = 1f;
     Rigidbody2D rb; // this object's rigidbody
@@ -120,7 +122,6 @@ public class playerScript : MonoBehaviour
 
     // Arms
     public GameObject pickupBox; // the box that the player is currently picking up
-    BoxCollider2D pickupBoxCol; // the area in which a player can pick up boxes (and later climb)
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
     ScreenShake screenShake; // screen shake script
@@ -156,10 +157,15 @@ public class playerScript : MonoBehaviour
     {
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(reverseDirectionTimer < 1f && partConfiguration == 1)
+        if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
         {
             reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
             rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
+        }
+        else if(climbingDismountTimer <= 0.1f && climbing == false)
+        {
+            rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+            climbingDismountTimer += Time.deltaTime;
         }
         else
         {
@@ -218,32 +224,42 @@ public class playerScript : MonoBehaviour
 
         if(climbing == true)
         {
-            if((climbingRight && Input.GetAxis("Horizontal") >= -0.05f) || (!climbingRight && Input.GetAxis("Horizontal") <= 0.05f))
-            {
-                jumpGate = true;
-                rb.constraints = RigidbodyConstraints2D.FreezePositionX;
-            }
+            climbingDismountTimer = 0f;
+            wasClimbing = true;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionY;
 
-            if(Input.GetAxis("Vertical") == 0f)
+            if(Input.GetAxis("Vertical") == 0f && wallJump == false)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                transform.rotation = Quaternion.identity;
             }
             else
             {
-                rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                //rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 rb.velocity = new Vector2(rb.position.x , Input.GetAxis("Vertical") * climbSpeed);
-                rb.gravityScale = 0f;
+                transform.rotation = Quaternion.identity;
+            }
+
+            if((climbingRight && Input.GetAxis("Horizontal") < 0f) || (!climbingRight && Input.GetAxis("Horizontal") > 0f)) // if player leaves the ladder
+            {
+                jumpGate = true;
+                rb.constraints = RigidbodyConstraints2D.None;
+                transform.rotation = Quaternion.identity;
+                climbing = false;
             }
         }
-        else
+        if(wasClimbing == true && climbing == false)
         {
-            rb.gravityScale = 2f;
             rb.constraints = RigidbodyConstraints2D.None;
-            if(partConfiguration != 1)
+            if(partConfiguration > 1)
             {
+                transform.rotation = Quaternion.identity;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
+            wasClimbing = false;
         }
 
         // turn around
@@ -363,13 +379,14 @@ public class playerScript : MonoBehaviour
                 {
                     climbing = true;
                     climbingRight = true;
-                    if(rb.velocity.y < 0f)
-                    {
-                        rb.gravityScale = 0.2f;
-                    }
                     return true;
                 }
                 climbing = false;
+                if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "WallJump")
+                {
+                    wallJump = true;
+                    return true;
+                }
             } 
             else if(moveInput < 0 || (facingRight == false && moveInput == 0))
             {
@@ -381,12 +398,14 @@ public class playerScript : MonoBehaviour
                     climbing = true;
                     climbingRight = false;
                     if(rb.velocity.y < 0f)
-                    {
-                        rb.gravityScale = 0.2f;
-                    }
                     return true;
                 }
                 climbing = false;
+                if(sideHitL.collider != null && sideHitL.collider.gameObject.tag == "WallJump")
+                {
+                    wallJump = true;
+                    return true;
+                }
             }
         }
 
@@ -700,7 +719,6 @@ void BoxInteract()
 
             boxCol.size = new Vector2(0.6f , 1.45f);
             boxCol.offset = new Vector2(0f , -0.27f);
-            pickupBoxCol.enabled = true;
             BoxDrop(); // no arms, so drop the box
         }
 
@@ -784,7 +802,7 @@ void BoxInteract()
     {
         headCol.enabled = false; // disable the rolling head collider
         boxCol.enabled = true; // use the capsule collider instead
-        rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+        rb.constraints = RigidbodyConstraints2D.FreezePositionY; // freeze movement temporarily
         rb.constraints = RigidbodyConstraints2D.FreezePositionX;
         jumpGate = true;
         rb.constraints = RigidbodyConstraints2D.None;
@@ -808,21 +826,4 @@ void BoxInteract()
         //Time.fixedDeltaTime = Time.timeScale * 0.001f;
     }
 */
-
-    void OnTriggerEnter2D(Collider2D col) // changes interactable box to the one the player approaches - still random if 2 boxes
-    {
-        if(col.tag == "Box" && holding == false) //&& pickupBox == null)
-        {
-            pickupBox = col.gameObject;
-            boxInRange = true;
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D col) // can't grab the box if it's not in range
-    {
-        if(col.tag == "Box")
-        {
-            boxInRange = false;
-        }
-    }
 }
