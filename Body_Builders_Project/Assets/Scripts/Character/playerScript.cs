@@ -2,7 +2,7 @@
 Creator: Daniel
 Created 04/08/2019
 Last Edited by: Daniel
-Last Edit 04/08/2019
+Last Edit 09/08/2019
 */
 
 /*
@@ -10,7 +10,6 @@ Still need to fix:
 
     time slow on groundbreakers
     try to get animations in from > sprites > V's Animations
-    box pickup proximity prioritisation to boxHoldPoscol - use a foreach loop
     currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
 Still need to add:
@@ -68,7 +67,8 @@ public class playerScript : MonoBehaviour
     float augmentedRaycastPosY; // alters the raycast position based on the player part configuration
     float groundedDistance = 0.15f; // raycast distance;
     public LayerMask jumpLayer; // what layers can the player jump on?
-    public LayerMask ladderLayer; // other layers the player can jump on
+    public LayerMask ladderLayer; // what cn the player climb?
+    public LayerMask pickupLayer; // what things can the player pick up?
 
 
 // AUGMENTS AND PARTS
@@ -81,7 +81,7 @@ public class playerScript : MonoBehaviour
     GameObject arms; // the arms component
     public string armString; // this is referenced from the name of the arm prefab
     bool boxInRange = false; // is a box in the pickup range?
-    bool holding = false; // is the player holding a box?
+    public bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
     bool climbing = false; // are you climbing?
     float climbingDismountTimer = 0f; // wall jump boost timer
@@ -104,7 +104,13 @@ public class playerScript : MonoBehaviour
 
 
 // ATTACHABLES AND PARTS
-
+    public float boxDetectorOffsetX = 0.68f;
+    public float boxDetectorOffsetY = 0.05f;
+    Vector2 boxDetectorCentre;
+    public float boxDetectorHeight = 1.96f;
+    public float boxDetectorWidth = 1.93f;
+    Vector2 boxDetectorSize;
+    float direction = 1f;
     Rigidbody2D rb; // this object's rigidbody
     BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
@@ -113,11 +119,12 @@ public class playerScript : MonoBehaviour
     GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
 
     // Arms
-    GameObject pickupBox; // the box that the player is currently picking up
+    public GameObject pickupBox; // the box that the player is currently picking up
     BoxCollider2D pickupBoxCol; // the area in which a player can pick up boxes (and later climb)
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
     ScreenShake screenShake; // screen shake script
+    GameObject closestBox; // closest box as determined by the box assigner
 
 
 
@@ -131,8 +138,6 @@ public class playerScript : MonoBehaviour
         headCol = head.GetComponent<CircleCollider2D>();
         scalerStar = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerStar").gameObject;
         scalerStar.SetActive(false);
-        pickupBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<BoxCollider2D>();
-        pickupBoxCol.enabled = true;
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
@@ -153,7 +158,7 @@ public class playerScript : MonoBehaviour
 
         if(reverseDirectionTimer < 1f && partConfiguration == 1)
         {
-            reverseDirectionTimer += Time.deltaTime;
+            reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
             rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
         }
         else
@@ -183,7 +188,7 @@ public class playerScript : MonoBehaviour
         else
         {
             isGrounded = false;
-            leftGroundTimer += Time.deltaTime;
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
             speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
             if(transform.position.y > maxHeight)
             {
@@ -206,6 +211,9 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
+        boxDetectorCentre = new Vector2(boxDetectorOffsetX * direction + transform.position.x , boxDetectorOffsetY + transform.position.y);
+        boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
+
         raycastPos = transform.position; // this can be altered later if you would like it to change
 
         if(climbing == true)
@@ -242,6 +250,7 @@ public class playerScript : MonoBehaviour
         if((facingRight == false && moveInput > 0) || facingRight == true && moveInput < 0)
         {
             facingRight = !facingRight;
+            direction = -direction;
             reverseDirectionTimer = 0f;
             Vector3 Scaler = transform.localScale;
             Scaler.x *= -1;
@@ -448,6 +457,70 @@ public class playerScript : MonoBehaviour
         }
     }
 
+    void BoxAssigner()
+    {
+        float distanceFromPickupPoint;
+        float previousDistanceFromPickupPoint = 0f;
+        Collider2D[] hitCollider = Physics2D.OverlapBoxAll(boxDetectorCentre , boxDetectorSize, 0f , pickupLayer);
+        int i = 0;
+        while (i < hitCollider.Length)
+        {
+            if(hitCollider[i].gameObject.tag == "HeavyLiftable" || hitCollider[i].gameObject.tag == "Box")
+            {
+                distanceFromPickupPoint = Vector2.Distance(hitCollider[i].gameObject.transform.position , boxHoldPos.position);
+                if(distanceFromPickupPoint < previousDistanceFromPickupPoint || previousDistanceFromPickupPoint == 0)
+                {
+                    previousDistanceFromPickupPoint = distanceFromPickupPoint;
+                    closestBox = hitCollider[i].gameObject;
+                }
+            }
+            i++;
+        }
+    }
+void BoxInteract()
+    {
+        if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
+        {
+            BoxAssigner();
+            {
+                if(closestBox != null)
+                {
+                    closestBox.transform.parent = this.transform;
+                    closestBox.transform.position = boxHoldPos.position;
+                    closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
+                    closestBox.GetComponent<Collider2D>().enabled = false;
+                    closestBox.transform.rotation = Quaternion.identity;
+                    heldBoxCol.enabled = true;
+                    holding = true;
+                }
+            }
+        } 
+        else if(Input.GetKeyDown("f") && holding == true)
+        {
+            BoxDrop();
+            // if we eventually do want the box to be thrown, add some alternative code here
+        }
+    }
+    
+    void BoxDrop() // when the character drps the box;
+    {
+        if(closestBox != null)
+        {
+            closestBox.transform.parent = null;
+            heldBoxCol.enabled = false;
+            closestBox.GetComponent<Rigidbody2D>().isKinematic = false;
+            closestBox.GetComponent<Collider2D>().enabled = true;
+            holding = false;
+            closestBox = null;
+        } 
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(boxDetectorCentre , boxDetectorSize);
+    }
+
 
     void DetachPart()
     {
@@ -535,7 +608,6 @@ public class playerScript : MonoBehaviour
             groundedDistance = 0.33f;
 
             BoxDrop(); // drops any box immediately
-            pickupBoxCol.enabled = false; // can't pick up any more boxes
             scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
 
@@ -575,7 +647,7 @@ public class playerScript : MonoBehaviour
 
             boxCol.size = new Vector2(0.6f , 1.6f);
             boxCol.offset = new Vector2(0f , 0.03f);
-            pickupBoxCol.enabled = true; // the player can now pick up boxes
+            
             if(holding == true) // keep holding the box if you were
             {
                 heldBoxCol.enabled = true;
@@ -683,7 +755,6 @@ public class playerScript : MonoBehaviour
             boxCol.size = new Vector2(0.6f , 2.08f);
             boxCol.offset = new Vector2(0f , 0.03f);
 
-            pickupBoxCol.enabled = true;
             if(holding == true) // keep holding the box if you already were
             {
                 heldBoxCol.enabled = true;
@@ -753,42 +824,5 @@ public class playerScript : MonoBehaviour
         {
             boxInRange = false;
         }
-    }
-
-    void BoxInteract()
-    {
-        if(pickupBox != null) // Pick up or drop boxes
-        {
-            if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4)) // pick up and drop box while you have arms and press "f"
-            {
-                if(holding == false && boxInRange == true)
-                // currently the player character chooses from all boxes in range at random this may need to be changed if they can have multiple boxes at a time
-                {
-                    pickupBox.transform.parent = this.transform;
-                    pickupBox.transform.position = boxHoldPos.position;
-                    pickupBox.GetComponent<Rigidbody2D>().isKinematic = true;
-                    pickupBox.GetComponent<Collider2D>().enabled = false;
-                    heldBoxCol.enabled = true;
-                    holding = true;
-                } 
-                else
-                {
-                    BoxDrop();
-                    // if we eventually do want the box to be thrown, add some alternative code here
-                }
-            }
-        }
-    }
-    
-    void BoxDrop() // when the character drps the box;
-    {
-        if(pickupBox != null)
-        {
-            pickupBox.transform.parent = null;
-            heldBoxCol.enabled = false;
-            pickupBox.GetComponent<Rigidbody2D>().isKinematic = false;
-            pickupBox.GetComponent<Collider2D>().enabled = true;
-            holding = false;
-        } 
     }
 }
