@@ -13,12 +13,14 @@ Still need to fix:
 
 Still need to add:
 
-    lifter arms
     shield arms
     hookshot head - open mouth and shoot it out - accelerate slightly while swinging?
+
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
+
     Time Slow on Groundbreakers
+
     Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
 
     particle effects on impact
@@ -101,6 +103,7 @@ public class playerScript : MonoBehaviour
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
     float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
+    bool groundBreakerReset; // used to make sure time slow is only used once
 
 
 // ATTACHABLES AND PARTS
@@ -125,6 +128,7 @@ public class playerScript : MonoBehaviour
     CircleCollider2D heldBoxCol; // this collider is used for the held box
     ScreenShake screenShake; // screen shake script
     GameObject closestBox; // closest box as determined by the box assigner
+    timeSlow timeSlowScript; // time slow script
 
 
 
@@ -157,6 +161,7 @@ public class playerScript : MonoBehaviour
         crosshair = gameObject.transform.Find("Crosshair").gameObject;
         crosshair.SetActive(false);
         hookShot = false;
+        timeSlowScript = GetComponent<timeSlow>();
         UpdateParts();
     }
 
@@ -182,6 +187,7 @@ public class playerScript : MonoBehaviour
         if(GroundCheck() == true)
         {
             isGrounded = true;
+            timeSlowScript.TimeNormal();
 
             if(maxHeight > (1f + transform.position.y))
             {
@@ -212,14 +218,6 @@ public class playerScript : MonoBehaviour
                 remainingJumps --;
             }
         }
-
-/*
-        if(groundbreaker == true && transform.position.y <= (maxHeight - (groundbreakerDistance - 1f)) && timeSlow == false)
-        {
-            GroundbreakerTimeShift();
-            timeSlow = true;
-        }
-*/
     }
 
     void Update()
@@ -317,6 +315,12 @@ public class playerScript : MonoBehaviour
 
 // JUMP TUNING --------------------------------------------------------------------------------------------
         rb.gravityScale = 2f;
+
+        if(transform.position.y <= (maxHeight - groundbreakerDistance) && groundbreaker & !groundBreakerReset)
+        {
+            timeSlowScript.TimeSlow();
+            groundBreakerReset = true;
+        }
 
         if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
         {
@@ -422,53 +426,68 @@ public class playerScript : MonoBehaviour
             Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
             Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 
-            if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance) && hitC.collider != null) // - groundbreakerDistance))
+            if(groundbreaker == true && transform.position.y <= (maxHeight - groundbreakerDistance) && hitC.collider != null)
             {
                 if(hitC.collider.gameObject.tag == "Groundbreakable")
                 {
                     hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                    timeSlowScript.TimeNormal();
                     return false;
                 }
                 else
                 {
+                    groundBreakerReset = false;
+                    timeSlowScript.TimeNormal();
                     return true;
                 }
             }
             // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
             else if(hitC.collider != null)
             {
+                timeSlowScript.TimeNormal();
                 if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
                 else if(hitC.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
+                    groundBreakerReset = false;
                 return true; // if not a part, or a non-attachable part, then act as though it is normal ground
             }
             else if(hitL.collider != null)
             {
+                timeSlowScript.TimeNormal();
                 if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
                 else if(hitL.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
+                groundBreakerReset = false;
                 return true; // if not a part, or a non-attachable part, then act as though it is normal ground
             }
             else if(hitR.collider != null)
             {
+                timeSlowScript.TimeNormal();
                 if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
                 else if(hitR.collider.gameObject.tag == "Arms" && (partConfiguration == 1 || partConfiguration == 3) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
+                    groundBreakerReset = false;
                     return false;
                 }
+                 groundBreakerReset = false;
                 return true; // if not a part, or a non-attachable part, then act as though it is normal ground
             }
             else
