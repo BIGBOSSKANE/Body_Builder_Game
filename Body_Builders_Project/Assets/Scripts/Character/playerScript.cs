@@ -8,8 +8,6 @@ Last Edit 09/08/2019
 /*
 Still need to fix:
 
-    time slow on groundbreakers
-    currently the player can jump vertically up wall jump walls, make sure it is more horizontal
     try to get animations in from > sprites > V's Animations
     currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
@@ -17,8 +15,11 @@ Still need to add:
 
     lifter arms
     shield arms
-    hookshot head - open mouth and shoot it out
+    hookshot head - open mouth and shoot it out - accelerate slightly while swinging?
+    headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
+    Time Slow on Groundbreakers
+    Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
 
     particle effects on impact
 */
@@ -45,7 +46,7 @@ public class playerScript : MonoBehaviour
 // JUMPING
     float jumpPower; // the current jump force based on augments
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
-    public bool slipCatch; // if the player just fell of a platform, they can still use their first jump in mid air
+    public bool jumpAfterFall; // if the player just fell of a platform, they can still use their first jump in mid air
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
@@ -77,11 +78,13 @@ public class playerScript : MonoBehaviour
     public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
     public string headString; // this is referenced from the name of the head augment
     bool scaler = false;
+    public bool hookShot = false;
+    hookShot hookShotScript;
 
     // Arms
     GameObject arms; // the arms component
     public string armString; // this is referenced from the name of the arm prefab
-    public bool holding = false; // is the player holding a box?
+    bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
     bool climbing = false; // are you climbing?
     public bool wallSliding = false; // are you on a wall-jumpable surface
@@ -100,12 +103,6 @@ public class playerScript : MonoBehaviour
     float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
 
 
-    float timeSlowdownFactor = 0.01f; // time speed while shapeshifting to use Groundbreakers
-    float timeSlowDownLength = 1.5f; // time of the slowdown period
-    bool timeSlow; // is the time slow active?
-    bool groundBreakerActivate; // are the groundbreakers activated?
-
-
 // ATTACHABLES AND PARTS
     float boxDetectorOffsetX = 0.68f;
     float boxDetectorOffsetY = 0.05f;
@@ -118,11 +115,12 @@ public class playerScript : MonoBehaviour
     BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
-    Camera camera; // the scene's camera
+    new Camera camera; // the scene's camera
     GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
+    GameObject crosshair;
+    GameObject hookshotAnchor;
 
     // Arms
-    public GameObject pickupBox; // the box that the player is currently picking up
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
     ScreenShake screenShake; // screen shake script
@@ -152,6 +150,13 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
+        hookShotScript = gameObject.GetComponent<hookShot>();
+        hookShotScript.enabled = false;
+        hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
+        hookshotAnchor.SetActive(false);
+        crosshair = gameObject.transform.Find("Crosshair").gameObject;
+        crosshair.SetActive(false);
+        hookShot = false;
         UpdateParts();
     }
 
@@ -202,7 +207,7 @@ public class playerScript : MonoBehaviour
             {
                 maxHeight = transform.position.y;
             }
-            if(remainingJumps == maximumJumps && !slipCatch)
+            if(remainingJumps == maximumJumps && !jumpAfterFall)
             {
                 remainingJumps --;
             }
@@ -505,13 +510,16 @@ void BoxInteract()
             {
                 if(closestBox != null)
                 {
-                    closestBox.transform.parent = this.transform;
-                    closestBox.transform.position = boxHoldPos.position;
-                    closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
-                    closestBox.GetComponent<Collider2D>().enabled = false;
-                    closestBox.transform.rotation = Quaternion.identity;
-                    heldBoxCol.enabled = true;
-                    holding = true;
+                    if((closestBox.tag != "HeavyLiftable") || lifter)
+                    {
+                        closestBox.transform.parent = this.transform;
+                        closestBox.transform.position = boxHoldPos.position;
+                        closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
+                        closestBox.GetComponent<Collider2D>().enabled = false;
+                        closestBox.transform.rotation = Quaternion.identity;
+                        heldBoxCol.enabled = true;
+                        holding = true;
+                    }
                 }
             }
         } 
@@ -615,6 +623,19 @@ void BoxInteract()
                 scaler = false;
                 jumpPower = jumpForce * 7f;
                 fallMultiplier = 2.5f;
+            }
+
+            if(hookShot)
+            {
+                hookShotScript.enabled = true;
+                hookshotAnchor.SetActive(true);
+                crosshair.SetActive(true);
+            }
+            else
+            {
+                hookShotScript.enabled = false;
+                hookshotAnchor.SetActive(false);
+                crosshair.SetActive(false);
             }
 
             boxCol.enabled = false; // don't use the typical vertical standing collider
@@ -810,6 +831,9 @@ void BoxInteract()
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
         scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
+        hookShotScript.enabled = false;
+        crosshair.SetActive(false);
+        hookshotAnchor.SetActive(false);
         isGrounded = false;
         fallMultiplier = 4f;
         rb.velocity = Vector2.zero;
