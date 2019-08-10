@@ -9,7 +9,7 @@ Last Edit 09/08/2019
 Still need to fix:
 
     time slow on groundbreakers
-    enhanced jump from ladders
+    currently the player can jump vertically up wall jump walls, make sure it is more horizontal
     try to get animations in from > sprites > V's Animations
     currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
@@ -84,7 +84,8 @@ public class playerScript : MonoBehaviour
     public bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
     bool climbing = false; // are you climbing?
-    bool wallJump = false; // are you on a wall-jumpable surface
+    public bool wallSliding = false; // are you on a wall-jumpable surface
+    float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
     bool wasClimbing = false; // did you just stop climbing?
     float climbingDismountTimer = 0f; // wall jump boost timer
     bool climbingRight = false; // what side are you climbing on?
@@ -99,7 +100,7 @@ public class playerScript : MonoBehaviour
     float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
 
 
-    float timeSlowdownFactor = 0.001f; // time speed while shapeshifting to use Groundbreakers
+    float timeSlowdownFactor = 0.01f; // time speed while shapeshifting to use Groundbreakers
     float timeSlowDownLength = 1.5f; // time of the slowdown period
     bool timeSlow; // is the time slow active?
     bool groundBreakerActivate; // are the groundbreakers activated?
@@ -117,7 +118,7 @@ public class playerScript : MonoBehaviour
     BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
-    public new GameObject camera; // the scene's camera
+    Camera camera; // the scene's camera
     GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
 
     // Arms
@@ -142,6 +143,7 @@ public class playerScript : MonoBehaviour
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
+        camera = Camera.main;
         screenShake = camera.GetComponent<ScreenShake>();
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
@@ -230,7 +232,7 @@ public class playerScript : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.constraints = RigidbodyConstraints2D.FreezePositionY;
 
-            if(Input.GetAxis("Vertical") == 0f && wallJump == false)
+            if(Input.GetAxis("Vertical") == 0f && wallSliding == false)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 transform.rotation = Quaternion.identity;
@@ -243,15 +245,22 @@ public class playerScript : MonoBehaviour
                 transform.rotation = Quaternion.identity;
             }
 
+            if(wallSliding == true) //maybe differentiate bools for ground and side collisions
+            {
+                if(rb.velocity.y < -wallSlideSpeedMax)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x , -wallSlideSpeedMax);
+                }
+            }
+
             if((climbingRight && Input.GetAxis("Horizontal") < 0f) || (!climbingRight && Input.GetAxis("Horizontal") > 0f)) // if player leaves the ladder
             {
-                jumpGate = true;
                 rb.constraints = RigidbodyConstraints2D.None;
                 transform.rotation = Quaternion.identity;
                 climbing = false;
             }
         }
-        if(wasClimbing == true && climbing == false)
+        if(wasClimbing == true && climbing == false) // turnforcer bool could mean that the player has to press the away button to jump on the wall
         {
             rb.constraints = RigidbodyConstraints2D.None;
             if(partConfiguration > 1)
@@ -273,25 +282,10 @@ public class playerScript : MonoBehaviour
             transform.localScale = Scaler;
         }
 
-/*
-        // for groundbreakers
-        if(timeSlow == true)
-        {
-            Time.timeScale += (1f / timeSlowDownLength) * Time.unscaledDeltaTime;
-            Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
-            if(Time.timeScale >= 1f || isGrounded == true)
-            {
-                Time.timeScale = 1f;
-                //Time.fixedDeltaTime = Time.timeScale;
-                groundBreakerActivate = true;
-                timeSlow = false;
-            }
-        }
-*/
 
+// JUMPING ------------------------------------------------------------------------------------------------------------------
 
-// JUMPING
-        if(Input.GetButton("Jump") && remainingJumps > 0f && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // jump
+        if(Input.GetButton("Jump") && remainingJumps > 0f && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
             if(isGrounded == true || (leftGroundTimer < 0.3f))
             {
@@ -316,7 +310,7 @@ public class playerScript : MonoBehaviour
             }
         }
 
-// JUMP TUNING
+// JUMP TUNING --------------------------------------------------------------------------------------------
         rb.gravityScale = 2f;
 
         if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
@@ -329,7 +323,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(true);
             }
         }
-        else if(rb.velocity.y < 0f) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
+        else if(rb.velocity.y < 0f && !wallSliding) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
             if(boostSprites != null)
@@ -355,6 +349,7 @@ public class playerScript : MonoBehaviour
     {
         RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
+        wallSliding = false;
 
         if(partConfiguration == 1)
         {
@@ -365,7 +360,14 @@ public class playerScript : MonoBehaviour
             }
             else if(scaler == true && Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
             {
-                return true;
+                if(hitC.collider!= null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
@@ -384,7 +386,7 @@ public class playerScript : MonoBehaviour
                 climbing = false;
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "WallJump")
                 {
-                    wallJump = true;
+                    wallSliding = true;
                     return true;
                 }
             } 
@@ -397,19 +399,18 @@ public class playerScript : MonoBehaviour
                 {
                     climbing = true;
                     climbingRight = false;
-                    if(rb.velocity.y < 0f)
                     return true;
                 }
                 climbing = false;
                 if(sideHitL.collider != null && sideHitL.collider.gameObject.tag == "WallJump")
                 {
-                    wallJump = true;
+                    wallSliding = true;
                     return true;
                 }
             }
         }
 
-        if(!jumpGate)
+        if(!jumpGate) // don't groundcheck if the player just jumped
         {
             RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
             RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);

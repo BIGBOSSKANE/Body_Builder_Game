@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 201133527749953338}
   - component: {fileID: 201133527749953337}
   - component: {fileID: 201133527749953317}
+  - component: {fileID: 1149721486}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -44,7 +45,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.2784314, g: 0.2784314, b: 0.2784314, a: 1}
+  m_BackGroundColor: {r: 0.19215688, g: 0.19215688, b: 0.19215688, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -60,7 +61,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.16
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -109,3 +110,22 @@ MonoBehaviour:
   lookAheadFactor: 0.5
   lookAheadReturnSpeed: 0.5
   lookAheadMoveThreshold: 0.1
+  resizeDuration: 0.8
+  headSize: 5
+  torsoSize: 5.5
+  legSize: 6
+  completeSize: 6.5
+--- !u!114 &1149721486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 201133527749953336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d544bbf15e6151042af14672e3a105e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeLimit: 6
+  shakeDivider: 12
