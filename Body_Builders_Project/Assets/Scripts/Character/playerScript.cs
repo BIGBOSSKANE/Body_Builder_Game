@@ -40,7 +40,7 @@ public class playerScript : MonoBehaviour
     private float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
-    float speed; // current movement speed
+    public float speed; // current movement speed
     float movementSpeed = 10f; // the max horizontal movement speed
     float augmentedMovementSpeed = 1f; // scales the movement limit with parts
 
@@ -67,8 +67,6 @@ public class playerScript : MonoBehaviour
     float raycastXOffset; // alters the distance between groundchecker raycasts based on part configuration
     float raycastYOffset; // alters raycast length based on character part configuration, this should be combined with "raycastPos"
     Vector2 raycastPos; // controls where groundcheckers come from
-    float augmentedRaycastPosX; // alters the raycast position based on the player part configuration
-    float augmentedRaycastPosY; // alters the raycast position based on the player part configuration
     float groundedDistance = 0.15f; // raycast distance;
     public LayerMask jumpLayer; // what layers can the player jump on?
     public LayerMask ladderLayer; // what cn the player climb?
@@ -99,12 +97,11 @@ public class playerScript : MonoBehaviour
     // Legs
     GameObject legs; // the legs component
     public string legString; // this is referenced from the name of the leg prefab
-    public bool groundbreaker = false; // do you have the groundbreaker legs?
+    bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
     float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
     bool groundBreakerReset; // used to make sure time slow is only used once
-
 
 // ATTACHABLES AND PARTS
     float boxDetectorOffsetX = 0.68f;
@@ -126,9 +123,10 @@ public class playerScript : MonoBehaviour
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
-    ScreenShake screenShake; // screen shake script
     GameObject closestBox; // closest box as determined by the box assigner
     timeSlow timeSlowScript; // time slow script
+    Camera2DFollow cameraScript;
+    bool cameraAdjuster;
 
 
 
@@ -146,7 +144,7 @@ public class playerScript : MonoBehaviour
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
         camera = Camera.main;
-        screenShake = camera.GetComponent<ScreenShake>();
+        cameraScript = camera.GetComponent<Camera2DFollow>();
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseDirectionTimer = 0f;
@@ -162,6 +160,7 @@ public class playerScript : MonoBehaviour
         crosshair.SetActive(false);
         hookShot = false;
         timeSlowScript = GetComponent<timeSlow>();
+        cameraAdjuster = true;
         UpdateParts();
     }
 
@@ -189,10 +188,15 @@ public class playerScript : MonoBehaviour
             isGrounded = true;
             timeSlowScript.TimeNormal();
 
-            if(maxHeight > (1f + transform.position.y))
+            if(maxHeight > (groundbreakerDistance + transform.position.y))
             {
                 float shakeAmount = maxHeight - transform.position.y;
-                screenShake.TriggerShake(shakeAmount);
+                cameraScript.TriggerShake(shakeAmount , 1.5f);
+            }
+            else if(maxHeight > (1f + transform.position.y))
+            {
+                float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , 1f);
             }
 
             maxHeight = transform.position.y;
@@ -222,6 +226,22 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
+        if(rb.velocity.y < 0f && cameraAdjuster == true)
+        {
+            cameraScript.SpeedUp();
+            cameraAdjuster = false;
+        }
+        else if(cameraAdjuster == true && isGrounded == true)
+        {
+            cameraScript.RestoreSpeed();
+            cameraAdjuster = false;
+        }
+
+        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true))
+        {
+            cameraAdjuster = true;
+        }
+
         boxDetectorCentre = new Vector2(boxDetectorOffsetX * direction + transform.position.x , boxDetectorOffsetY + transform.position.y);
         boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
 
@@ -316,10 +336,13 @@ public class playerScript : MonoBehaviour
 // JUMP TUNING --------------------------------------------------------------------------------------------
         rb.gravityScale = 2f;
 
-        if(transform.position.y <= (maxHeight - groundbreakerDistance) && groundbreaker & !groundBreakerReset)
+        if(transform.position.y <= (maxHeight - groundbreakerDistance))
         {
-            timeSlowScript.TimeSlow();
-            groundBreakerReset = true;
+            if(groundbreaker && !groundBreakerReset)
+            {
+                timeSlowScript.TimeSlow();
+                groundBreakerReset = true;
+            }
         }
 
         if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
@@ -862,12 +885,6 @@ void BoxInteract()
         jumpGateTimer = jumpGateDuration - 0.12f;
         raycastXOffset = 0.27f;
         groundedDistance = 0.15f;
+        maxHeight = transform.position.y;
     }
-/*
-    void GroundbreakerTimeShift()
-    {
-        Time.timeScale = timeSlowdownFactor;
-        //Time.fixedDeltaTime = Time.timeScale * 0.001f;
-    }
-*/
 }

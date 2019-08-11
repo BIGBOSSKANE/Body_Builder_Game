@@ -436,7 +436,6 @@ GameObject:
   - component: {fileID: 7366464798927738177}
   - component: {fileID: 3787395916754752069}
   - component: {fileID: 790690559}
-  - component: {fileID: 5601206546010791042}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -507,8 +506,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae793bb457f06447bff184abf6f9290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slowedSpeed: 0.001
-  slowDownDuration: 2
+  slowedSpeed: 0.2
+  slowDownDuration: 5
   actualTimeScale: 0
 --- !u!114 &4753556650152104425
 MonoBehaviour:
@@ -522,7 +521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daca95957794fc34c981b2d7fd17d0e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseMovedTime: 2
+  mouseMovedTime: 3
   ropeLayerMask:
     serializedVersion: 2
     m_Bits: 512
@@ -609,21 +608,6 @@ DistanceJoint2D:
   m_AutoConfigureDistance: 0
   m_Distance: 0.005
   m_MaxDistanceOnly: 0
---- !u!114 &5601206546010791042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7366464798927738179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ae793bb457f06447bff184abf6f9290, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slowedSpeed: 0.25
-  slowDownDuration: 10
-  actualTimeScale: 0
 --- !u!1 &8834885144257459468
 GameObject:
   m_ObjectHideFlags: 0

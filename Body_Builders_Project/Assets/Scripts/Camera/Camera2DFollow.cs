@@ -1,13 +1,20 @@
 using System;
 using UnityEngine;
+using Random=UnityEngine.Random;
 
     public class Camera2DFollow : MonoBehaviour
     {
         public Transform target;
+        playerScript playerScript;
+        bool speedUp;
+        bool slowDown;
         public float damping = 1;
+        float initialDamping;
+        float currentDamping;
         public float lookAheadFactor = 3;
         public float lookAheadReturnSpeed = 0.5f;
         public float lookAheadMoveThreshold = 0.1f;
+        float initialLookAheadMoveThreshold;
 
         private float m_OffsetZ;
         private Vector3 m_LastTargetPosition;
@@ -26,27 +33,86 @@ using UnityEngine;
         public float torsoSize = 5.5f;
         public float legSize = 6f;
         public float completeSize = 6.5f;
+        float t; // lerp time
 
-        // Use this for initialization
+        // Shake
+        public float shakeLimit = 3f;
+        public float shakeDivider = 25f;
+        Transform transformPos;
+        private float shakeDuration = 0f;
+        private float shakeMagnitude = 0.7f;
+        Vector3 initialPosition;
+
 
         private void Awake()
         {
             camera = gameObject.GetComponent<Camera>(); // locates the camera immediately before player calls for a resize
+            if (transformPos == null)
+            {
+                transformPos = gameObject.transform;
+            }
+        }
+
+        public void TriggerShake(float shakeAmount , float dampenEnhancer)
+        {
+            shakeDuration = Mathf.Clamp(shakeAmount/4f , 0f , 0.3f);
+            shakeAmount = Mathf.Clamp(shakeAmount/(shakeDivider * dampenEnhancer) , 0f , shakeLimit);
+            shakeMagnitude = shakeAmount;
         }
 
         private void Start()
         {
             target = GameObject.Find("Player").GetComponent<Transform>();
+            playerScript = target.gameObject.GetComponent<playerScript>();
             transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
             m_LastTargetPosition = target.position;
             m_OffsetZ = (transform.position - target.position).z;
             transform.parent = null;
+            initialDamping = damping;
+            t = 0f;
         }
 
+        public void SpeedUp()
+        {
+            speedUp = true;
+            slowDown = false;
+            currentDamping = damping;
+            t = 0f;
+        }
+
+        public void RestoreSpeed()
+        {
+            slowDown = true;
+            speedUp = false;
+            currentDamping = damping;
+            t = 0f;
+        }
 
         // Update is called once per frame
         private void Update()
         {
+            if(damping <= 0f)
+            {
+                speedUp = false;
+                damping = 0f;
+            }
+            else if(speedUp == true)
+            {
+                t += Time.unscaledDeltaTime / 1f;
+                damping = Mathf.SmoothStep(currentDamping , 0f , t);
+            }
+            
+            if(slowDown == true && damping >= initialDamping)
+            {
+                damping = initialDamping;
+                slowDown = false;
+            }
+            else if (slowDown == true && damping < initialDamping)
+            {
+                t += Time.unscaledDeltaTime / 1f;
+                damping = Mathf.SmoothStep(currentDamping , initialDamping , t);
+            }
+
             // only update lookahead pos if accelerating or changed direction
             float xMoveDelta = (target.position - m_LastTargetPosition).x;
 
@@ -62,7 +128,11 @@ using UnityEngine;
             }
 
             Vector3 aheadTargetPos = target.position + m_LookAheadPos + Vector3.forward*m_OffsetZ;
-            Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
+            //Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
+
+            Vector3 newPos = new Vector3(Mathf.SmoothDamp(transform.position.x , aheadTargetPos.x , ref m_CurrentVelocity.x , initialDamping),
+                                         Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
+                                         Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
 
             transform.position = newPos;
 
@@ -77,6 +147,18 @@ using UnityEngine;
             {
                 resize = false;
                 resizeTimer = 0f;
+            }
+
+            if (shakeDuration > 0)
+            {
+                transformPos.localPosition = transformPos.position + Random.insideUnitSphere * shakeMagnitude;
+                shakeDuration -= Time.unscaledDeltaTime;
+                shakeMagnitude -= Time.unscaledDeltaTime;
+            }
+            else
+            {
+                shakeDuration = 0f;
+                transformPos.localPosition = transformPos.position;
             }
         }
 
