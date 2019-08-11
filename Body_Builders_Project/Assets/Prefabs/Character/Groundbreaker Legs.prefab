@@ -136,12 +136,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c06137a959a834d91f4d39e6b95375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundBreaker: 0
   boxCol: {fileID: 4530757531702161867}
   rb: {fileID: 4530757531702161866}
   legType: 2
   player: {fileID: 0}
   head: {fileID: 0}
   playerScript: {fileID: 0}
+  yCastOffset: -0.86
+  raycastDistance: 0.17
+  jumpLayer:
+    serializedVersion: 2
+    m_Bits: 148992
 --- !u!212 &4530757531702161864
 SpriteRenderer:
   m_ObjectHideFlags: 0

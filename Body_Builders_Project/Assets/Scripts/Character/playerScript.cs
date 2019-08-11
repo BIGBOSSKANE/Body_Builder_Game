@@ -54,7 +54,7 @@ public class playerScript : MonoBehaviour
     float leftGroundTimer; // how long ago were you last grounded
 
     public bool isGrounded; // is the player on the ground?
-    float maxHeight; // the maximum height of the jump
+    public float maxHeight; // the maximum height of the jump
     bool jumpGate; // prevent jumping while this is true
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
@@ -73,6 +73,10 @@ public class playerScript : MonoBehaviour
     public LayerMask ladderLayer; // what cn the player climb?
     public LayerMask pickupLayer; // what things can the player pick up?
 
+    public Vector2 tetherPoint;
+    public float swingForce = 4f;
+    public bool isSwinging;
+
 
 // AUGMENTS AND PARTS
 
@@ -80,7 +84,7 @@ public class playerScript : MonoBehaviour
     public string headString; // this is referenced from the name of the head augment
     bool scaler = false;
     public bool hookShot = false;
-    hookShot hookShotScript;
+    hookShotScript hookShotScript;
 
     // Arms
     GameObject arms; // the arms component
@@ -101,7 +105,7 @@ public class playerScript : MonoBehaviour
     bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
-    float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
+    public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
     bool groundBreakerReset; // used to make sure time slow is only used once
 
 // ATTACHABLES AND PARTS
@@ -118,7 +122,6 @@ public class playerScript : MonoBehaviour
     CircleCollider2D headCol; // the collider used when the player is just a head
     new Camera camera; // the scene's camera
     GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
-    GameObject crosshair;
     GameObject hookshotAnchor;
 
     // Arms
@@ -153,12 +156,10 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookShotScript = gameObject.GetComponent<hookShot>();
+        hookShotScript = GetComponent<hookShotScript>();
         hookShotScript.enabled = false;
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
-        crosshair = gameObject.transform.Find("Crosshair").gameObject;
-        crosshair.SetActive(false);
         hookShot = false;
         timeSlowScript = GetComponent<timeSlow>();
         cameraAdjuster = true;
@@ -169,58 +170,81 @@ public class playerScript : MonoBehaviour
     {
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+        if(isSwinging)
         {
-            reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
-        }
-        else if(climbingDismountTimer <= 0.1f && climbing == false)
-        {
-            rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
-            climbingDismountTimer += Time.deltaTime;
+            var playerToTetherPointDirection = (tetherPoint - (Vector2)transform.position.normalized);
+            Vector2 perpendicularDirection;
+            if(moveInput < 0f)
+            {
+                perpendicularDirection = new Vector2(-playerToTetherPointDirection.y , playerToTetherPointDirection.x * -2f);
+                Vector2 leftPerpPos = (Vector2)transform.position - perpendicularDirection * -2f;
+                Debug.DrawLine(transform.position , leftPerpPos , Color.green , 0f);
+            }
+            else
+            {
+                perpendicularDirection = new Vector2(playerToTetherPointDirection.y , -playerToTetherPointDirection.x);
+                Vector2 rightPerpPos = (Vector2)transform.position + perpendicularDirection * 2f;
+                Debug.DrawLine(transform.position, rightPerpPos, Color.green , 0f);
+            }
+
+            var force = perpendicularDirection * swingForce;
+            rb.AddForce(force, ForceMode2D.Force);
         }
         else
         {
-            rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
-        }
-
-        if(GroundCheck() == true)
-        {
-            isGrounded = true;
-            timeSlowScript.TimeNormal();
-
-            if(maxHeight > (groundbreakerDistance + transform.position.y))
+            if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
-                float shakeAmount = maxHeight - transform.position.y;
-                cameraScript.TriggerShake(shakeAmount , 1.5f);
+                reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
             }
-            else if(maxHeight > (1f + transform.position.y))
+            else if(climbingDismountTimer <= 0.1f && climbing == false)
             {
-                float shakeAmount = maxHeight - transform.position.y;
-                cameraScript.TriggerShake(shakeAmount , 1f);
+                rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+                climbingDismountTimer += Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
 
-            maxHeight = transform.position.y;
-            lastGroundedHeight = transform.position.y;
-            leftGroundTimer = 0f;
-            remainingJumps = maximumJumps;
-            if(boostSprites != null)
+            if(GroundCheck() == true)
             {
-                boostSprites.SetActive(false);
-            }
-        }
-        else
-        {
-            isGrounded = false;
-            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-            if(transform.position.y > maxHeight)
-            {
+                isGrounded = true;
+                timeSlowScript.TimeNormal();
+
+                if(maxHeight > (groundbreakerDistance + transform.position.y))
+                {
+                    float shakeAmount = maxHeight - transform.position.y;
+                    cameraScript.TriggerShake(shakeAmount , 1.5f);
+                }
+                else if(maxHeight > (1f + transform.position.y))
+                {
+                    float shakeAmount = maxHeight - transform.position.y;
+                    cameraScript.TriggerShake(shakeAmount , 1f);
+                }
+
                 maxHeight = transform.position.y;
+                lastGroundedHeight = transform.position.y;
+                leftGroundTimer = 0f;
+                remainingJumps = maximumJumps;
+                if(boostSprites != null)
+                {
+                    boostSprites.SetActive(false);
+                }
             }
-            if(remainingJumps == maximumJumps && !jumpAfterFall)
+            else
             {
-                remainingJumps --;
+                isGrounded = false;
+                leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+                if(transform.position.y > maxHeight)
+                {
+                    maxHeight = transform.position.y;
+                }
+                if(remainingJumps == maximumJumps && !jumpAfterFall)
+                {
+                    remainingJumps --;
+                }
             }
         }
     }
@@ -455,20 +479,17 @@ public class playerScript : MonoBehaviour
                 if(hitC.collider.gameObject.tag == "Groundbreakable")
                 {
                     hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                    timeSlowScript.TimeNormal();
                     return false;
                 }
                 else
                 {
                     groundBreakerReset = false;
-                    timeSlowScript.TimeNormal();
                     return true;
                 }
             }
             // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
             else if(hitC.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -484,7 +505,6 @@ public class playerScript : MonoBehaviour
             }
             else if(hitL.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -500,7 +520,6 @@ public class playerScript : MonoBehaviour
             }
             else if(hitR.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -599,7 +618,7 @@ void BoxInteract()
         {
             if(partConfiguration > 2)
             {
-                legs.GetComponent<Legs>().Detached();
+                legs.GetComponent<Legs>().Detached(maxHeight , groundbreakerDistance);
                 legs.transform.parent = null;
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
@@ -672,13 +691,11 @@ void BoxInteract()
             {
                 hookShotScript.enabled = true;
                 hookshotAnchor.SetActive(true);
-                crosshair.SetActive(true);
             }
             else
             {
                 hookShotScript.enabled = false;
                 hookshotAnchor.SetActive(false);
-                crosshair.SetActive(false);
             }
 
             boxCol.enabled = false; // don't use the typical vertical standing collider
@@ -875,7 +892,6 @@ void BoxInteract()
         scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
         hookShotScript.enabled = false;
-        crosshair.SetActive(false);
         hookshotAnchor.SetActive(false);
         isGrounded = false;
         fallMultiplier = 4f;
@@ -887,5 +903,6 @@ void BoxInteract()
         raycastXOffset = 0.27f;
         groundedDistance = 0.15f;
         maxHeight = transform.position.y;
+        isSwinging = false;
     }
 }

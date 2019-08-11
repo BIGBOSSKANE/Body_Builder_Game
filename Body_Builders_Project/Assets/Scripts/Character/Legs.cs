@@ -12,6 +12,7 @@ using UnityEngine;
 public class Legs : MonoBehaviour
 {
     bool attached;
+    public bool groundBreaker = false; // when ground breakers are dropped, they will continue to do their thing
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
     public Rigidbody2D rb;
@@ -24,12 +25,21 @@ public class Legs : MonoBehaviour
     public playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
+    timeSlow timeSlowScript;
+    public float yCastOffset = -0.86f;
+    public float raycastDistance = 0.17f;
+    float maxHeight;
+    float groundbreakerDistance;
+    public LayerMask jumpLayer;
+    bool groundBreakerReset;
+
 
     void Start()
     {
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
+        timeSlowScript = player.GetComponent<timeSlow>();
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<playerScript>();
         solidCollider = transform.Find("Legs_Solid_Collider").gameObject;
@@ -46,13 +56,46 @@ public class Legs : MonoBehaviour
         {
             unavailableTimer += Time.deltaTime;
         }
+
+        if(transform.position.y <= (maxHeight - groundbreakerDistance))
+        {
+            if(groundBreaker && !groundBreakerReset)
+            {
+                timeSlowScript.TimeSlow();
+                groundBreakerReset = true;
+            }
+        }
+
+        if(groundBreaker == true)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + yCastOffset), Vector2.down, raycastDistance, jumpLayer);
+            Debug.DrawRay(new Vector2(transform.position.x, transform.position.y + yCastOffset), Vector2.down * raycastDistance, Color.red);
+
+            if(hit.collider != null)
+            {
+                if(transform.position.y <= (maxHeight - groundbreakerDistance))
+                {
+                    if(hit.collider.gameObject.tag == "Groundbreakable")
+                    {
+                        hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                    }
+                }
+                else
+                {
+                    maxHeight = transform.position.y;
+                    groundBreakerReset = false;
+                    groundBreaker = false;
+                }
+                timeSlowScript.TimeNormal();
+            }
+        }
     }
 
     void CheckForParent()
     {
         if(transform.parent == null)
         {
-            Detached();
+            Detached(0f , 0f);
         }
         else
         {
@@ -60,8 +103,10 @@ public class Legs : MonoBehaviour
         }
     }
 
-    public void Detached()
+    public void Detached(float maxHeightCalled , float groundbreakerDistanceCalled)
     {
+        maxHeight = maxHeightCalled;
+        groundbreakerDistance = groundbreakerDistanceCalled;
         transform.parent = null;
         solidBoxCollider.enabled = true;
         boxCol.enabled = true;
@@ -69,6 +114,10 @@ public class Legs : MonoBehaviour
         unavailableTimer = 0f;
         rb.isKinematic = false;
         gameObject.layer = 18;
+        if(gameObject.name == "GroundbreakerLegs")
+        {
+            groundBreaker = true;
+        }
     }
 
     public void Attached()
