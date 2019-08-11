@@ -10,6 +10,7 @@ Still need to fix:
 
     try to get animations in from > sprites > V's Animations
     currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
+    wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
 
 Still need to add:
 
