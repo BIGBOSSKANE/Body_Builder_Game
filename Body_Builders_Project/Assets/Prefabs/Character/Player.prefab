@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &906951701
 Transform:
   m_ObjectHideFlags: 0
@@ -208,12 +208,12 @@ GameObject:
   - component: {fileID: 1414621457}
   - component: {fileID: 1414621458}
   m_Layer: 8
-  m_Name: HookShot
+  m_Name: HookshotHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1414621457
 Transform:
   m_ObjectHideFlags: 0
@@ -292,7 +292,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6145001861340463342
 Transform:
   m_ObjectHideFlags: 0
@@ -478,6 +478,7 @@ MonoBehaviour:
   jumpAfterFall: 0
   lastGroundedHeight: 0
   isGrounded: 0
+  maxHeight: 0
   remainingJumps: 0
   jumpLayer:
     serializedVersion: 2
@@ -488,6 +489,8 @@ MonoBehaviour:
   pickupLayer:
     serializedVersion: 2
     m_Bits: 1024
+  tetherPoint: {x: 0, y: 0}
+  swingForce: 4
   isSwinging: 0
   partConfiguration: 1
   headString: 
@@ -495,6 +498,7 @@ MonoBehaviour:
   armString: 
   wallSliding: 0
   legString: 
+  groundbreakerDistance: 4
 --- !u!114 &4282603750954052786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,7 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseMovedTime: 2
-  ropeClimbSpeed: 4
+  ropeClimbSpeed: 3
   tetherLayer:
     serializedVersion: 2
     m_Bits: 2097664
@@ -621,7 +625,7 @@ GameObject:
   - component: {fileID: 7079115831785488552}
   - component: {fileID: 9062518044640192137}
   m_Layer: 8
-  m_Name: ScalerStar
+  m_Name: ScalerHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

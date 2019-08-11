@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class hookShotScript : MonoBehaviour
+public class hookshotScript : MonoBehaviour
 {
     // Mouse Move Tracker
     bool mouseMoved;
@@ -42,7 +42,7 @@ public class hookShotScript : MonoBehaviour
         lineRenderer = gameObject.transform.Find("HookshotAnchor").gameObject.GetComponent<LineRenderer>();
         lineRenderer.enabled = false;
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();        
-        hookShotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookShot").gameObject;
+        hookShotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
     }
 
     void Update()
@@ -96,7 +96,7 @@ public class hookShotScript : MonoBehaviour
             }
             else if(Input.GetAxis("Vertical") < 0f)
             {
-                distanceJoint.distance += 6f * Time.deltaTime;
+                distanceJoint.distance += 5f * Time.deltaTime;
             }
         }
     }

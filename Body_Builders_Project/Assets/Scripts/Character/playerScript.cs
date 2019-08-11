@@ -9,7 +9,7 @@ Last Edit 09/08/2019
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
-    currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
+    currently when w is held and you have the scaler augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
     wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
 
 Still need to add:
@@ -19,8 +19,6 @@ Still need to add:
 
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
-
-    Time Slow on Groundbreakers
 
     Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
 
@@ -84,7 +82,6 @@ public class playerScript : MonoBehaviour
     public string headString; // this is referenced from the name of the head augment
     bool scaler = false;
     public bool hookShot = false;
-    hookShotScript hookShotScript;
 
     // Arms
     GameObject arms; // the arms component
@@ -121,8 +118,10 @@ public class playerScript : MonoBehaviour
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
     new Camera camera; // the scene's camera
-    GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
+    GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
+    GameObject hookshotAugment;
+    hookshotScript hookshotScript;
 
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
@@ -139,11 +138,12 @@ public class playerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         startingAngularDrag = rb.angularDrag;
         boxCol = gameObject.GetComponent<BoxCollider2D>();
+        timeSlowScript = gameObject.GetComponent<timeSlow>();
         boxCol.enabled = false;
         head = gameObject.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
-        scalerStar = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerStar").gameObject;
-        scalerStar.SetActive(false);
+        scalerAugment = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerHead").gameObject;
+        scalerAugment.SetActive(false);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
@@ -156,12 +156,13 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookShotScript = GetComponent<hookShotScript>();
-        hookShotScript.enabled = false;
+        hookshotScript = gameObject.GetComponent<hookshotScript>();
+        hookshotScript.enabled = false;
+        hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
+        hookshotAugment.SetActive(false);
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
         hookShot = false;
-        timeSlowScript = GetComponent<timeSlow>();
         cameraAdjuster = true;
         UpdateParts();
     }
@@ -172,26 +173,12 @@ public class playerScript : MonoBehaviour
 
         if(isSwinging)
         {
-            var playerToTetherPointDirection = (tetherPoint - (Vector2)transform.position.normalized);
-            Vector2 perpendicularDirection;
-            if(moveInput < 0f)
-            {
-                perpendicularDirection = new Vector2(-playerToTetherPointDirection.y , playerToTetherPointDirection.x * -2f);
-                Vector2 leftPerpPos = (Vector2)transform.position - perpendicularDirection * -2f;
-                Debug.DrawLine(transform.position , leftPerpPos , Color.green , 0f);
-            }
-            else
-            {
-                perpendicularDirection = new Vector2(playerToTetherPointDirection.y , -playerToTetherPointDirection.x);
-                Vector2 rightPerpPos = (Vector2)transform.position + perpendicularDirection * 2f;
-                Debug.DrawLine(transform.position, rightPerpPos, Color.green , 0f);
-            }
-
-            var force = perpendicularDirection * swingForce;
-            rb.AddForce(force, ForceMode2D.Force);
+            rb.drag = 0.1f;
+            rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
         }
         else
         {
+            rb.drag = 0.06f;
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
@@ -674,7 +661,7 @@ void BoxInteract()
                 boostSprites = null;
             }
 
-            if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
+            if(headString == "ScalerHead" || scaler) // reduces jump power if you have the Scaler Augment as a trade-off
             {
                 scaler = true;
                 jumpPower = jumpForce * 6f;
@@ -687,15 +674,17 @@ void BoxInteract()
                 fallMultiplier = 2.5f;
             }
 
-            if(hookShot)
+            if(headString == "HookshotHead" || hookShot)
             {
-                hookShotScript.enabled = true;
-                hookshotAnchor.SetActive(true);
+                hookShot = true;
+                hookshotAugment.SetActive(true);
+                // do stuff here
             }
             else
             {
-                hookShotScript.enabled = false;
-                hookshotAnchor.SetActive(false);
+                hookShot = false;
+                hookshotAugment.SetActive(false);
+                // cancel stuff here
             }
 
             boxCol.enabled = false; // don't use the typical vertical standing collider
@@ -709,7 +698,7 @@ void BoxInteract()
             groundedDistance = 0.33f;
 
             BoxDrop(); // drops any box immediately
-            scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
+            scalerAugment.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
 
 
@@ -867,14 +856,30 @@ void BoxInteract()
 
 // Manage Head Augments Here
 
-        if(headString == "Scaler") // changes whether the Scaler Augment is visible or not - no mechanical difference
+        if(headString == "ScalerHead" || scaler) // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
-            scalerStar.SetActive(true);
+            scalerAugment.SetActive(true);
+            hookShot = false;
+            // start things here
         }
-        else
+
+        if(headString == "HookshotHead" || hookShot)
         {
-            headString = "BasicHead";
-            scalerStar.SetActive(false);
+            hookShot = true;
+            hookshotAugment.SetActive(true);
+            hookshotScript.enabled = true;
+            hookshotAnchor.SetActive(false);
+            // start things here
+        }
+        
+        if(headString == "BasicHead")
+        {
+            scalerAugment.SetActive(false);
+            hookShot = false;
+            hookshotAugment.SetActive(false);
+            hookshotScript.enabled = true;
+            hookshotAnchor.SetActive(false);
+            // cancel things here
         }
 
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
@@ -889,9 +894,9 @@ void BoxInteract()
         jumpGate = true;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
-        scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
+        scalerAugment.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
-        hookShotScript.enabled = false;
+        hookshotScript.enabled = false;
         hookshotAnchor.SetActive(false);
         isGrounded = false;
         fallMultiplier = 4f;

@@ -30,7 +30,7 @@ public class timeSlow : MonoBehaviour
 
         if(slowTime == true)
         {
-            Time.timeScale -= Mathf.Clamp((1f / (slowDownDuration * 0.15f)) * Time.unscaledDeltaTime , 0f , Time.timeScale);
+            Time.timeScale -= Mathf.Clamp((1f / (slowDownDuration * 0.25f)) * Time.unscaledDeltaTime , 0f , Time.timeScale);
         }
 
         if(Time.timeScale <= slowedSpeed)
@@ -38,7 +38,7 @@ public class timeSlow : MonoBehaviour
             slowTime = false;
             
             holdTimer += Time.deltaTime*(1f/slowedSpeed);
-            if(holdTimer >= (slowDownDuration * 0.7f))
+            if(holdTimer >= (slowDownDuration * 0.2f))
             {
                 restoreTime = true;
             }
@@ -52,7 +52,7 @@ public class timeSlow : MonoBehaviour
         if(restoreTime == true)
         {
             holdTimer = 0f;
-            Time.timeScale += Mathf.Clamp((1f / (slowDownDuration * 0.15f)) * Time.unscaledDeltaTime , slowedSpeed , 1f - Time.timeScale);
+            Time.timeScale += Mathf.Clamp((1f / (slowDownDuration * 0.55f)) * Time.unscaledDeltaTime , slowedSpeed , 1f - Time.timeScale);
         }
         
         actualTimeScale = Time.timeScale;
