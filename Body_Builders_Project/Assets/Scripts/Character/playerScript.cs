@@ -90,6 +90,7 @@ public class playerScript : MonoBehaviour
     public string armString; // this is referenced from the name of the arm prefab
     bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
+    public bool shield = false; // do you have the shield augment?
     bool climbing = false; // are you climbing?
     public bool wallSliding = false; // are you on a wall-jumpable surface
     float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
@@ -133,6 +134,10 @@ public class playerScript : MonoBehaviour
     Camera2DFollow cameraScript;
     bool cameraAdjuster;
 
+    GameObject shieldBubble; // the shield bubble object
+    bool isDeflecting = false; // is the player currently deflecting
+    float shieldRadius;
+    Vector2 laserOrigin;
 
 
     void Start()
@@ -165,6 +170,8 @@ public class playerScript : MonoBehaviour
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
         hookShot = false;
+        shieldBubble = gameObject.transform.Find("ShieldBubble").gameObject;
+        shieldBubble.SetActive(false);
         cameraAdjuster = true;
         UpdateParts();
     }
@@ -176,6 +183,7 @@ public class playerScript : MonoBehaviour
         if(isSwinging)
         {
             //rb.drag = 0.08f;
+            //isGrounded = true; // experimental - for jumping from rope
             rb.gravityScale = 3f;
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
         }
@@ -262,6 +270,14 @@ public class playerScript : MonoBehaviour
         boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
+
+
+        if(shield && isDeflecting)
+        {
+            Deflecting();
+        }
+        isDeflecting = false;
+
 
         if(climbing == true)
         {
@@ -391,6 +407,20 @@ public class playerScript : MonoBehaviour
         BoxInteract(); // check for box pickup or drop prompts
 
         DetachPart(); // detach part on "space" press
+
+        DeployShield(); // create the shield bubble around the player
+    }
+
+    public void DeployShield()
+    {
+        if(shield && Input.GetMouseButtonDown(1))
+        {
+            shieldBubble.SetActive(true);
+        }
+        else
+        {
+            shieldBubble.SetActive(false);
+        }
     }
 
     bool GroundCheck()
@@ -626,6 +656,45 @@ void BoxInteract()
         }
     }
 
+    public void ManageDeflect(bool hit)
+    {
+        /*
+            laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
+
+            potentially get the laser to input the point of impact, then create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
+        */
+        if(hit == true)
+        {
+            isDeflecting = true;
+            //enable line renderer
+            // change shield colour
+        }
+        else
+        {
+            isDeflecting = false;
+            // disable line renderer
+            // restore shield colour
+        }
+    }
+
+    public void Deflecting()
+    {
+        // laser here
+
+        // this laser should be on a layer behind everything but the background, but in front of the other laser
+        Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
+        mouseDirection.Normalize();
+        Vector2 laserOrigin = new Vector2(mouseDirection.x , mouseDirection.y) * shieldRadius;
+        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, new Vector2(mouseDirection.x , mouseDirection.y), Mathf.Infinity /*, laser layer goes here */);
+        if(laser.collider != null)
+        {
+            Vector2 laserEndpoint = laser.point;
+            // Draw line
+            // spawn laser collision animation at point, changing the angle based on laser.collider normal, on a layer in front of the laser
+        }
+
+    }
+
 
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
@@ -665,7 +734,7 @@ void BoxInteract()
                 boostSprites = null;
             }
 
-            if(headString == "ScalerHead" || scaler) // reduces jump power if you have the Scaler Augment as a trade-off
+            if(headString == "ScalerHead" || scaler) // if the player already has a head augmenr, they keep it when they get a new one
             {
                 scaler = true;
                 jumpPower = jumpForce * 6f;
@@ -678,7 +747,7 @@ void BoxInteract()
                 fallMultiplier = 2.5f;
             }
 
-            if(headString == "HookshotHead" || hookShot)
+            if(headString == "HookshotHead" || hookShot) // if the player already has a head augment, they keep it when they get a new one
             {
                 hookShot = true;
                 hookshotAugment.SetActive(true);
@@ -726,6 +795,14 @@ void BoxInteract()
             else
             {
                 lifter = false;
+            }
+            if(armString == "ShieldArms")
+            {
+                shield = true;
+            }
+            else
+            {
+                shield = false;
             }
 
             legString = "None"; // no legs
