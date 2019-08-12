@@ -9,13 +9,15 @@ Last Edit 09/08/2019
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
+
     currently when w is held and you have the scaler augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
+
     wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
+
 
 Still need to add:
 
     shield arms
-    hookshot head - open mouth and shoot it out - accelerate slightly while swinging?
 
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
@@ -173,12 +175,14 @@ public class playerScript : MonoBehaviour
 
         if(isSwinging)
         {
-            rb.drag = 0.1f;
+            //rb.drag = 0.08f;
+            rb.gravityScale = 3f;
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
         }
         else
         {
-            rb.drag = 0.06f;
+            //rb.drag = 0.06f;
+            rb.gravityScale = 2f;
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
@@ -678,12 +682,16 @@ void BoxInteract()
             {
                 hookShot = true;
                 hookshotAugment.SetActive(true);
+                hookshotAnchor.SetActive(true);
+                hookshotScript.enabled = true;
                 // do stuff here
             }
             else
             {
                 hookShot = false;
                 hookshotAugment.SetActive(false);
+                hookshotAnchor.SetActive(false);
+                hookshotScript.enabled = false;
                 // cancel stuff here
             }
 
@@ -866,13 +874,10 @@ void BoxInteract()
         if(headString == "HookshotHead" || hookShot)
         {
             hookShot = true;
-            hookshotAugment.SetActive(true);
-            hookshotScript.enabled = true;
-            hookshotAnchor.SetActive(false);
             // start things here
         }
         
-        if(headString == "BasicHead")
+        if(headString == "BasicHead" && !scaler && !hookShot)
         {
             scalerAugment.SetActive(false);
             hookShot = false;
@@ -909,5 +914,8 @@ void BoxInteract()
         groundedDistance = 0.15f;
         maxHeight = transform.position.y;
         isSwinging = false;
+        hookshotScript.enabled = false;
+        Vector3 hookshotDirection = Quaternion.Euler(0f , 0f, 45f) * Vector2.right;
+        hookshotAugment.transform.up = hookshotDirection;
     }
 }

@@ -79,8 +79,22 @@ public class hookshotScript : MonoBehaviour
         augmentAimDirection = Quaternion.Euler(0 , 0 , (aimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
 
         playerPosition = transform.position;
-        
-        hookShotAugment.transform.up = augmentAimDirection;
+
+        if(!ropeAttached) // aim at cursor
+        {
+            hookShotAugment.transform.up = augmentAimDirection;
+        }
+        else // aim at anchorpoint
+        {
+            Vector2 firedDirection = new Vector2(ropeAnchorPoint.x , ropeAnchorPoint.y) - playerPosition;
+            float firedAimAngle = Mathf.Atan2(firedDirection.y , firedDirection.x);
+            if(firedAimAngle < 0f)
+            {
+                firedAimAngle = Mathf.PI * 2 + aimAngle;
+            }
+            Vector3 augmentFiredDirection = Quaternion.Euler(0 , 0 , (firedAimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
+            hookShotAugment.transform.up = augmentFiredDirection;
+        }
 
         HookShotFire();
         if(ropeAttached == true)
