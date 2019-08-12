@@ -72,6 +72,7 @@ public class playerScript : MonoBehaviour
     public LayerMask jumpLayer; // what layers can the player jump on?
     public LayerMask ladderLayer; // what cn the player climb?
     public LayerMask pickupLayer; // what things can the player pick up?
+    public LayerMask laserLayer; // what can the deflected laser hit?
 
     public Vector2 tetherPoint;
     public float swingForce = 4f;
@@ -136,8 +137,10 @@ public class playerScript : MonoBehaviour
 
     GameObject shieldBubble; // the shield bubble object
     bool isDeflecting = false; // is the player currently deflecting
-    float shieldRadius;
     Vector2 laserOrigin;
+    float shieldRadius;
+    LineRenderer laserLine;
+    public Vector2 ropeDirection;
 
 
     void Start()
@@ -172,7 +175,10 @@ public class playerScript : MonoBehaviour
         hookShot = false;
         shieldBubble = gameObject.transform.Find("ShieldBubble").gameObject;
         shieldBubble.SetActive(false);
+        shieldRadius = gameObject.transform.Find("ShieldBubble").gameObject.GetComponent<CircleCollider2D>().radius;
         cameraAdjuster = true;
+        laserLine = gameObject.GetComponent<LineRenderer>();
+        isSwinging = false;
         UpdateParts();
     }
 
@@ -183,9 +189,10 @@ public class playerScript : MonoBehaviour
         if(isSwinging)
         {
             //rb.drag = 0.08f;
-            //isGrounded = true; // experimental - for jumping from rope
             rb.gravityScale = 3f;
+
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+            // Physics2D.IgnoreLayerCollision(8 , 14); when we have a singleton game manager running, call here for it to switch off PassThroughPlatformColliders
         }
         else
         {
@@ -271,13 +278,14 @@ public class playerScript : MonoBehaviour
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
 
-
+        LaserCaster();
+/*
         if(shield && isDeflecting)
         {
-            Deflecting();
+            LaserCaster();
         }
         isDeflecting = false;
-
+*/
 
         if(climbing == true)
         {
@@ -409,18 +417,6 @@ public class playerScript : MonoBehaviour
         DetachPart(); // detach part on "space" press
 
         DeployShield(); // create the shield bubble around the player
-    }
-
-    public void DeployShield()
-    {
-        if(shield && Input.GetMouseButtonDown(1))
-        {
-            shieldBubble.SetActive(true);
-        }
-        else
-        {
-            shieldBubble.SetActive(false);
-        }
     }
 
     bool GroundCheck()
@@ -626,13 +622,6 @@ void BoxInteract()
         } 
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(boxDetectorCentre , boxDetectorSize);
-    }
-
-
     void DetachPart()
     {
         if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
@@ -656,41 +645,64 @@ void BoxInteract()
         }
     }
 
-    public void ManageDeflect(bool hit)
+    public void DeployShield()
+    {
+        if(shield && Input.GetMouseButtonDown(1) && !shieldBubble.activeSelf)
+        {
+            shieldBubble.SetActive(true);
+        }
+        else if(!shield || (Input.GetMouseButtonDown(1) && shieldBubble.activeSelf))
+        {
+            shieldBubble.SetActive(false);
+        }
+    }
+
+    public void ManageDeflect(bool hit , Vector2 laserHitPos)
     {
         /*
             laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
 
-            potentially get the laser to input the point of impact, then create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
+            use laser hit pos to create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
         */
         if(hit == true)
         {
             isDeflecting = true;
-            //enable line renderer
-            // change shield colour
+            laserLine.enabled = true;
         }
         else
         {
             isDeflecting = false;
+            laserLine.enabled = false;
             // disable line renderer
             // restore shield colour
         }
     }
 
-    public void Deflecting()
+    public void LaserCaster()
     {
+        //enable line renderer
+        // change shield colour
+
         // laser here
 
         // this laser should be on a layer behind everything but the background, but in front of the other laser
         Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
-        mouseDirection.Normalize();
-        Vector2 laserOrigin = new Vector2(mouseDirection.x , mouseDirection.y) * shieldRadius;
-        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, new Vector2(mouseDirection.x , mouseDirection.y), Mathf.Infinity /*, laser layer goes here */);
+        Vector2 laserOriginDirection = new Vector2(mouseDirection.x , mouseDirection.y);
+        laserOriginDirection.Normalize();
+        Vector2 laserOrigin = laserOriginDirection * shieldRadius;
+        laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
+        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
             Vector2 laserEndpoint = laser.point;
+
+            laserLine.positionCount = 2;
+            laserLine.SetPosition(0 , laserOrigin);
+            laserLine.SetPosition(1 , laserEndpoint);
+
+            Vector2 laserCollisionNormal = laser.normal;
             // Draw line
-            // spawn laser collision animation at point, changing the angle based on laser.collider normal, on a layer in front of the laser
+            // spawn laser collision sparks animation at point, changing the angle based on laser.collider normal, on a layer in front of the laser
         }
 
     }
@@ -728,6 +740,7 @@ void BoxInteract()
             groundbreaker = false;
             afterburner = false;
             lifter = false;
+            shield = false;
             if(boostSprites != null)
             {
                 boostSprites.SetActive(false);
@@ -751,7 +764,6 @@ void BoxInteract()
             {
                 hookShot = true;
                 hookshotAugment.SetActive(true);
-                hookshotAnchor.SetActive(true);
                 hookshotScript.enabled = true;
                 // do stuff here
             }
@@ -796,6 +808,7 @@ void BoxInteract()
             {
                 lifter = false;
             }
+
             if(armString == "ShieldArms")
             {
                 shield = true;
@@ -803,6 +816,7 @@ void BoxInteract()
             else
             {
                 shield = false;
+                shieldBubble.SetActive(false);
             }
 
             legString = "None"; // no legs
@@ -843,6 +857,7 @@ void BoxInteract()
             NonHeadConfig();
             armString = "None"; // no arms
             lifter = false;
+            shield = false;
             legs = gameObject.transform.Find(legString).gameObject;
                 if(legString == "AfterburnerLegs")
                 {
@@ -894,6 +909,16 @@ void BoxInteract()
             else
             {
                 lifter = false;
+            }
+
+            if(armString == "ShieldArms")
+            {
+                shield = true;
+            }
+            else
+            {
+                shield = false;
+                shieldBubble.SetActive(false);
             }
 
             legs = gameObject.transform.Find(legString).gameObject;
@@ -951,6 +976,7 @@ void BoxInteract()
         if(headString == "HookshotHead" || hookShot)
         {
             hookShot = true;
+            hookshotAugment.SetActive(true);
             // start things here
         }
         
@@ -959,7 +985,7 @@ void BoxInteract()
             scalerAugment.SetActive(false);
             hookShot = false;
             hookshotAugment.SetActive(false);
-            hookshotScript.enabled = true;
+            hookshotScript.enabled = false;
             hookshotAnchor.SetActive(false);
             // cancel things here
         }
@@ -992,7 +1018,6 @@ void BoxInteract()
         maxHeight = transform.position.y;
         isSwinging = false;
         hookshotScript.enabled = false;
-        Vector3 hookshotDirection = Quaternion.Euler(0f , 0f, 45f) * Vector2.right;
-        hookshotAugment.transform.up = hookshotDirection;
+        hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
     }
 }

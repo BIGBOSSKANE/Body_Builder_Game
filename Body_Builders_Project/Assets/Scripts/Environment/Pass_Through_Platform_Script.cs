@@ -12,12 +12,14 @@ using UnityEngine;
 
 public class Pass_Through_Platform_Script : MonoBehaviour
 {
-    public PlatformEffector2D effector;
+    PlatformEffector2D effector;
     float waitTime;
     bool playerAbove;
+    playerScript playerScript;
 
     void Start()
     {
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
         effector = gameObject.GetComponent<PlatformEffector2D>();
         waitTime = 0.1f;
         playerAbove = false;
@@ -25,6 +27,15 @@ public class Pass_Through_Platform_Script : MonoBehaviour
 
     void Update()
     {
+        if(playerScript.isSwinging == true)
+        {
+            gameObject.layer = 13;
+        }
+        else
+        {
+            gameObject.layer = 14;
+        }
+
         if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
         {
             waitTime = 0.1f;

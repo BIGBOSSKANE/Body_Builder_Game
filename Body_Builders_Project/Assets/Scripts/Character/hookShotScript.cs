@@ -80,11 +80,11 @@ public class hookshotScript : MonoBehaviour
 
         playerPosition = transform.position;
 
-        if(!ropeAttached) // aim at cursor
+        if(!ropeAttached && playerScript.partConfiguration == 1) // aim at cursor
         {
             hookShotAugment.transform.up = augmentAimDirection;
         }
-        else // aim at anchorpoint
+        else if(playerScript.partConfiguration == 1) // aim at anchorpoint
         {
             Vector2 firedDirection = new Vector2(ropeAnchorPoint.x , ropeAnchorPoint.y) - playerPosition;
             float firedAimAngle = Mathf.Atan2(firedDirection.y , firedDirection.x);
@@ -94,6 +94,7 @@ public class hookshotScript : MonoBehaviour
             }
             Vector3 augmentFiredDirection = Quaternion.Euler(0 , 0 , (firedAimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
             hookShotAugment.transform.up = augmentFiredDirection;
+            playerScript.ropeDirection = augmentFiredDirection;
         }
 
         HookShotFire();
@@ -135,15 +136,20 @@ public class hookshotScript : MonoBehaviour
                 distanceJoint.enabled = true;
                 lineRenderer.enabled = true;
                 playerScript.isSwinging = true;
+                if(!playerScript.isGrounded)
+                {
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
+                }
             }
         }
-        else if(Input.GetKey("space"))
+        else if(Input.GetKey("space") && ropeAttached)
         {
             hookShotAnchorPoint.SetActive(false);
             ropeAttached = false;
             distanceJoint.enabled = false;
             lineRenderer.enabled = false;
             playerScript.isSwinging = false;
+            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
         }
     }
 
