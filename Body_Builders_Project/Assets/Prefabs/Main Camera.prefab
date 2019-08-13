@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 201133527749953338}
   - component: {fileID: 201133527749953337}
   - component: {fileID: 201133527749953317}
-  - component: {fileID: 1149721486}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -115,17 +114,5 @@ MonoBehaviour:
   torsoSize: 5.5
   legSize: 6
   completeSize: 6.5
---- !u!114 &1149721486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 201133527749953336}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d544bbf15e6151042af14672e3a105e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shakeLimit: 6
-  shakeDivider: 12
+  shakeLimit: 3
+  shakeDivider: 25

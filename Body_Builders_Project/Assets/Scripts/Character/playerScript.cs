@@ -9,17 +9,18 @@ Last Edit 09/08/2019
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
-    currently when w is held and you have the scale augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
+
+    currently when w is held and you have the scaler augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
+
+    wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
+
 
 Still need to add:
 
     shield arms
-    hookshot head - open mouth and shoot it out - accelerate slightly while swinging?
 
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
-
-    Time Slow on Groundbreakers
 
     Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
 
@@ -40,7 +41,7 @@ public class playerScript : MonoBehaviour
     private float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
-    float speed; // current movement speed
+    public float speed; // current movement speed
     float movementSpeed = 10f; // the max horizontal movement speed
     float augmentedMovementSpeed = 1f; // scales the movement limit with parts
 
@@ -53,7 +54,7 @@ public class playerScript : MonoBehaviour
     float leftGroundTimer; // how long ago were you last grounded
 
     public bool isGrounded; // is the player on the ground?
-    float maxHeight; // the maximum height of the jump
+    public float maxHeight; // the maximum height of the jump
     bool jumpGate; // prevent jumping while this is true
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
@@ -67,12 +68,15 @@ public class playerScript : MonoBehaviour
     float raycastXOffset; // alters the distance between groundchecker raycasts based on part configuration
     float raycastYOffset; // alters raycast length based on character part configuration, this should be combined with "raycastPos"
     Vector2 raycastPos; // controls where groundcheckers come from
-    float augmentedRaycastPosX; // alters the raycast position based on the player part configuration
-    float augmentedRaycastPosY; // alters the raycast position based on the player part configuration
     float groundedDistance = 0.15f; // raycast distance;
     public LayerMask jumpLayer; // what layers can the player jump on?
     public LayerMask ladderLayer; // what cn the player climb?
     public LayerMask pickupLayer; // what things can the player pick up?
+    public LayerMask laserLayer; // what can the deflected laser hit?
+
+    public Vector2 tetherPoint;
+    public float swingForce = 4f;
+    public bool isSwinging;
 
 
 // AUGMENTS AND PARTS
@@ -81,13 +85,13 @@ public class playerScript : MonoBehaviour
     public string headString; // this is referenced from the name of the head augment
     bool scaler = false;
     public bool hookShot = false;
-    hookShot hookShotScript;
 
     // Arms
     GameObject arms; // the arms component
     public string armString; // this is referenced from the name of the arm prefab
     bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
+    public bool shield = false; // do you have the shield augment?
     bool climbing = false; // are you climbing?
     public bool wallSliding = false; // are you on a wall-jumpable surface
     float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
@@ -99,12 +103,11 @@ public class playerScript : MonoBehaviour
     // Legs
     GameObject legs; // the legs component
     public string legString; // this is referenced from the name of the leg prefab
-    public bool groundbreaker = false; // do you have the groundbreaker legs?
+    bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
-    float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
+    public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
     bool groundBreakerReset; // used to make sure time slow is only used once
-
 
 // ATTACHABLES AND PARTS
     float boxDetectorOffsetX = 0.68f;
@@ -119,17 +122,25 @@ public class playerScript : MonoBehaviour
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
     new Camera camera; // the scene's camera
-    GameObject scalerStar; // the sprite for the Scaler Augment - starts disabled
-    GameObject crosshair;
+    GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
+    GameObject hookshotAugment;
+    hookshotScript hookshotScript;
 
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
-    ScreenShake screenShake; // screen shake script
     GameObject closestBox; // closest box as determined by the box assigner
     timeSlow timeSlowScript; // time slow script
+    Camera2DFollow cameraScript;
+    bool cameraAdjuster;
 
+    GameObject shieldBubble; // the shield bubble object
+    public bool isDeflecting = false; // is the player currently deflecting
+    Vector2 laserOrigin;
+    float shieldRadius;
+    LineRenderer laserLine;
+    public Vector2 ropeDirection;
 
 
     void Start()
@@ -137,16 +148,17 @@ public class playerScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         startingAngularDrag = rb.angularDrag;
         boxCol = gameObject.GetComponent<BoxCollider2D>();
+        timeSlowScript = gameObject.GetComponent<timeSlow>();
         boxCol.enabled = false;
         head = gameObject.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
-        scalerStar = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerStar").gameObject;
-        scalerStar.SetActive(false);
+        scalerAugment = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerHead").gameObject;
+        scalerAugment.SetActive(false);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;
         camera = Camera.main;
-        screenShake = camera.GetComponent<ScreenShake>();
+        cameraScript = camera.GetComponent<Camera2DFollow>();
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseDirectionTimer = 0f;
@@ -154,14 +166,19 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookShotScript = gameObject.GetComponent<hookShot>();
-        hookShotScript.enabled = false;
+        hookshotScript = gameObject.GetComponent<hookshotScript>();
+        hookshotScript.enabled = false;
+        hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
+        hookshotAugment.SetActive(false);
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
-        crosshair = gameObject.transform.Find("Crosshair").gameObject;
-        crosshair.SetActive(false);
         hookShot = false;
-        timeSlowScript = GetComponent<timeSlow>();
+        shieldBubble = gameObject.transform.Find("ShieldBubble").gameObject;
+        shieldBubble.SetActive(false);
+        shieldRadius = gameObject.transform.Find("ShieldBubble").gameObject.GetComponent<CircleCollider2D>().radius;
+        cameraAdjuster = true;
+        laserLine = gameObject.GetComponent<LineRenderer>();
+        isSwinging = false;
         UpdateParts();
     }
 
@@ -169,63 +186,102 @@ public class playerScript : MonoBehaviour
     {
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+        if(isSwinging)
         {
-            reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
-        }
-        else if(climbingDismountTimer <= 0.1f && climbing == false)
-        {
-            rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
-            climbingDismountTimer += Time.deltaTime;
+            //rb.drag = 0.08f;
+            rb.gravityScale = 3f;
+
+            rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+            // Physics2D.IgnoreLayerCollision(8 , 14); when we have a singleton game manager running, call here for it to switch off PassThroughPlatformColliders
         }
         else
         {
-            rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
-        }
-
-        if(GroundCheck() == true)
-        {
-            isGrounded = true;
-            timeSlowScript.TimeNormal();
-
-            if(maxHeight > (1f + transform.position.y))
+            //rb.drag = 0.06f;
+            rb.gravityScale = 2f;
+            if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
-                float shakeAmount = maxHeight - transform.position.y;
-                screenShake.TriggerShake(shakeAmount);
+                reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
+            }
+            else if(climbingDismountTimer <= 0.1f && climbing == false)
+            {
+                rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+                climbingDismountTimer += Time.deltaTime;
+            }
+            else
+            {
+                rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
 
-            maxHeight = transform.position.y;
-            lastGroundedHeight = transform.position.y;
-            leftGroundTimer = 0f;
-            remainingJumps = maximumJumps;
-            if(boostSprites != null)
+            if(GroundCheck() == true)
             {
-                boostSprites.SetActive(false);
-            }
-        }
-        else
-        {
-            isGrounded = false;
-            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-            if(transform.position.y > maxHeight)
-            {
+                isGrounded = true;
+                timeSlowScript.TimeNormal();
+
+                if(maxHeight > (groundbreakerDistance + transform.position.y))
+                {
+                    float shakeAmount = maxHeight - transform.position.y;
+                    cameraScript.TriggerShake(shakeAmount , 1.5f);
+                }
+                else if(maxHeight > (1f + transform.position.y))
+                {
+                    float shakeAmount = maxHeight - transform.position.y;
+                    cameraScript.TriggerShake(shakeAmount , 1f);
+                }
+
                 maxHeight = transform.position.y;
+                lastGroundedHeight = transform.position.y;
+                leftGroundTimer = 0f;
+                remainingJumps = maximumJumps;
+                if(boostSprites != null)
+                {
+                    boostSprites.SetActive(false);
+                }
             }
-            if(remainingJumps == maximumJumps && !jumpAfterFall)
+            else
             {
-                remainingJumps --;
+                isGrounded = false;
+                leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+                if(transform.position.y > maxHeight)
+                {
+                    maxHeight = transform.position.y;
+                }
+                if(remainingJumps == maximumJumps && !jumpAfterFall)
+                {
+                    remainingJumps --;
+                }
             }
         }
     }
 
     void Update()
     {
+        if(rb.velocity.y < 0f && cameraAdjuster == true)
+        {
+            cameraScript.SpeedUp();
+            cameraAdjuster = false;
+        }
+        else if(cameraAdjuster == true && isGrounded == true)
+        {
+            cameraScript.RestoreSpeed();
+            cameraAdjuster = false;
+        }
+
+        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true))
+        {
+            cameraAdjuster = true;
+        }
+
         boxDetectorCentre = new Vector2(boxDetectorOffsetX * direction + transform.position.x , boxDetectorOffsetY + transform.position.y);
         boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
+
+        if(shield && isDeflecting)
+        {
+            LaserCaster();
+        }
 
         if(climbing == true)
         {
@@ -316,10 +372,13 @@ public class playerScript : MonoBehaviour
 // JUMP TUNING --------------------------------------------------------------------------------------------
         rb.gravityScale = 2f;
 
-        if(transform.position.y <= (maxHeight - groundbreakerDistance) && groundbreaker & !groundBreakerReset)
+        if(transform.position.y <= (maxHeight - groundbreakerDistance))
         {
-            timeSlowScript.TimeSlow();
-            groundBreakerReset = true;
+            if(groundbreaker && !groundBreakerReset)
+            {
+                timeSlowScript.TimeSlow();
+                groundBreakerReset = true;
+            }
         }
 
         if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
@@ -352,6 +411,8 @@ public class playerScript : MonoBehaviour
         BoxInteract(); // check for box pickup or drop prompts
 
         DetachPart(); // detach part on "space" press
+
+        DeployShield(); // create the shield bubble around the player
     }
 
     bool GroundCheck()
@@ -431,20 +492,17 @@ public class playerScript : MonoBehaviour
                 if(hitC.collider.gameObject.tag == "Groundbreakable")
                 {
                     hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
-                    timeSlowScript.TimeNormal();
                     return false;
                 }
                 else
                 {
                     groundBreakerReset = false;
-                    timeSlowScript.TimeNormal();
                     return true;
                 }
             }
             // the following ensure that the player is not grounded when colliding with attachable parts, necessary for the part attacher script
             else if(hitC.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitC.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -460,7 +518,6 @@ public class playerScript : MonoBehaviour
             }
             else if(hitL.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitL.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -476,7 +533,6 @@ public class playerScript : MonoBehaviour
             }
             else if(hitR.collider != null)
             {
-                timeSlowScript.TimeNormal();
                 if(hitR.collider.gameObject.tag == "Legs" && (partConfiguration == 1 || partConfiguration == 2) && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08f))))
                 {
                     groundBreakerReset = false;
@@ -562,20 +618,13 @@ void BoxInteract()
         } 
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(boxDetectorCentre , boxDetectorSize);
-    }
-
-
     void DetachPart()
     {
         if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
         {
             if(partConfiguration > 2)
             {
-                legs.GetComponent<Legs>().Detached();
+                legs.GetComponent<Legs>().Detached(maxHeight , groundbreakerDistance);
                 legs.transform.parent = null;
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
@@ -590,6 +639,68 @@ void BoxInteract()
                 rb.velocity = Vector2.up * jumpForce * 9f;
             }
         }
+    }
+
+    public void DeployShield()
+    {
+        if(shield && Input.GetMouseButtonDown(1) && !shieldBubble.activeSelf)
+        {
+            shieldBubble.SetActive(true);
+        }
+        else if(!shield || (Input.GetMouseButtonDown(1) && shieldBubble.activeSelf))
+        {
+            shieldBubble.SetActive(false);
+        }
+    }
+
+    public void ManageDeflect(bool hit , Vector2 laserHitPos)
+    {
+        /*
+            laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
+
+            use laser hit pos to create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
+        */
+        if(hit == true)
+        {
+            isDeflecting = true;
+            laserLine.enabled = true;
+        }
+        else
+        {
+            isDeflecting = false;
+            laserLine.enabled = false;
+            // disable line renderer
+            // restore shield colour
+        }
+    }
+
+    public void LaserCaster()
+    {
+        //enable line renderer
+        // change shield colour
+
+        // laser here
+
+        // this laser should be on a layer behind everything but the background, but in front of the other laser
+        Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
+        Vector2 laserOriginDirection = new Vector2(mouseDirection.x , mouseDirection.y);
+        laserOriginDirection.Normalize();
+        Vector2 laserOrigin = laserOriginDirection * shieldRadius;
+        laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
+        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
+        if(laser.collider != null)
+        {
+            Vector2 laserEndpoint = laser.point;
+
+            laserLine.positionCount = 2;
+            laserLine.SetPosition(0 , laserOrigin);
+            laserLine.SetPosition(1 , laserEndpoint);
+
+            Vector2 laserCollisionNormal = laser.normal;
+            // Draw line
+            // spawn laser collision sparks animation at point, changing the angle based on laser.collider normal, on a layer in front of the laser
+        }
+
     }
 
 
@@ -625,13 +736,14 @@ void BoxInteract()
             groundbreaker = false;
             afterburner = false;
             lifter = false;
+            shield = false;
             if(boostSprites != null)
             {
                 boostSprites.SetActive(false);
                 boostSprites = null;
             }
 
-            if(headString == "Scaler") // reduces jump power if you have the Scaler Augment as a trade-off
+            if(headString == "ScalerHead" || scaler) // if the player already has a head augmenr, they keep it when they get a new one
             {
                 scaler = true;
                 jumpPower = jumpForce * 6f;
@@ -644,17 +756,20 @@ void BoxInteract()
                 fallMultiplier = 2.5f;
             }
 
-            if(hookShot)
+            if(headString == "HookshotHead" || hookShot) // if the player already has a head augment, they keep it when they get a new one
             {
-                hookShotScript.enabled = true;
-                hookshotAnchor.SetActive(true);
-                crosshair.SetActive(true);
+                hookShot = true;
+                hookshotAugment.SetActive(true);
+                hookshotScript.enabled = true;
+                // do stuff here
             }
             else
             {
-                hookShotScript.enabled = false;
+                hookShot = false;
+                hookshotAugment.SetActive(false);
                 hookshotAnchor.SetActive(false);
-                crosshair.SetActive(false);
+                hookshotScript.enabled = false;
+                // cancel stuff here
             }
 
             boxCol.enabled = false; // don't use the typical vertical standing collider
@@ -668,7 +783,7 @@ void BoxInteract()
             groundedDistance = 0.33f;
 
             BoxDrop(); // drops any box immediately
-            scalerStar.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
+            scalerAugment.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
 
 
@@ -688,6 +803,16 @@ void BoxInteract()
             else
             {
                 lifter = false;
+            }
+
+            if(armString == "ShieldArms")
+            {
+                shield = true;
+            }
+            else
+            {
+                shield = false;
+                shieldBubble.SetActive(false);
             }
 
             legString = "None"; // no legs
@@ -728,6 +853,7 @@ void BoxInteract()
             NonHeadConfig();
             armString = "None"; // no arms
             lifter = false;
+            shield = false;
             legs = gameObject.transform.Find(legString).gameObject;
                 if(legString == "AfterburnerLegs")
                 {
@@ -781,6 +907,16 @@ void BoxInteract()
                 lifter = false;
             }
 
+            if(armString == "ShieldArms")
+            {
+                shield = true;
+            }
+            else
+            {
+                shield = false;
+                shieldBubble.SetActive(false);
+            }
+
             legs = gameObject.transform.Find(legString).gameObject;
                 if(legString == "AfterburnerLegs")
                 {
@@ -826,14 +962,28 @@ void BoxInteract()
 
 // Manage Head Augments Here
 
-        if(headString == "Scaler") // changes whether the Scaler Augment is visible or not - no mechanical difference
+        if(headString == "ScalerHead" || scaler) // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
-            scalerStar.SetActive(true);
+            scalerAugment.SetActive(true);
+            hookShot = false;
+            // start things here
         }
-        else
+
+        if(headString == "HookshotHead" || hookShot)
         {
-            headString = "BasicHead";
-            scalerStar.SetActive(false);
+            hookShot = true;
+            hookshotAugment.SetActive(true);
+            // start things here
+        }
+        
+        if(headString == "BasicHead" && !scaler && !hookShot)
+        {
+            scalerAugment.SetActive(false);
+            hookShot = false;
+            hookshotAugment.SetActive(false);
+            hookshotScript.enabled = false;
+            hookshotAnchor.SetActive(false);
+            // cancel things here
         }
 
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
@@ -848,10 +998,9 @@ void BoxInteract()
         jumpGate = true;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
-        scalerStar.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
+        scalerAugment.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
-        hookShotScript.enabled = false;
-        crosshair.SetActive(false);
+        hookshotScript.enabled = false;
         hookshotAnchor.SetActive(false);
         isGrounded = false;
         fallMultiplier = 4f;
@@ -862,12 +1011,9 @@ void BoxInteract()
         jumpGateTimer = jumpGateDuration - 0.12f;
         raycastXOffset = 0.27f;
         groundedDistance = 0.15f;
+        maxHeight = transform.position.y;
+        isSwinging = false;
+        hookshotScript.enabled = false;
+        hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
     }
-/*
-    void GroundbreakerTimeShift()
-    {
-        Time.timeScale = timeSlowdownFactor;
-        //Time.fixedDeltaTime = Time.timeScale * 0.001f;
-    }
-*/
 }

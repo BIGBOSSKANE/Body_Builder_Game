@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class hookShot : MonoBehaviour
@@ -14,11 +15,12 @@ public class hookShot : MonoBehaviour
     DistanceJoint2D ropeJoint;
     Transform crosshair;
     SpriteRenderer crosshairSprite;
-    //public PlayerMovement playerMovement;
     private bool ropeAttached;
     private Vector2 playerPosition;
     private Rigidbody2D hookShotAnchorPointRb;
     private SpriteRenderer hookshotAnchorSprite;
+    private bool distanceSet; // distance between the player and the currently used pivot point
+    playerScript playerScript;
 
     LineRenderer ropeRenderer;
     public LayerMask ropeLayerMask;
@@ -36,6 +38,7 @@ public class hookShot : MonoBehaviour
         ropeJoint = gameObject.GetComponent<DistanceJoint2D>();
         ropeJoint.enabled = false;
         ropeRenderer = gameObject.transform.Find("HookshotAnchor").gameObject.GetComponent<LineRenderer>();
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
     }
 
     void Update()
@@ -82,6 +85,7 @@ public class hookShot : MonoBehaviour
         }
 
         HandleInput(aimDirection);
+        UpdateRopePositions();
     }
 
     private void SetCrossHairPosition(float aimAngle)
@@ -130,7 +134,7 @@ public class hookShot : MonoBehaviour
             }
         }
 
-        if(Input.GetMouseButtonUp(1))
+        if(Input.GetMouseButtonDown(0))
         {
             ResetRope();
         }
@@ -140,11 +144,65 @@ public class hookShot : MonoBehaviour
     {
         ropeJoint.enabled = false;
         ropeAttached = false;
-        //playerMovement.isSwinging = false;
+        playerScript.isSwinging = false;
         ropeRenderer.positionCount = 2;
         ropeRenderer.SetPosition(0 , transform.position);
         ropeRenderer.SetPosition(1 , transform.position);
         ropePositions.Clear();
         hookshotAnchorSprite.enabled = false;
+    }
+
+    private void UpdateRopePositions() // used to create multiple tether points
+    {
+        if(!ropeAttached)
+        {
+            return; // stop if the rope isn't attached
+        }
+        ropeRenderer.positionCount = ropePositions.Count + 1; // number of rope positions + player position
+
+        for(var i = ropeRenderer.positionCount - 1; i >= 0; i--) // backwards loop to find all of the vertex positions
+        {
+            if(i != ropeRenderer.positionCount - 1 ) // not the last point
+            {
+                ropeRenderer.SetPosition(i , ropePositions[i]);
+
+                if(i == ropePositions.Count - 1 || ropePositions.Count == 1) // set the anchor point to be the one closest to the player
+                {
+                    var ropePosition = ropePositions[ropePositions.Count - 1];
+                    if(ropePositions.Count == 1)
+                    {
+                        hookShotAnchorPointRb.transform.position = ropePosition;
+                        if(!distanceSet)
+                        {
+                            ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
+                            distanceSet = true;
+                        }
+                    }
+                    else
+                    {
+                        hookShotAnchorPointRb.transform.position = ropePosition; // current 
+                        if(!distanceSet)
+                        {
+                            ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
+                            distanceSet = true;
+                        }
+                    }
+                }
+                else if (i - 1 == ropePositions.IndexOf(ropePositions.Last())) // the current hinge/anchor point
+                {
+                    var ropePosition = ropePositions.Last();
+                    hookShotAnchorPointRb.transform.position = ropePosition;
+                    if(!distanceSet)
+                    {
+                        ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
+                        distanceSet = true;
+                    }
+                }
+            }
+            else
+            {
+                ropeRenderer.SetPosition(i , transform.position); // the hinge cannot be the player's location
+            }
+        }
     }
 }
