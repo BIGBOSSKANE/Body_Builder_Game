@@ -580,13 +580,16 @@ MonoBehaviour:
   remainingJumps: 0
   jumpLayer:
     serializedVersion: 2
-    m_Bits: 476672
+    m_Bits: 1000960
   ladderLayer:
     serializedVersion: 2
     m_Bits: 524288
   pickupLayer:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 263168
+  laserLayer:
+    serializedVersion: 2
+    m_Bits: 3100160
   tetherPoint: {x: 0, y: 0}
   swingForce: 4
   isSwinging: 0
@@ -598,6 +601,7 @@ MonoBehaviour:
   wallSliding: 0
   legString: 
   groundbreakerDistance: 4
+  isDeflecting: 0
   ropeDirection: {x: 0, y: 0}
 --- !u!114 &4282603750954052786
 MonoBehaviour:
@@ -729,9 +733,9 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
-  m_RendererPriority: 0
+  m_RendererPriority: -60
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -762,13 +766,31 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.38461494
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.12182619
+        value: 0.60256666
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4619338
+        value: 0.23076963
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4

@@ -1014,6 +1014,13 @@ void BoxInteract()
         maxHeight = transform.position.y;
         isSwinging = false;
         hookshotScript.enabled = false;
-        hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
+        if(facingRight)
+        {
+            hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
+        }
+        else
+        {
+            hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f, -45f);
+        }
     }
 }
