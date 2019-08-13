@@ -136,8 +136,12 @@ public class playerScript : MonoBehaviour
     bool cameraAdjuster;
 
     GameObject shieldBubble; // the shield bubble object
-    public bool isDeflecting = false; // is the player currently deflecting
+    bool shieldActive = false;
+    bool isDeflecting = false; // is the player currently deflecting
+    public bool firingLaser = false;
     Vector2 laserOrigin;
+    float shieldUnmodifiedRadius;
+    float shieldModifiedRadius;
     float shieldRadius;
     LineRenderer laserLine;
     public Vector2 ropeDirection;
@@ -175,7 +179,9 @@ public class playerScript : MonoBehaviour
         hookShot = false;
         shieldBubble = gameObject.transform.Find("ShieldBubble").gameObject;
         shieldBubble.SetActive(false);
-        shieldRadius = gameObject.transform.Find("ShieldBubble").gameObject.GetComponent<CircleCollider2D>().radius;
+        shieldUnmodifiedRadius = gameObject.transform.Find("ShieldBubble").gameObject.GetComponent<CircleCollider2D>().radius;
+        shieldModifiedRadius = gameObject.transform.Find("ShieldBubble").gameObject.transform.localScale.x;
+        shieldRadius = shieldUnmodifiedRadius * shieldModifiedRadius;
         cameraAdjuster = true;
         laserLine = gameObject.GetComponent<LineRenderer>();
         isSwinging = false;
@@ -646,32 +652,33 @@ void BoxInteract()
         if(shield && Input.GetMouseButtonDown(1) && !shieldBubble.activeSelf)
         {
             shieldBubble.SetActive(true);
+            shieldActive = true;
         }
         else if(!shield || (Input.GetMouseButtonDown(1) && shieldBubble.activeSelf))
         {
             shieldBubble.SetActive(false);
+            shieldActive = false;
         }
     }
 
-    public void ManageDeflect(bool hit , bool firing , Vector2 laserHitPos)
+    public void InitiateDeflect()
     {
         /*
             laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
 
             use laser hit pos to create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
         */
-        if(hit == true)
+        if(shield && shieldActive)
         {
             isDeflecting = true;
             laserLine.enabled = true;
         }
-        else
-        {
-            isDeflecting = false;
-            laserLine.enabled = false;
-            // disable line renderer
-            // restore shield colour
-        }
+    }
+
+    public void EndDeflect()
+    {
+        isDeflecting = false;
+        laserLine.enabled = false;
     }
 
     public void LaserCaster()
@@ -697,8 +704,17 @@ void BoxInteract()
             laserLine.SetPosition(1 , laserEndpoint);
 
             Vector2 laserCollisionNormal = laser.normal;
-            // Draw line
-            // spawn laser collision sparks animation at point, changing the angle based on laser.collider normal, on a layer in front of the laser
+            // spawn laser collision sparks here, changing the angle and location to the laser.normal
+
+            if(firingLaser)
+            {
+                // Do Stuff Here
+
+                if(laser.collider.tag == "Enemy" || laser.collider.tag == "Groundbreakable")
+                {
+                    Destroy(laser.collider.gameObject);
+                }
+            }
         }
 
     }
@@ -965,7 +981,6 @@ void BoxInteract()
         if(headString == "ScalerHead" || scaler) // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
             scalerAugment.SetActive(true);
-            hookShot = false;
             // start things here
         }
 
@@ -978,6 +993,7 @@ void BoxInteract()
         
         if(headString == "BasicHead" && !scaler && !hookShot)
         {
+            scaler = false;
             scalerAugment.SetActive(false);
             hookShot = false;
             hookshotAugment.SetActive(false);
