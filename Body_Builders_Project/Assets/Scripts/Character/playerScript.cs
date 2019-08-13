@@ -136,7 +136,7 @@ public class playerScript : MonoBehaviour
     bool cameraAdjuster;
 
     GameObject shieldBubble; // the shield bubble object
-    bool isDeflecting = false; // is the player currently deflecting
+    public bool isDeflecting = false; // is the player currently deflecting
     Vector2 laserOrigin;
     float shieldRadius;
     LineRenderer laserLine;
@@ -278,14 +278,10 @@ public class playerScript : MonoBehaviour
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
 
-        LaserCaster();
-/*
         if(shield && isDeflecting)
         {
             LaserCaster();
         }
-        isDeflecting = false;
-*/
 
         if(climbing == true)
         {
