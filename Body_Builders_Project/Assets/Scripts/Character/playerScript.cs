@@ -653,7 +653,7 @@ void BoxInteract()
         }
     }
 
-    public void ManageDeflect(bool hit , Vector2 laserHitPos)
+    public void ManageDeflect(bool hit , bool firing , Vector2 laserHitPos)
     {
         /*
             laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
