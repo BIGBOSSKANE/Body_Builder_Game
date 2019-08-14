@@ -12,7 +12,6 @@ public class bansheeScript : MonoBehaviour
     public float laserChargeTime = 1.5f;
     float laserFireTimer = 0f;
     public float laserFireTime = 3f;
-    public LayerMask collideableLayers;
     public LayerMask laserLayer;
     public LayerMask playerLayer;
     public LineRenderer laserLine;
@@ -79,7 +78,14 @@ public class bansheeScript : MonoBehaviour
                     collisionNormalAngle = Mathf.PI * 2 + collisionNormalAngle;
                 }
 
-                collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
+                if(playerScript.partConfiguration == 1 && laser.collider.tag == "Player")
+                {
+                    collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg) + 180f) * Vector2.right;
+                }
+                else
+                {
+                    collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
+                }
 
                 if(laser.collider.tag == "Player")
                 {

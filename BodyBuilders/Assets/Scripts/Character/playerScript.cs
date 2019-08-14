@@ -734,7 +734,6 @@ void BoxInteract()
         }
     }
 
-
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
