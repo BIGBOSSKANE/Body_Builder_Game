@@ -6,7 +6,8 @@ public class bansheeScript : MonoBehaviour
 {
     bool isCharging = false;
     bool isFiring = false;
-    public GameObject target;
+    GameObject target;
+    GameObject collisionEffect;
     float  laserChargeTimer = 0f;
     public float laserChargeTime = 1.5f;
     float laserFireTimer = 0f;
@@ -21,8 +22,10 @@ public class bansheeScript : MonoBehaviour
     CircleCollider2D circleCol;
     float laserRange = 100f;
     string laserTag = "none";
+    float laserAngle;
     playerScript playerScript;
-    //bool windUp;
+    Vector2 targetPosition;
+    Vector2 laserOriginDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +33,8 @@ public class bansheeScript : MonoBehaviour
         target = GameObject.Find("Player");
         playerScript = target.GetComponent<playerScript>();
         laserOriginPoint = gameObject.transform.Find("laserOrigin").gameObject;
+        collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
+        collisionEffect.SetActive(false);
         circleCol = gameObject.GetComponent<CircleCollider2D>();
         laserLine = gameObject.GetComponent<LineRenderer>();
         laserChargeTimer = 0f;
@@ -41,22 +46,22 @@ public class bansheeScript : MonoBehaviour
     {
         if(Physics2D.OverlapCircle(gameObject.transform.position, 15f , playerLayer))
         {
-            Vector2 targetPosition = target.transform.position;
-            laserOrigin = laserOriginPoint.transform.position;
-
-            Vector2 laserOriginDirection = new Vector2(targetPosition.x - laserOrigin.x , targetPosition.y - laserOrigin.y);
-            float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x);
-            if(laserAngle < 0f)
-            {
-                laserAngle = Mathf.PI * 2 + laserAngle;
-            }
+            collisionEffect.SetActive(true);
+            laserLine.enabled = true;
 
             if(!isFiring)
             {
+                targetPosition = target.transform.position;
+                laserOrigin = laserOriginPoint.transform.position;
+                laserOriginDirection = new Vector2(targetPosition.x - laserOrigin.x , targetPosition.y - laserOrigin.y);
+                laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x);
+                if(laserAngle < 0f)
+                {
+                    laserAngle = Mathf.PI * 2 + laserAngle;
+                }
                 gameObject.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg) + 90f) * Vector2.right;
+                laserOriginDirection.Normalize();
             }
-
-            laserOriginDirection.Normalize();
 
             RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, laserRange , laserLayer);
             if(laser.collider != null)
@@ -68,68 +73,88 @@ public class bansheeScript : MonoBehaviour
                 laserLine.SetPosition(1 , laserEndpoint);
 
                 Vector2 laserCollisionNormal = laser.normal;
-
-                if(laser.collider.tag == "Player" && isFiring) 
+                float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
+                if(collisionNormalAngle < 0f)
                 {
-                    Destroy(target);
-                    Debug.Log("Killed");
+                    collisionNormalAngle = Mathf.PI * 2 + collisionNormalAngle;
                 }
-                else if (laser.collider.tag == "Shield" && isFiring)
-                {
-                    playerScript.firingLaser = true;
-                }
-                else if(laser.collider.tag == "Shield" || laser.collider.tag == "Player")
-                {
-                    isCharging = true;
 
-                    if(laserTag != "Shield" && laser.collider.tag != "Player")
+                collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
+
+                if(laser.collider.tag == "Player")
+                {
+                    collisionEffect.transform.position = targetPosition;
+                    playerScript.DeathRay(false);
+                    playerScript.EndDeflect();
+                    if(isFiring == true)
+                    {
+                        //Destroy(target);
+                        Debug.Log("Killed");
+                    }
+                    else
+                    {
+                        isCharging = true;
+                    }
+                }
+                else if(laser.collider.tag == "Shield")
+                {
+                    collisionEffect.transform.position = laser.point;
+                    if(laserTag != "Shield")
                     {
                         playerScript.InitiateDeflect();
+                        laserChargeTimer = 0f;
                     }
 
-                    if(laser.collider.tag == "Player")
+                    if(isFiring == true)
                     {
-                        playerScript.EndDeflect();
+                        playerScript.DeathRay(true);
+                    }
+                    else
+                    {
+                        playerScript.DeathRay(false);
+                        isCharging = true;
                     }
                 }
-                else if(laser.collider.tag != "Shield")
+                else
                 {
+                    playerScript.DeathRay(false);
                     playerScript.EndDeflect();
                     isCharging = false;
+                    collisionEffect.transform.position = laser.point;
                 }
                 laserTag = laser.collider.tag;
             }
         }
+        else
+        {
+            isCharging = false;
+            collisionEffect.SetActive(false);
+            laserLine.enabled = false;
+            laserChargeTimer -= 2f * Time.deltaTime;
+        }
 
         if(isCharging)
         {
+            isFiring = false;
+            laserFireTimer = 0f;
             laserChargeTimer += Time.deltaTime;
             if(laserChargeTimer >= laserChargeTime)
             {
                 isFiring = true;
             }
-            //Charging();
-        }
-        else
-        {
-            laserChargeTimer -= 2f * Time.deltaTime;
         }
 
         if(isFiring)
         {
-            LaserBlast();
+            isCharging = false;
+            laserChargeTimer = 0f;
+            laserFireTimer += Time.deltaTime;
+            if(laserFireTimer > laserFireTime)
+            {
+                isFiring = false;
+                laserFireTimer = 0f;
+            }
         }
 
-    }
-
-    void LaserBlast()
-    {
-        laserFireTimer += Time.deltaTime;
-        if(laserFireTimer > laserFireTime)
-        {
-            isFiring = false;
-            laserChargeTime = 0f;
-            laserFireTimer = 0f;
-        }
     }
 }

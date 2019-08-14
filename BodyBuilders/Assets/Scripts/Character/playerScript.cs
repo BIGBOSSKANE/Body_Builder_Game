@@ -136,9 +136,10 @@ public class playerScript : MonoBehaviour
     bool cameraAdjuster;
 
     GameObject shieldBubble; // the shield bubble object
-    bool shieldActive = false;
+    public bool shieldActive = false;
     bool isDeflecting = false; // is the player currently deflecting
-    public bool firingLaser = false;
+    bool firingLaser = false;
+    GameObject collisionEffect;
     Vector2 laserOrigin;
     float shieldUnmodifiedRadius;
     float shieldModifiedRadius;
@@ -177,13 +178,15 @@ public class playerScript : MonoBehaviour
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
         hookShot = false;
-        shieldBubble = gameObject.transform.Find("ShieldBubble").gameObject;
-        shieldBubble.SetActive(false);
-        shieldUnmodifiedRadius = gameObject.transform.Find("ShieldBubble").gameObject.GetComponent<CircleCollider2D>().radius;
-        shieldModifiedRadius = gameObject.transform.Find("ShieldBubble").gameObject.transform.localScale.x;
+        shieldBubble = gameObject.transform.Find("shieldBubble").gameObject;
+        shieldUnmodifiedRadius = shieldBubble.GetComponent<CircleCollider2D>().radius;
+        shieldModifiedRadius = shieldBubble.transform.localScale.x;
         shieldRadius = shieldUnmodifiedRadius * shieldModifiedRadius;
+        shieldBubble.SetActive(false);
         cameraAdjuster = true;
         laserLine = gameObject.GetComponent<LineRenderer>();
+        collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
+        collisionEffect.SetActive(false);
         isSwinging = false;
         UpdateParts();
     }
@@ -418,7 +421,12 @@ public class playerScript : MonoBehaviour
 
         DetachPart(); // detach part on "space" press
 
-        DeployShield(); // create the shield bubble around the player
+        DeployShield();
+
+        if(!shield || !shieldActive)
+        {
+            EndDeflect(); // create the shield bubble around the player
+        }
     }
 
     bool GroundCheck()
@@ -663,15 +671,23 @@ void BoxInteract()
 
     public void InitiateDeflect()
     {
-        /*
-            laser should store game object hit, twice, and only call this function if the game objects do not match (it is hitting a new target (either this or not this))
-
-            use laser hit pos to create a ripple effect as though the forcefield has been hit by it, with the centre of its base on the impact point at the collision point, facing up towards the player
-        */
         if(shield && shieldActive)
         {
             isDeflecting = true;
             laserLine.enabled = true;
+            collisionEffect.SetActive(true);
+        }
+    }
+
+    public void DeathRay(bool firing)
+    {
+        if(firing)
+        {
+            firingLaser = true;
+        }
+        else
+        {
+            firingLaser = false;
         }
     }
 
@@ -679,16 +695,11 @@ void BoxInteract()
     {
         isDeflecting = false;
         laserLine.enabled = false;
+        collisionEffect.SetActive(false);
     }
 
     public void LaserCaster()
     {
-        //enable line renderer
-        // change shield colour
-
-        // laser here
-
-        // this laser should be on a layer behind everything but the background, but in front of the other laser
         Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
         Vector2 laserOriginDirection = new Vector2(mouseDirection.x , mouseDirection.y);
         laserOriginDirection.Normalize();
@@ -704,19 +715,23 @@ void BoxInteract()
             laserLine.SetPosition(1 , laserEndpoint);
 
             Vector2 laserCollisionNormal = laser.normal;
-            // spawn laser collision sparks here, changing the angle and location to the laser.normal
+            float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
+            if(collisionNormalAngle < 0f)
+            {
+                collisionNormalAngle = Mathf.PI * 2 + collisionNormalAngle;
+            }
+
+            collisionEffect.transform.position = laser.point;
+            collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
 
             if(firingLaser)
             {
-                // Do Stuff Here
-
                 if(laser.collider.tag == "Enemy" || laser.collider.tag == "Groundbreakable")
                 {
                     Destroy(laser.collider.gameObject);
                 }
             }
         }
-
     }
 
 
