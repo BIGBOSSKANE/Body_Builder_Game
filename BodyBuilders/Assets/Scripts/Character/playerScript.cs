@@ -159,6 +159,7 @@ public class playerScript : MonoBehaviour
         headCol = head.GetComponent<CircleCollider2D>();
         scalerAugment = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerHead").gameObject;
         scalerAugment.SetActive(false);
+        gameObject.transform.Find("BoxHoldLocation").gameObject.SetActive(true);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
         heldBoxCol.enabled = false;

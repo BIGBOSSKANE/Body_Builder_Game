@@ -126,7 +126,15 @@ public class bansheeScript : MonoBehaviour
                     playerScript.DeathRay(false);
                     playerScript.EndDeflect();
                     isCharging = false;
-                    collisionEffect.transform.position = laser.point;
+
+                    if(laser.collider.tag == "Box" || laser.collider.tag == "Enemy")
+                    {
+                        collisionEffect.transform.position = laser.collider.transform.position;
+                    }
+                    else
+                    {
+                        collisionEffect.transform.position = laser.point;
+                    }
                 }
                 laserTag = laser.collider.tag;
             }

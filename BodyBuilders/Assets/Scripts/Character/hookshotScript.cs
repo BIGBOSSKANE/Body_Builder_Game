@@ -142,7 +142,7 @@ public class hookshotScript : MonoBehaviour
                 }
             }
         }
-        else if(Input.GetKey("space") && ropeAttached)
+        else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)
         {
             hookShotAnchorPoint.SetActive(false);
             ropeAttached = false;

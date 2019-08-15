@@ -14,6 +14,7 @@ public class elevatorScript : MonoBehaviour
     Vector2 movePoint1;
     Vector2 movePoint2;
     GameObject player;
+    GameObject holder;
     playerScript playerScript;
     
     void Start()
@@ -25,6 +26,7 @@ public class elevatorScript : MonoBehaviour
         forwards = true;
         playerOnboard = false;
         player = GameObject.Find("Player").gameObject;
+        holder = gameObject.transform.Find("holder").gameObject;
         playerScript = player.GetComponent<playerScript>();
     }
 
@@ -65,12 +67,12 @@ public class elevatorScript : MonoBehaviour
                 playerOnboard = true;
                 if(playerScript.partConfiguration != 1)
                 {
-                    player.transform.parent = gameObject.transform; // causing wierd scaling issues for head, talk to brad
+                    player.transform.parent = holder.transform; // causing wierd scaling issues for head, talk to brad
                 }
             }
             else
             {
-                col.gameObject.transform.parent = gameObject.transform;
+                col.gameObject.transform.parent = holder.transform;
             }
         }
     }
@@ -88,7 +90,18 @@ public class elevatorScript : MonoBehaviour
             }
             else
             {
-                col.gameObject.transform.parent = null;
+                if(col.gameObject.transform.parent == holder)
+                {
+                    col.gameObject.transform.parent = null;
+                }
+                else if(col.gameObject.transform.parent.gameObject.transform.parent == holder)
+                {
+                    col.gameObject.transform.parent.gameObject.transform.parent = null;
+                }
+                else if(col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent == holder)
+                {
+                    col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = null;
+                }
             }
         }
     }
