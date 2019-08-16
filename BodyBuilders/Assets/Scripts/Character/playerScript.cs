@@ -146,6 +146,8 @@ public class playerScript : MonoBehaviour
     float shieldRadius;
     LineRenderer laserLine;
     public Vector2 ropeDirection;
+    public PhysicsMaterial2D frictionMaterial;
+    public PhysicsMaterial2D slipperyMaterial;
 
 
     void Start()
@@ -194,19 +196,21 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(partConfiguration == 1) // this was added to fix a Unity bug where the box collider would be active whilst disabled
+        {
+            Destroy(boxCol);
+        }
+
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
         if(isSwinging)
         {
-            //rb.drag = 0.08f;
             rb.gravityScale = 3f;
 
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
-            // Physics2D.IgnoreLayerCollision(8 , 14); when we have a singleton game manager running, call here for it to switch off PassThroughPlatformColliders
         }
         else
         {
-            //rb.drag = 0.06f;
             rb.gravityScale = 2f;
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
@@ -754,9 +758,11 @@ void BoxInteract()
         }
 
         Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
+        transform.rotation = Quaternion.identity; // lock rotation to 0;
 
         if(!hasArms && !hasLegs)
         {
+            rb.sharedMaterial = frictionMaterial;
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
             jumpPower = jumpForce * 6f;
@@ -803,8 +809,15 @@ void BoxInteract()
                 // cancel stuff here
             }
 
-            boxCol.enabled = false; // don't use the typical vertical standing collider
-            headCol.enabled = true; // use the circle collider instead
+            if(boxCol != null)
+            {
+                Destroy(boxCol);
+            }
+            //boxCol.enabled = false; // don't use the typical vertical standing collider
+            if(headCol != null && headCol != true)
+            {
+                headCol.enabled = true;
+            }
             rb.constraints = RigidbodyConstraints2D.None; // can roll
             head.transform.position = gameObject.transform.position; // no need for snapOffsetPos here as it is perfectly centred
             legString = "None"; // no legs
@@ -1016,16 +1029,23 @@ void BoxInteract()
             hookshotAnchor.SetActive(false);
             // cancel things here
         }
-
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
     }
 
     void NonHeadConfig()
     {
         headCol.enabled = false; // disable the rolling head collider
-        boxCol.enabled = true; // use the capsule collider instead
+        if(boxCol != null)
+        {
+            boxCol.enabled = true; // use the capsule collider instead
+        }
+        else
+        {
+            boxCol = gameObject.AddComponent<BoxCollider2D>();
+        }
         rb.constraints = RigidbodyConstraints2D.FreezePositionY; // freeze movement temporarily
         rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+        rb.sharedMaterial = slipperyMaterial;
         jumpGate = true;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll

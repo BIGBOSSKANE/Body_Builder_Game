@@ -29,12 +29,16 @@ public class elevatorScript : MonoBehaviour
         playerOnboard = false;
         player = GameObject.Find("Player").gameObject;
         holder = gameObject.transform.parent.gameObject.transform.Find("ElevatorHolder").gameObject;
+        holder.transform.position = Vector3.zero;
+        holder.transform.localScale = new Vector3(1f , 1f, 1f);
+        holder.transform.rotation = Quaternion.Euler(0f , 0f , 0f);
         playerScript = player.GetComponent<playerScript>();
     }
 
     void FixedUpdate()
     {
         holder.transform.position = transform.position;
+
         if(!jumpBooster)
         {
             if(moveTimer >= 1f)
@@ -61,10 +65,9 @@ public class elevatorScript : MonoBehaviour
         }
     }
 
-
     void Update()
     {
-        if(Input.GetKey("space"))
+        if(Input.GetKey("space") && playerOnboard == true)
         {
             pickupPoint.enabled = false;
             pickupPoint.enabled = true;
@@ -73,19 +76,20 @@ public class elevatorScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if(col.tag != "Untagged" || col.tag != "PassThroughPlatform" || col.tag != "Environment")
+        if(Input.GetAxis("Vertical") < 0.1f && (col.tag != "Untagged" || col.tag != "PassThroughPlatform" || col.tag != "Environment"))
         {
-            if(col.tag == "Player")
+            if(col.tag == "Player" && playerOnboard == false)
             {
                 playerOnboard = true;
                 
-                if(playerScript.partConfiguration != 1)
-                {
-                    player.transform.parent = holder.transform; // causing wierd scaling issues for head, talk to brad
-                }
-                
                 player.transform.parent = holder.transform;
+                
                 playerScript.UpdateParts();
+                
+                if(playerScript.partConfiguration == 1)
+                {
+                    Destroy(player.GetComponent<BoxCollider2D>());
+                }
             }
             else
             {
@@ -111,41 +115,37 @@ public class elevatorScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D col)
     {
-        Exiting(col);
-    }
-
-    void Exiting(Collider2D col)
-    {
         if(col.tag != "Untagged" || col.tag != "PassThroughPlatform")
         {
-            if(col.tag == "Player")
+            if(col.tag == "Player") // && playerOnboard == true)
             {
+                playerOnboard = false;
                 var OriginalConstraints = player.GetComponent<Rigidbody2D>().constraints;
                 playerOnboard = false;
                 player.transform.parent = null;
                 player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
                 player.GetComponent<Rigidbody2D>().constraints = OriginalConstraints;
+
+                if(playerScript.partConfiguration == 1)
+                {
+                    Destroy(player.GetComponent<BoxCollider2D>());
+                }
             }
             else
             {
-                if(col.gameObject.transform.parent == holder)
+                if(col.gameObject.transform.parent != null && col.gameObject.transform.parent == holder)
                 {
                     col.gameObject.transform.parent = null;
                 }
-                else if(col.gameObject.transform.parent.gameObject.transform.parent == holder)
+                else if(col.gameObject.transform.parent.parent != null && col.gameObject.transform.parent.parent == holder)
                 {
                     col.gameObject.transform.parent.gameObject.transform.parent = null;
                 }
-                else if(col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent == holder)
+                else if(col.gameObject.transform.parent.parent.parent != null && col.gameObject.transform.parent.parent.parent == holder)
                 {
                     col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = null;
                 }
             }
-        }
-
-        if(col.tag == "Player")
-        {
-            playerOnboard = false;
         }
     }
 }

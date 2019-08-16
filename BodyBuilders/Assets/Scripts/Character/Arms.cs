@@ -73,20 +73,13 @@ public class Arms : MonoBehaviour
 
     void CheckForParent()
     {
-        if(transform.parent == null)
+        if(transform.parent != null && transform.parent.tag == "Player")
         {
-            Detached();
+            Attached();
         }
         else
         {
-            if(transform.parent.tag == "Player")
-            {
-                Attached();
-            }
-            else
-            {
-                Detached();
-            }
+            Detached();
         }
     }
 

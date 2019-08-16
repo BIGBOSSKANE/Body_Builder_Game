@@ -93,20 +93,13 @@ public class Legs : MonoBehaviour
 
     void CheckForParent()
     {
-        if(transform.parent == null)
+        if(transform.parent != null && transform.parent.tag == "Player")
         {
-            Detached(0f , 0f);
+            Attached();
         }
         else
         {
-            if(transform.parent.tag == "Player")
-            {
-                Attached();
-            }
-            else
-            {
-                Detached(0f , 0f);
-            }
+            Detached(0f , 0f);
         }
     }
 
