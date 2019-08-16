@@ -99,7 +99,14 @@ public class Legs : MonoBehaviour
         }
         else
         {
-            Attached();
+            if(transform.parent.tag == "Player")
+            {
+                Attached();
+            }
+            else
+            {
+                Detached(0f , 0f);
+            }
         }
     }
 

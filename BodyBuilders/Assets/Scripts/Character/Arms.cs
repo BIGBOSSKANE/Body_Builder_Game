@@ -79,7 +79,14 @@ public class Arms : MonoBehaviour
         }
         else
         {
-            Attached();
+            if(transform.parent.tag == "Player")
+            {
+                Attached();
+            }
+            else
+            {
+                Detached();
+            }
         }
     }
 
