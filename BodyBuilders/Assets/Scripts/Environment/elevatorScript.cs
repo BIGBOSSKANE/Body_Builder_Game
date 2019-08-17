@@ -41,6 +41,11 @@ public class elevatorScript : MonoBehaviour
         playerScript = player.GetComponent<playerScript>();
     }
 
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(lowPoint, highPoint);
+    }
+
     void FixedUpdate()
     {
         holder.transform.position = transform.position;
@@ -173,7 +178,6 @@ public class elevatorScript : MonoBehaviour
 
         if(moveTimer % triggerCheckTime <= 0.0005f && moveTimer % triggerCheckTime >= -0.0005f) // check the trigger periodically in case anything has dodged the TriggerEnter window
         {
-            Debug.Log("tick");
             Parent(col);
         }
     }

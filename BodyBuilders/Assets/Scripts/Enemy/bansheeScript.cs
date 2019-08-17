@@ -22,8 +22,10 @@ public class bansheeScript : MonoBehaviour
     string laserTag = "none";
     float laserAngle;
     playerScript playerScript;
+    laserRouter laserRouter;
     Vector2 targetPosition;
     Vector2 laserOriginDirection;
+    bool notPrimeTarget = false;
 
     // Start is called before the first frame update
     void Start()
@@ -88,6 +90,7 @@ public class bansheeScript : MonoBehaviour
 
                 if(laser.collider.tag == "Player")
                 {
+                    notPrimeTarget = false;
                     collisionEffect.transform.position = targetPosition;
                     playerScript.DeathRay(false);
                     playerScript.EndDeflect();
@@ -103,6 +106,7 @@ public class bansheeScript : MonoBehaviour
                 }
                 else if(laser.collider.tag == "Shield")
                 {
+                    notPrimeTarget = false;
                     collisionEffect.transform.position = laser.point;
                     if(laserTag != "Shield")
                     {
@@ -120,10 +124,38 @@ public class bansheeScript : MonoBehaviour
                         isCharging = true;
                     }
                 }
+                else if(laser.collider.tag == "LaserRouter")
+                {
+                    notPrimeTarget = false;
+                    if(laserTag != "laserRouter")
+                    {
+                        laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
+                        laserRouter.Charged();
+                        if(isFiring == true)
+                        {
+                            laserRouter.DeathRay(true);
+                        }
+                        else
+                        {
+                            laserRouter.DeathRay(false);
+                        }
+                    }
+                }
                 else
                 {
-                    playerScript.DeathRay(false);
-                    playerScript.EndDeflect();
+                    if(notPrimeTarget == false)
+                    {
+                        if(laserRouter != null)
+                        {
+                            laserRouter.Drained();
+                            laserRouter.DeathRay(false);
+                        }
+                        playerScript.DeathRay(false);
+                        playerScript.EndDeflect();
+                    }
+
+                    notPrimeTarget = true;
+
                     isCharging = false;
 
                     if(laser.collider.tag == "Box" || laser.collider.tag == "Enemy")

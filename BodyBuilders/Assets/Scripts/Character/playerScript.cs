@@ -149,6 +149,8 @@ public class playerScript : MonoBehaviour
     public Vector2 ropeDirection;
     public PhysicsMaterial2D frictionMaterial;
     public PhysicsMaterial2D slipperyMaterial;
+    string laserTag;
+    laserRouter laserRouter;
 
 
     void Start()
@@ -735,6 +737,31 @@ void BoxInteract()
             collisionEffect.transform.position = laser.point;
             collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
 
+            if(laser.collider.tag == "LaserRouter")
+            {
+                if(laserTag != "laserRouter")
+                {
+                    laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
+                    laserRouter.Charged();
+                    if(firingLaser)
+                    {
+                        laserRouter.DeathRay(true);
+                    }
+                    else
+                    {
+                        laserRouter.DeathRay(false);
+                    }
+                }
+            }
+            else
+            {
+                if(laserRouter != null)
+                {
+                    laserRouter.Drained();
+                    laserRouter.DeathRay(false);
+                }
+            }
+
             if(firingLaser)
             {
                 if(laser.collider.tag == "Enemy" || laser.collider.tag == "Groundbreakable")
@@ -742,6 +769,8 @@ void BoxInteract()
                     Destroy(laser.collider.gameObject);
                 }
             }
+            
+            laserTag = laser.collider.tag;
         }
     }
 
