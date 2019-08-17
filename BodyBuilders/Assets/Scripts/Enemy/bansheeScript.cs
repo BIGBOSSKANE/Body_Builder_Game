@@ -16,8 +16,7 @@ public class bansheeScript : MonoBehaviour
     public LayerMask playerLayer;
     public LineRenderer laserLine;
     public GameObject laserOriginPoint;
-    public Vector3 laserOrigin;
-    public Vector3 laserTarget;
+    Vector3 laserOrigin;
     CircleCollider2D circleCol;
     float laserRange = 100f;
     string laserTag = "none";
