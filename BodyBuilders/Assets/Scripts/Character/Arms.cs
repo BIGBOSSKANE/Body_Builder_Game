@@ -45,7 +45,7 @@ public class Arms : MonoBehaviour
         playerScript = player.GetComponent<playerScript>();
         boxCol = this.GetComponent<BoxCollider2D>();
         rb = this.GetComponent<Rigidbody2D>();
-        solidCollider = transform.Find("Arms_Solid_Collider").gameObject;
+        solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
         solidBoxCollider.enabled = true;
         this.name = armType + "Arms";

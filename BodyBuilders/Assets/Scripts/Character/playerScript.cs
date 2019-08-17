@@ -56,6 +56,7 @@ public class playerScript : MonoBehaviour
     public bool isGrounded; // is the player on the ground?
     public float maxHeight; // the maximum height of the jump
     bool jumpGate; // prevent jumping while this is true
+    public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
@@ -436,6 +437,11 @@ public class playerScript : MonoBehaviour
 
     bool GroundCheck()
     {
+        if(jumpBan)
+        {
+            return false;
+        }
+
         RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         wallSliding = false;
@@ -758,7 +764,6 @@ void BoxInteract()
         }
 
         Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
-        transform.rotation = Quaternion.identity; // lock rotation to 0;
 
         if(!hasArms && !hasLegs)
         {
@@ -814,7 +819,7 @@ void BoxInteract()
                 Destroy(boxCol);
             }
             //boxCol.enabled = false; // don't use the typical vertical standing collider
-            if(headCol != null && headCol != true)
+            if(headCol != null && headCol.enabled != true)
             {
                 headCol.enabled = true;
             }

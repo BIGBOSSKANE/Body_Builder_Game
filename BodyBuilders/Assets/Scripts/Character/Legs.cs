@@ -42,7 +42,7 @@ public class Legs : MonoBehaviour
         timeSlowScript = player.GetComponent<timeSlow>();
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<playerScript>();
-        solidCollider = transform.Find("Legs_Solid_Collider").gameObject;
+        solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
         solidBoxCollider.enabled = true;
         this.name = legType + "Legs";

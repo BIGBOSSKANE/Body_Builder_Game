@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class elevatorScript : MonoBehaviour
 {
+    public bool activated = true;
     public float moveTime = 5f;
     public bool jumpBooster = false;
     public float launchForce = 3f;
+    public float jumpTimeOffset = 0.2f;
+    public float jumpLaunchForce = 6f;
+    public float slamUpTime = 0.8f;
     public LayerMask liftableObjects;
     public float moveTimer = 0f;
-    public bool forwards = true;
+    bool ascending = true;
+    float triggerCheckTime = 0.3f;
     bool playerOnboard = false;
-    Vector2 movePoint1;
-    Vector2 movePoint2;
+    bool slam;
+    Vector2 lowPoint;
+    Vector2 highPoint;
     GameObject player;
     GameObject holder;
     playerScript playerScript;
@@ -20,12 +26,12 @@ public class elevatorScript : MonoBehaviour
     
     void Start()
     {
-        movePoint1 = gameObject.transform.Find("movePoint1").gameObject.transform.position;
-        movePoint2 = gameObject.transform.Find("movePoint2").gameObject.transform.position;
+        lowPoint = gameObject.transform.Find("lowPoint").gameObject.transform.position;
+        highPoint = gameObject.transform.Find("highPoint").gameObject.transform.position;
         pickupPoint = gameObject.GetComponent<BoxCollider2D>();
-        transform.position = movePoint1;
+        transform.position = lowPoint;
         moveTimer = 0f;
-        forwards = true;
+        ascending = true;
         playerOnboard = false;
         player = GameObject.Find("Player").gameObject;
         holder = gameObject.transform.parent.gameObject.transform.Find("ElevatorHolder").gameObject;
@@ -39,29 +45,53 @@ public class elevatorScript : MonoBehaviour
     {
         holder.transform.position = transform.position;
 
-        if(!jumpBooster)
+        if(!activated)
         {
-            if(moveTimer >= 1f)
-            {
-                forwards = !forwards;
-                moveTimer = 0f;
-            }
-            if(forwards)
-            {
-                transform.position = new Vector2(Mathf.SmoothStep(movePoint1.x , movePoint2.x , moveTimer) , Mathf.SmoothStep(movePoint1.y , movePoint2.y , moveTimer));
-            }
-            else
-            {
-                transform.position = new Vector2(Mathf.SmoothStep(movePoint2.x , movePoint1.x , moveTimer) , Mathf.SmoothStep(movePoint2.y , movePoint1.y , moveTimer));
-            }
-            moveTimer += Time.fixedDeltaTime / moveTime;
+            return;
+        }
+
+        if(moveTimer >= 1f)
+        {
+            ascending = !ascending;
+            moveTimer = 0f;
+        }
+
+        if(moveTimer > (1f - jumpTimeOffset))
+        {
+            slam = true;
+        }
+
+        playerScript.jumpBan = false;
+        if(!ascending)
+        {
+            slam = false;
         }
         else
         {
-            if(playerOnboard && moveTimer >= (moveTime - 0.5f))
+            playerScript.jumpBan = true;
+        }
+        
+
+        if(ascending)
+        {
+            if(jumpBooster)
             {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+                moveTimer += Time.fixedDeltaTime / slamUpTime;
+                if(playerOnboard && moveTimer >= (moveTime - jumpTimeOffset) && Input.GetAxis("Vertical") > 0f && ascending == true)
+                {
+                    player.GetComponent<Rigidbody2D>().AddForce(transform.up * jumpLaunchForce , ForceMode2D.Impulse);
+                }
             }
+            else
+            {   
+                moveTimer += Time.fixedDeltaTime / moveTime;
+            }
+            transform.position = new Vector2(Mathf.SmoothStep(lowPoint.x , highPoint.x , moveTimer) , Mathf.SmoothStep(lowPoint.y , highPoint.y , moveTimer));
+        }
+        else
+        {
+            moveTimer += Time.fixedDeltaTime / moveTime;
+            transform.position = new Vector2(Mathf.SmoothStep(highPoint.x , lowPoint.x , moveTimer) , Mathf.SmoothStep(highPoint.y , lowPoint.y , moveTimer));
         }
     }
 
@@ -76,6 +106,11 @@ public class elevatorScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
+        Parent(col);
+    }
+
+    void Parent(Collider2D col)
+    {
         if(Input.GetAxis("Vertical") < 0.1f && (col.tag != "Untagged" || col.tag != "PassThroughPlatform" || col.tag != "Environment"))
         {
             if(col.tag == "Player" && playerOnboard == false)
@@ -84,7 +119,7 @@ public class elevatorScript : MonoBehaviour
                 
                 player.transform.parent = holder.transform;
                 
-                playerScript.UpdateParts();
+                //playerScript.UpdateParts();
                 
                 if(playerScript.partConfiguration == 1)
                 {
@@ -110,6 +145,36 @@ public class elevatorScript : MonoBehaviour
                     col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = holder.transform;
                 }
             }
+        }
+    }
+
+    void OnTriggerStay2D(Collider2D col)
+    {
+        if(slam == true)
+        {
+            if(col.tag == "Player")
+            {
+                player.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+            }
+            else if(col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
+            {
+                col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+            }
+            else
+            {
+                col.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+            }
+
+            if(col.transform.position.y <= holder.transform.position.y)
+            {
+                col.transform.position = new Vector2(col.transform.position.x , holder.transform.position.y);
+            }
+        }
+
+        if(moveTimer % triggerCheckTime <= 0.0005f && moveTimer % triggerCheckTime >= -0.0005f) // check the trigger periodically in case anything has dodged the TriggerEnter window
+        {
+            Debug.Log("tick");
+            Parent(col);
         }
     }
 
