@@ -151,6 +151,8 @@ public class playerScript : MonoBehaviour
     public PhysicsMaterial2D slipperyMaterial;
     string laserTag;
     laserRouter laserRouter;
+    powerCell powerCell;
+    powerStation powerStation;
 
 
     void Start()
@@ -592,7 +594,7 @@ public class playerScript : MonoBehaviour
         int i = 0;
         while (i < hitCollider.Length)
         {
-            if(hitCollider[i].gameObject.tag == "HeavyLiftable" || hitCollider[i].gameObject.tag == "Box")
+            if(hitCollider[i].gameObject.tag == "HeavyLiftable" || hitCollider[i].gameObject.tag == "Box" || hitCollider[i].gameObject.tag == "powerCell")
             {
                 distanceFromPickupPoint = Vector2.Distance(hitCollider[i].gameObject.transform.position , boxHoldPos.position);
                 if(distanceFromPickupPoint < previousDistanceFromPickupPoint || previousDistanceFromPickupPoint == 0)
@@ -612,7 +614,7 @@ void BoxInteract()
             {
                 if(closestBox != null)
                 {
-                    if((closestBox.tag != "HeavyLiftable") || lifter)
+                    if(((closestBox.tag != "HeavyLiftable")||(closestBox.tag != "powerCell")) || lifter)
                     {
                         closestBox.transform.parent = this.transform;
                         closestBox.transform.position = boxHoldPos.position;
@@ -753,9 +755,25 @@ void BoxInteract()
                     }
                 }
             }
+            else if(laser.collider.tag == "powerCell")
+            {
+                if(laserTag != "powerCell")
+                {
+                    powerCell = laser.transform.gameObject.GetComponent<powerCell>();
+                    powerCell.charged = true;
+                }
+            }
+            else if(laser.collider.tag == "PowerStation")
+            {
+                if(laserTag != "PowerStation")
+                {
+                    powerStation = laser.transform.gameObject.GetComponent<powerStation>();
+                    powerStation.energised = true;
+                }
+            }
             else
             {
-                if(laserRouter != null)
+                if(laserRouter != null && laserTag == "laserRouter")
                 {
                     laserRouter.Drained();
                     laserRouter.DeathRay(false);

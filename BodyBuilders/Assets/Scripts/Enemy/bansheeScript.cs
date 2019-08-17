@@ -25,7 +25,8 @@ public class bansheeScript : MonoBehaviour
     laserRouter laserRouter;
     Vector2 targetPosition;
     Vector2 laserOriginDirection;
-    bool notPrimeTarget = false;
+    powerCell powerCell;
+    powerStation powerStation;
 
     // Start is called before the first frame update
     void Start()
@@ -88,9 +89,8 @@ public class bansheeScript : MonoBehaviour
                     collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
                 }
 
-                if(laser.collider.tag == "Player")
+                if(laser.collider.tag == "Player") // if hitting the player and they do not have the deflector shield
                 {
-                    notPrimeTarget = false;
                     collisionEffect.transform.position = targetPosition;
                     playerScript.DeathRay(false);
                     playerScript.EndDeflect();
@@ -104,9 +104,8 @@ public class bansheeScript : MonoBehaviour
                         isCharging = true;
                     }
                 }
-                else if(laser.collider.tag == "Shield")
+                else if(laser.collider.tag == "Shield") // if it hits the player's force field shield
                 {
-                    notPrimeTarget = false;
                     collisionEffect.transform.position = laser.point;
                     if(laserTag != "Shield")
                     {
@@ -124,9 +123,8 @@ public class bansheeScript : MonoBehaviour
                         isCharging = true;
                     }
                 }
-                else if(laser.collider.tag == "LaserRouter")
+                else if(laser.collider.tag == "LaserRouter") // if it hits a laser router
                 {
-                    notPrimeTarget = false;
                     if(laserTag != "laserRouter")
                     {
                         laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
@@ -143,18 +141,17 @@ public class bansheeScript : MonoBehaviour
                 }
                 else
                 {
-                    if(notPrimeTarget == false)
+                    if(laserRouter != null && laserTag == "laserRouter")
                     {
-                        if(laserRouter != null)
-                        {
-                            laserRouter.Drained();
-                            laserRouter.DeathRay(false);
-                        }
+                        laserRouter.Drained();
+                        laserRouter.DeathRay(false);
+                    }
+
+                    if(laserTag == "Shield")
+                    {
                         playerScript.DeathRay(false);
                         playerScript.EndDeflect();
                     }
-
-                    notPrimeTarget = true;
 
                     isCharging = false;
 
@@ -167,6 +164,24 @@ public class bansheeScript : MonoBehaviour
                         collisionEffect.transform.position = laser.point;
                     }
                 }
+
+                if(laser.collider.tag == "powerCell")
+                {
+                    if(laserTag != "powerCell")
+                    {
+                        powerCell = laser.transform.gameObject.GetComponent<powerCell>();
+                        powerCell.charged = true;
+                    }
+                }
+                else if(laser.collider.tag == "PowerStation")
+                {
+                    if(laserTag != "PowerStation")
+                    {
+                        powerStation = laser.transform.gameObject.GetComponent<powerStation>();
+                        powerStation.energised = true;
+                    }
+                }
+                
                 laserTag = laser.collider.tag;
             }
         }

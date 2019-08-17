@@ -12,7 +12,6 @@ public class fanZone : MonoBehaviour
 
     void Start()
     {
-        //lockHeight = transform.position.y + (0.5f * transform.localScale.y);
         player = GameObject.Find("Player").gameObject;
     }
 
@@ -28,7 +27,7 @@ public class fanZone : MonoBehaviour
             }
 
             if((player.transform.position.y < lockHeight + 0.2f && player.transform.position.y > lockHeight - 0.2f)
-                && (colRb.velocity.y < 0.1f && colRb.velocity.y > -0.1f)
+                && (colRb.velocity.y < 0.05f && colRb.velocity.y > -0.05f)
                 && !(Input.GetAxis("Vertical") > 0f))
             {
                 player.transform.position = new Vector2(player.transform.position.x , lockHeight);
@@ -48,7 +47,7 @@ public class fanZone : MonoBehaviour
             
             if(colRb.velocity.y < 0f)
             {
-                colRb.velocity = new Vector2(colRb.velocity.x , Mathf.Clamp((colRb.velocity.y + (Time.deltaTime * 80f)) , 0f , 5f)); // * -colRb.velocity.y));
+                colRb.velocity = new Vector2(colRb.velocity.x , Mathf.Clamp((colRb.velocity.y + (Time.deltaTime * 80f)) , 0f , 5f));
             }
 
             if(col.transform.position.y < lockHeight + 0.2f || col.transform.position.y > lockHeight - 0.2f && colRb.velocity.y < 2.5f && colRb.velocity.y > -2.5f)

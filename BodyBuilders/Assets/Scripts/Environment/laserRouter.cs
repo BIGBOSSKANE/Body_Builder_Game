@@ -6,7 +6,7 @@ public class laserRouter : MonoBehaviour
 {
     public bool canStoreCharge = false;
     bool charged = false;
-    public bool deathRay = false;
+    bool deathRay = false;
     float colRadius;
     GameObject aim;
     GameObject core;
@@ -22,6 +22,8 @@ public class laserRouter : MonoBehaviour
     string laserTag;
     playerScript playerScript;
     public LayerMask laserLayer;
+    powerCell powerCell;
+    powerStation powerStation;
 
     void Start()
     {
@@ -105,11 +107,12 @@ public class laserRouter : MonoBehaviour
 
     void LaserCaster()
     {
-        Vector2 laserOriginDirection = aim.transform.up;
-        laserOriginDirection.Normalize();
-        Vector2 laserOrigin = aim.transform.position * colRadius;
+        Vector2 laserOriginDirection = (aim.transform.up + aim.transform.right).normalized;
+        Vector2 laserOrigin = transform.position * colRadius;
         laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
-        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
+        laserOrigin = transform.position;
+
+        RaycastHit2D laser = Physics2D.Raycast(transform.position, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
             Vector2 laserEndpoint = laser.point;
@@ -128,9 +131,9 @@ public class laserRouter : MonoBehaviour
             collisionEffect.transform.position = laser.point;
             collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
 
-            if(laser.collider.tag == "Player")
+            if(laser.collider.tag == "Shield")
             {
-                if(laserTag != "Player")
+                if(laserTag != "Shield") // if the most recent collider hit was not the player
                 {
                     playerScript playerScript = laser.transform.gameObject.GetComponent<playerScript>();
                     playerScript.InitiateDeflect();
@@ -144,9 +147,20 @@ public class laserRouter : MonoBehaviour
                     }
                 }
             }
+            else if(laser.collider.tag == "Player")
+            {
+                if(laserTag != "Player") // if the most recent collider hit was not the player
+                {
+                    if(charged)
+                    {
+                        //Destroy(target);
+                        Debug.Log("Killed");
+                    }
+                }               
+            }
             else
             {
-                if(playerScript != null)
+                if(playerScript != null && laserTag == "Shield")
                 {
                     playerScript.EndDeflect();
                     playerScript.DeathRay(false);
@@ -187,6 +201,23 @@ public class laserRouter : MonoBehaviour
                     Destroy(laser.collider.gameObject);
                 }
             }
+
+            if(laser.collider.tag == "powerCell")
+            {
+                if(laserTag != "powerCell")
+                {
+                    powerCell = laser.transform.gameObject.GetComponent<powerCell>();
+                    powerCell.charged = true;
+                }
+            }
+            else if(laser.collider.tag == "PowerStation")
+            {
+                if(laserTag != "PowerStation")
+                {
+                    powerStation = laser.transform.gameObject.GetComponent<powerStation>();
+                    powerStation.energised = true;
+                }
+            }
             
             laserTag = laser.collider.tag;
         }
@@ -221,3 +252,6 @@ public class laserRouter : MonoBehaviour
         }
     }
 }
+
+
+// may need to change it so that it only gets a charge when hit by the death ray (only one stage), then permanently emits that charge
