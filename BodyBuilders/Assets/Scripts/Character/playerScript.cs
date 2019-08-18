@@ -131,6 +131,7 @@ public class playerScript : MonoBehaviour
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
+    CapsuleCollider2D heldPowerCellCol; // the collider used for the power cell while held
     GameObject closestBox; // closest box as determined by the box assigner
     timeSlow timeSlowScript; // time slow script
     Camera2DFollow cameraScript;
@@ -168,7 +169,9 @@ public class playerScript : MonoBehaviour
         scalerAugment.SetActive(false);
         gameObject.transform.Find("BoxHoldLocation").gameObject.SetActive(true);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
+        heldPowerCellCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CapsuleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
+        heldPowerCellCol.enabled = false;
         heldBoxCol.enabled = false;
         camera = Camera.main;
         cameraScript = camera.GetComponent<Camera2DFollow>();
@@ -610,7 +613,7 @@ void BoxInteract()
     {
         if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
         {
-            BoxAssigner();
+            BoxAssigner(); // sort through each available box, and find the one closest to the pickup point
             {
                 if(closestBox != null)
                 {
@@ -621,13 +624,20 @@ void BoxInteract()
                         closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
                         closestBox.GetComponent<Collider2D>().enabled = false;
                         closestBox.transform.rotation = Quaternion.identity;
-                        heldBoxCol.enabled = true;
                         holding = true;
+                        if(closestBox.tag == "powerCell")
+                        {
+                            heldPowerCellCol.enabled = true;
+                        }
+                        else
+                        {
+                            heldBoxCol.enabled = true;
+                        }
                     }
                 }
             }
         } 
-        else if(Input.GetKeyDown("f") && holding == true)
+        else if(Input.GetKeyDown("f") && holding == true) // while the player is holding a box, and presses the f key, drop the box
         {
             BoxDrop();
             // if we eventually do want the box to be thrown, add some alternative code here
@@ -640,6 +650,7 @@ void BoxInteract()
         {
             closestBox.transform.parent = null;
             heldBoxCol.enabled = false;
+            heldPowerCellCol.enabled = false;
             closestBox.GetComponent<Rigidbody2D>().isKinematic = false;
             closestBox.GetComponent<Collider2D>().enabled = true;
             holding = false;
@@ -931,11 +942,19 @@ void BoxInteract()
             
             if(holding == true) // keep holding the box if you were
             {
-                heldBoxCol.enabled = true;
+                if(closestBox.tag == "powerCell")
+                {
+                    heldPowerCellCol.enabled = true;
+                }
+                else
+                {
+                    heldBoxCol.enabled = true;
+                }
             }
             else
             {
                 heldBoxCol.enabled = false;
+                heldPowerCellCol.enabled = false;
             }
         }
 
@@ -1046,13 +1065,21 @@ void BoxInteract()
             boxCol.size = new Vector2(0.6f , 2.08f);
             boxCol.offset = new Vector2(0f , 0.03f);
 
-            if(holding == true) // keep holding the box if you already were
+            if(holding == true) // keep holding the box if you were
             {
-                heldBoxCol.enabled = true;
+                if(closestBox.tag == "powerCell")
+                {
+                    heldPowerCellCol.enabled = true;
+                }
+                else
+                {
+                    heldBoxCol.enabled = true;
+                }
             }
             else
             {
                 heldBoxCol.enabled = false;
+                heldPowerCellCol.enabled = false;
             }
         }
 

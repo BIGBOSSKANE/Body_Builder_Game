@@ -73,7 +73,10 @@ public class elevatorScript : MonoBehaviour
         }
         else
         {
-            playerScript.jumpBan = true;
+            if(playerOnboard)
+            {
+                playerScript.jumpBan = true;
+            }
         }
         
 
