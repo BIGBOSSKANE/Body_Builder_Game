@@ -154,6 +154,7 @@ public class playerScript : MonoBehaviour
     laserRouter laserRouter;
     powerCell powerCell;
     powerStation powerStation;
+    Vector2 laserEndpoint;
 
 
     void Start()
@@ -734,11 +735,8 @@ void BoxInteract()
         RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
-            Vector2 laserEndpoint = laser.point;
-
-            laserLine.positionCount = 2;
-            laserLine.SetPosition(0 , laserOrigin);
-            laserLine.SetPosition(1 , laserEndpoint);
+            laserEndpoint = laser.point;
+            collisionEffect.SetActive(true);
 
             Vector2 laserCollisionNormal = laser.normal;
             float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
@@ -801,6 +799,14 @@ void BoxInteract()
             
             laserTag = laser.collider.tag;
         }
+        else
+        {
+            collisionEffect.SetActive(false);
+            laserEndpoint = laserOrigin + (laserOriginDirection * 1000f);
+        }
+        laserLine.positionCount = 2;
+        laserLine.SetPosition(0 , laserOrigin);
+        laserLine.SetPosition(1 , laserEndpoint);
     }
 
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance

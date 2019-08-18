@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// get the direction between the two elevator points, and then apply the force that way (angling slightly up if it is just horizontal)
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -212,10 +214,6 @@ public class elevatorScript : MonoBehaviour
                 else if(col.gameObject.transform.parent.parent != null && col.gameObject.transform.parent.parent == holder)
                 {
                     col.gameObject.transform.parent.gameObject.transform.parent = null;
-                }
-                else if(col.gameObject.transform.parent.parent.parent != null && col.gameObject.transform.parent.parent.parent == holder)
-                {
-                    col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = null;
                 }
             }
         }

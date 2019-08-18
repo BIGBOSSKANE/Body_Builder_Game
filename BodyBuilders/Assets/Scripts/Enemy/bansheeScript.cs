@@ -16,7 +16,7 @@ public class bansheeScript : MonoBehaviour
     public LayerMask playerLayer;
     public LineRenderer laserLine;
     public GameObject laserOriginPoint;
-    Vector3 laserOrigin;
+    Vector2 laserOrigin;
     CircleCollider2D circleCol;
     float laserRange = 100f;
     string laserTag = "none";
@@ -25,6 +25,7 @@ public class bansheeScript : MonoBehaviour
     laserRouter laserRouter;
     Vector2 targetPosition;
     Vector2 laserOriginDirection;
+    Vector2 laserEndpoint;
     powerCell powerCell;
     powerStation powerStation;
 
@@ -67,7 +68,8 @@ public class bansheeScript : MonoBehaviour
             RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, laserRange , laserLayer);
             if(laser.collider != null)
             {
-                Vector2 laserEndpoint = laser.point;
+                laserEndpoint = laser.point;
+                collisionEffect.SetActive(true);
 
                 laserLine.positionCount = 2;
                 laserLine.SetPosition(0 , laserOrigin);
@@ -181,8 +183,12 @@ public class bansheeScript : MonoBehaviour
                         powerStation.energised = true;
                     }
                 }
-                
                 laserTag = laser.collider.tag;
+            }
+            else
+            {
+                laserTag = "null";
+                collisionEffect.SetActive(false);
             }
         }
         else
