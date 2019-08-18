@@ -94,6 +94,7 @@ public class elevatorScript : MonoBehaviour
                 {
                     playerScript.slamVector = slamDirection * jumpLaunchForce;
                     playerScript.slam = 0f;
+                    // it all works if just slamming up, and using Vector2.up instead of slamDirection
                     player.GetComponent<Rigidbody2D>().AddForce(slamDirection * jumpLaunchForce , ForceMode2D.Impulse);
                 }
             }
@@ -173,7 +174,15 @@ public class elevatorScript : MonoBehaviour
             }
             else if(col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
             {
-                col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
+                if(col.gameObject.GetComponent<Rigidbody2D>() != null)
+                {
+                    // it all works if just slamming up, and using Vector2.up instead of slamDirection
+                    col.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
+                }
+                else
+                {
+                    col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
+                }
             }
             else
             {
