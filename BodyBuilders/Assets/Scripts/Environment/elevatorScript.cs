@@ -21,6 +21,7 @@ public class elevatorScript : MonoBehaviour
     bool slam;
     Vector2 lowPoint;
     Vector2 highPoint;
+    Vector2 slamDirection;
     GameObject player;
     GameObject holder;
     playerScript playerScript;
@@ -41,6 +42,9 @@ public class elevatorScript : MonoBehaviour
         holder.transform.localScale = new Vector3(1f , 1f, 1f);
         holder.transform.rotation = Quaternion.Euler(0f , 0f , 0f);
         playerScript = player.GetComponent<playerScript>();
+
+        slamDirection = highPoint - lowPoint;
+        slamDirection = slamDirection.normalized;
     }
 
     void OnDrawGizmos()
@@ -80,7 +84,6 @@ public class elevatorScript : MonoBehaviour
                 playerScript.jumpBan = true;
             }
         }
-        
 
         if(ascending)
         {
@@ -89,7 +92,9 @@ public class elevatorScript : MonoBehaviour
                 moveTimer += Time.fixedDeltaTime / slamUpTime;
                 if(playerOnboard && moveTimer >= (moveTime - jumpTimeOffset) && Input.GetAxis("Vertical") > 0f && ascending == true)
                 {
-                    player.GetComponent<Rigidbody2D>().AddForce(transform.up * jumpLaunchForce , ForceMode2D.Impulse);
+                    playerScript.slamVector = slamDirection * jumpLaunchForce;
+                    playerScript.slam = 0f;
+                    player.GetComponent<Rigidbody2D>().AddForce(slamDirection * jumpLaunchForce , ForceMode2D.Impulse);
                 }
             }
             else
@@ -129,8 +134,6 @@ public class elevatorScript : MonoBehaviour
                 
                 player.transform.parent = holder.transform;
                 
-                //playerScript.UpdateParts();
-                
                 if(playerScript.partConfiguration == 1)
                 {
                     Destroy(player.GetComponent<BoxCollider2D>());
@@ -142,17 +145,17 @@ public class elevatorScript : MonoBehaviour
                 {
                     col.gameObject.transform.parent = holder.transform;
                 }
-                else if(col.gameObject.transform.parent.gameObject.transform.parent == null)
+                else if(col.gameObject.transform.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.gameObject.transform.parent = holder.transform;
+                    col.gameObject.transform.parent.parent = holder.transform;
                 }
-                else if(col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent == null)
+                else if(col.gameObject.transform.parent.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = holder.transform;
+                    col.gameObject.transform.parent.parent.parent = holder.transform;
                 }
-                else if(col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent == null)
+                else if(col.gameObject.transform.parent.parent.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent = holder.transform;
+                    col.gameObject.transform.parent.parent.parent.parent = holder.transform;
                 }
             }
         }
@@ -164,15 +167,17 @@ public class elevatorScript : MonoBehaviour
         {
             if(col.tag == "Player")
             {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+                playerScript.slamVector = slamDirection * launchForce;
+                playerScript.slam = 0f;
+                player.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
             }
             else if(col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
             {
-                col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+                col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
             }
             else
             {
-                col.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * launchForce , ForceMode2D.Impulse);
+                col.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
             }
 
             if(col.transform.position.y <= holder.transform.position.y)

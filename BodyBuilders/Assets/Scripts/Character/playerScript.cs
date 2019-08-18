@@ -38,7 +38,7 @@ public class playerScript : MonoBehaviour
 
     private float moveInput; // get player Input value
     private bool facingRight = true; // used to flip the character when turning
-    private float reverseDirectionTimer = 0f;
+    public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
     public float speed; // current movement speed
@@ -155,6 +155,8 @@ public class playerScript : MonoBehaviour
     powerCell powerCell;
     powerStation powerStation;
     Vector2 laserEndpoint;
+    public float slam = 0f;
+    public Vector2 slamVector;
 
 
     void Start()
@@ -212,7 +214,7 @@ public class playerScript : MonoBehaviour
 
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(isSwinging)
+        if(isSwinging) // disables the velocity defining parameters to allow a force to be applied
         {
             rb.gravityScale = 3f;
 
@@ -221,9 +223,18 @@ public class playerScript : MonoBehaviour
         else
         {
             rb.gravityScale = 2f;
-            if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+            if(slam < 2f)
             {
-                reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                if(slam > 0.2f && isGrounded == true)
+                {
+                    slam = 2f;
+                }
+                slam += Time.deltaTime;
+                rb.velocity = new Vector2((5f * slamVector.x - (slamVector.x * 5f * (slam / 2f))) + (moveInput * (movementSpeed * (slam / 2f))), rb.velocity.y);
+            }
+            else if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+            {
+                reverseDirectionTimer += Time.fixedDeltaTime;
                 rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
             }
             else if(climbingDismountTimer <= 0.1f && climbing == false)
