@@ -67,22 +67,23 @@ public class elevatorScript : MonoBehaviour
             moveTimer = 0f;
         }
 
-        if(moveTimer > (1f - jumpTimeOffset))
+        if(moveTimer > (1f - jumpTimeOffset) && jumpBooster)
         {
             slam = true;
         }
-
-        playerScript.jumpBan = false;
-        if(!ascending)
+        
+        if(jumpBooster && ascending)
         {
-            slam = false;
-        }
-        else
-        {
+            slam = true;
             if(playerOnboard)
             {
                 playerScript.jumpBan = true;
             }
+        }
+        else
+        {
+            playerScript.jumpBan = false;
+            slam = false;
         }
 
         if(ascending)
@@ -129,16 +130,23 @@ public class elevatorScript : MonoBehaviour
     {
         if(Input.GetAxis("Vertical") < 0.1f && (col.tag != "Untagged" || col.tag != "PassThroughPlatform" || col.tag != "Environment"))
         {
-            if(col.tag == "Player" && playerOnboard == false)
+            if(col.tag == "Player" && playerOnboard == false) // potentially remove the player onBoard bool if incorrect detaching occurs
             {
-                playerOnboard = true;
-                
                 player.transform.parent = holder.transform;
                 
                 if(playerScript.partConfiguration == 1)
                 {
                     Destroy(player.GetComponent<BoxCollider2D>());
                 }
+                playerOnboard = true;
+            }
+            else if(col.tag == "Arms" || col.tag == "Legs")
+            {
+                col.gameObject.transform.parent.parent = holder.transform;
+            }
+            else if(col.tag == "Box" || col.tag == "Powercell")
+            {
+                col.gameObject.transform.parent = holder.transform;
             }
             else
             {
@@ -162,6 +170,39 @@ public class elevatorScript : MonoBehaviour
         }
     }
 
+    void Unparent(Collider2D col)
+    {
+        if(col.tag == "Player") // potentially remove the player onBoard bool if incorrect detaching occurs
+        {                
+            player.transform.parent = null;
+            
+            if(playerScript.partConfiguration == 1)
+            {
+                Destroy(player.GetComponent<BoxCollider2D>());
+            }
+            playerOnboard = false;
+        }
+        else if(col.tag == "Arms" || col.tag == "Legs")
+        {
+            col.gameObject.transform.parent.transform.parent = null;
+        }
+        else if(col.tag == "Box" || col.tag == "Powercell")
+        {
+            col.gameObject.transform.gameObject.transform.parent = null;
+        }
+        else
+        {
+            if(col.gameObject.transform.parent != null && col.gameObject.transform.parent == holder)
+            {
+                col.gameObject.transform.parent = null;
+            }
+            else if(col.gameObject.transform.parent.parent != null && col.gameObject.transform.parent.parent == holder)
+            {
+                col.gameObject.transform.parent.gameObject.transform.parent = null;
+            }
+        }
+    }
+
     void OnTriggerStay2D(Collider2D col)
     {
         if(slam == true)
@@ -176,7 +217,6 @@ public class elevatorScript : MonoBehaviour
             {
                 if(col.gameObject.GetComponent<Rigidbody2D>() != null)
                 {
-                    // it all works if just slamming up, and using Vector2.up instead of slamDirection
                     col.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
                 }
                 else
@@ -184,12 +224,12 @@ public class elevatorScript : MonoBehaviour
                     col.transform.parent.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
                 }
             }
-            else
+            else if(col.gameObject.tag == "Box" || col.gameObject.tag == "powerCell")
             {
                 col.gameObject.GetComponent<Rigidbody2D>().AddForce(slamDirection * launchForce , ForceMode2D.Impulse);
             }
 
-            if(col.transform.position.y <= holder.transform.position.y)
+            if(col.transform.position.y <= holder.transform.position.y) // prevent objects from falling through while moving quickly
             {
                 col.transform.position = new Vector2(col.transform.position.x , holder.transform.position.y);
             }
@@ -203,33 +243,9 @@ public class elevatorScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D col)
     {
-        if(col.tag != "Untagged" || col.tag != "PassThroughPlatform")
+        if(col.tag != "Untagged" && col.tag != "PassThroughPlatform" && col.tag != "Environment")
         {
-            if(col.tag == "Player") // && playerOnboard == true)
-            {
-                playerOnboard = false;
-                var OriginalConstraints = player.GetComponent<Rigidbody2D>().constraints;
-                playerOnboard = false;
-                player.transform.parent = null;
-                player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-                player.GetComponent<Rigidbody2D>().constraints = OriginalConstraints;
-
-                if(playerScript.partConfiguration == 1)
-                {
-                    Destroy(player.GetComponent<BoxCollider2D>());
-                }
-            }
-            else
-            {
-                if(col.gameObject.transform.parent != null && col.gameObject.transform.parent == holder)
-                {
-                    col.gameObject.transform.parent = null;
-                }
-                else if(col.gameObject.transform.parent.parent != null && col.gameObject.transform.parent.parent == holder)
-                {
-                    col.gameObject.transform.parent.gameObject.transform.parent = null;
-                }
-            }
+            Unparent(col);
         }
     }
 }

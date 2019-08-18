@@ -17,14 +17,10 @@ Still need to fix:
 
 Still need to add:
 
-    shield arms
-
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
 
     Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
-
-    particle effects on impact
 */
 
 
@@ -126,7 +122,7 @@ public class playerScript : MonoBehaviour
     GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
     GameObject hookshotAugment;
-    hookshotScript hookshotScript;
+    hookshot hookshotScript;
 
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
@@ -185,7 +181,7 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookshotScript = gameObject.GetComponent<hookshotScript>();
+        hookshotScript = gameObject.GetComponent<hookshot>();
         hookshotScript.enabled = false;
         hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
         hookshotAugment.SetActive(false);
@@ -219,6 +215,11 @@ public class playerScript : MonoBehaviour
             rb.gravityScale = 3f;
 
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+
+            if(GroundCheck() == true)
+            {
+                isGrounded = true;
+            }
         }
         else
         {
@@ -468,6 +469,11 @@ public class playerScript : MonoBehaviour
         if(partConfiguration == 1)
         {
             climbing = false;
+            if(isSwinging && hitC.collider != null)
+            {
+                hookshotScript.DetachRope();
+            }
+
             if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
             {
                 return false;

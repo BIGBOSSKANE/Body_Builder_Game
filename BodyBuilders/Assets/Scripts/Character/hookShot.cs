@@ -1,31 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class hookShot : MonoBehaviour
+public class hookshot : MonoBehaviour
 {
+    // Mouse Move Tracker
     bool mouseMoved;
     public float mouseMovedTime = 2f;
     float mouseMovedTimer;
+    float hookShotDistance = 6f;
+    Vector2 worldMousePos;
     Vector2 aimDirection;
-    Vector3 previousMousePos;
+    Vector2 previousMousePos;
 
+    // Hookshot
+    public bool ropeAttached = false;
+    public float ropeClimbSpeed = 2f;
+    Vector3 augmentAimDirection;
+    playerScript playerScript;
     GameObject hookShotAnchorPoint;
-    DistanceJoint2D ropeJoint;
+    Vector3 ropeAnchorPoint;
+    GameObject hookShotAugment;
+    DistanceJoint2D distanceJoint;
     Transform crosshair;
     SpriteRenderer crosshairSprite;
-    private bool ropeAttached;
-    private Vector2 playerPosition;
     private Rigidbody2D hookShotAnchorPointRb;
     private SpriteRenderer hookshotAnchorSprite;
-    private bool distanceSet; // distance between the player and the currently used pivot point
-    playerScript playerScript;
-
-    LineRenderer ropeRenderer;
-    public LayerMask ropeLayerMask;
+    LineRenderer lineRenderer;
+    public LayerMask tetherLayer;
+    private Vector2 playerPosition;
     public float ropeMaxCastDistance = 20f;
-    private List<Vector2> ropePositions = new List<Vector2>();
 
     void Start()
     {
@@ -33,17 +37,17 @@ public class hookShot : MonoBehaviour
         hookShotAnchorPoint = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookShotAnchorPointRb = hookShotAnchorPoint.GetComponent<Rigidbody2D>();
         hookshotAnchorSprite = hookShotAnchorPoint.GetComponent<SpriteRenderer>();
-        crosshair = gameObject.transform.Find("Crosshair").gameObject.transform;
-        crosshairSprite = crosshair.GetComponent<SpriteRenderer>();
-        ropeJoint = gameObject.GetComponent<DistanceJoint2D>();
-        ropeJoint.enabled = false;
-        ropeRenderer = gameObject.transform.Find("HookshotAnchor").gameObject.GetComponent<LineRenderer>();
-        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
+        distanceJoint = gameObject.GetComponent<DistanceJoint2D>();
+        distanceJoint.enabled = false;
+        lineRenderer = gameObject.transform.Find("HookshotAnchor").gameObject.GetComponent<LineRenderer>();
+        lineRenderer.enabled = false;
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();        
+        hookShotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
     }
 
     void Update()
     {
-        Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , 0f));
+        worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         
         if(previousMousePos != worldMousePos)
         {
@@ -63,146 +67,103 @@ public class hookShot : MonoBehaviour
             }
         }
 
-        var facingDirection = worldMousePos - transform.position;
-        var aimAngle = Mathf.Atan2(facingDirection.y , facingDirection.x);
+        Vector2 facingDirection = new Vector2(worldMousePos.x - transform.position.x , worldMousePos.y - transform.position.y);
+        float aimAngle = Mathf.Atan2(facingDirection.y , facingDirection.x);
 
         if(aimAngle < 0f)
         {
             aimAngle = Mathf.PI * 2 + aimAngle;
         }
 
-        var aimDirection = Quaternion.Euler(0 , 0 , aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        aimDirection = Quaternion.Euler(0 , 0 , aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        augmentAimDirection = Quaternion.Euler(0 , 0 , (aimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
 
         playerPosition = transform.position;
 
-        if(!ropeAttached && mouseMoved)
+        if(!ropeAttached && playerScript.partConfiguration == 1) // aim at cursor
         {
-            SetCrossHairPosition(aimAngle);
+            hookShotAugment.transform.up = augmentAimDirection;
         }
-        else
+        else if(playerScript.partConfiguration == 1) // aim at anchorpoint
         {
-            crosshairSprite.enabled = false;
+            Vector2 firedDirection = new Vector2(ropeAnchorPoint.x , ropeAnchorPoint.y) - playerPosition;
+            float firedAimAngle = Mathf.Atan2(firedDirection.y , firedDirection.x);
+            if(firedAimAngle < 0f)
+            {
+                firedAimAngle = Mathf.PI * 2 + aimAngle;
+            }
+            Vector3 augmentFiredDirection = Quaternion.Euler(0 , 0 , (firedAimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
+            hookShotAugment.transform.up = augmentFiredDirection;
+            playerScript.ropeDirection = augmentFiredDirection;
         }
 
-        HandleInput(aimDirection);
-        UpdateRopePositions();
+        HookShotFire();
+        if(ropeAttached == true)
+        {
+            DrawRope();
+        }
+
+        if(ropeAttached && Input.GetAxis("Vertical") != 0f)
+        {
+            if(Input.GetAxis("Vertical") > 0f)
+            {
+                distanceJoint.distance -= ropeClimbSpeed * Time.deltaTime;
+            }
+            else if(Input.GetAxis("Vertical") < 0f)
+            {
+                distanceJoint.distance += 5f * Time.deltaTime;
+            }
+        }
     }
 
-    private void SetCrossHairPosition(float aimAngle)
+    private void HookShotFire()
     {
-        if(!crosshairSprite.enabled)
+        if(Input.GetMouseButtonDown(1))
         {
-            crosshairSprite.enabled = true;
-        }
-
-        float crossHairPosX = transform.position.x + 1f * Mathf.Cos(aimAngle);
-        var crossHairPosY = transform.position.y + 1f * Mathf.Sin(aimAngle);
-
-        var crossHairPosition = new Vector3(crossHairPosX , crossHairPosY , 0);
-        crosshair.transform.position = crossHairPosition;
-    }
-
-    private void HandleInput(Vector2 aimDirection) // call from update
-    {
-        if(Input.GetMouseButton(1)) // right click
-        {
-            if(ropeAttached) return;
-            ropeRenderer.enabled = true;
-
-            RaycastHit2D hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
-
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
             if(hit.collider != null)
             {
+                if(hit.collider.gameObject.tag == "TetherPoint")
+                {
+                    ropeAnchorPoint = hit.collider.gameObject.transform.position;
+                }
+                else
+                {
+                    ropeAnchorPoint = hit.point;
+                }
+                hookShotAnchorPoint.SetActive(true);
                 ropeAttached = true;
-                if(!ropePositions.Contains(hit.point)) // check that the hitpoint isn't already part of the rope
+                distanceJoint.enabled = true;
+                lineRenderer.enabled = true;
+                playerScript.isSwinging = true;
+                if(!playerScript.isGrounded)
                 {
-                    Debug.Log("Hit" + hit.point);
-                    // the issue is that the point is spawning in the player now, that will change
-                    // apply a small impulse force upwards on the player to get them off the ground
-                    transform.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 5f , ForceMode2D.Impulse);
-                    ropePositions.Add(hit.point);
-                    ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
-                    ropeJoint.enabled = true;
-                    hookshotAnchorSprite.enabled = true;
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
                 }
             }
-            else // the rope misses
-            {
-                ropeRenderer.enabled = false;
-                ropeAttached = false;
-                ropeJoint.enabled = false;
-            }
         }
-
-        if(Input.GetMouseButtonDown(0))
+        else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)
         {
-            ResetRope();
+            DetachRope();
         }
     }
 
-    private void ResetRope()
+    private void DrawRope()
     {
-        ropeJoint.enabled = false;
+        hookShotAnchorPoint.transform.position = ropeAnchorPoint;
+        distanceJoint.distance = Vector2.Distance(ropeAnchorPoint , transform.position);
+        lineRenderer.positionCount = 2;
+        lineRenderer.SetPosition(0 , transform.position);
+        lineRenderer.SetPosition(1 , ropeAnchorPoint);
+    }
+
+    public void DetachRope()
+        {
+        hookShotAnchorPoint.SetActive(false);
         ropeAttached = false;
+        distanceJoint.enabled = false;
+        lineRenderer.enabled = false;
         playerScript.isSwinging = false;
-        ropeRenderer.positionCount = 2;
-        ropeRenderer.SetPosition(0 , transform.position);
-        ropeRenderer.SetPosition(1 , transform.position);
-        ropePositions.Clear();
-        hookshotAnchorSprite.enabled = false;
-    }
-
-    private void UpdateRopePositions() // used to create multiple tether points
-    {
-        if(!ropeAttached)
-        {
-            return; // stop if the rope isn't attached
-        }
-        ropeRenderer.positionCount = ropePositions.Count + 1; // number of rope positions + player position
-
-        for(var i = ropeRenderer.positionCount - 1; i >= 0; i--) // backwards loop to find all of the vertex positions
-        {
-            if(i != ropeRenderer.positionCount - 1 ) // not the last point
-            {
-                ropeRenderer.SetPosition(i , ropePositions[i]);
-
-                if(i == ropePositions.Count - 1 || ropePositions.Count == 1) // set the anchor point to be the one closest to the player
-                {
-                    var ropePosition = ropePositions[ropePositions.Count - 1];
-                    if(ropePositions.Count == 1)
-                    {
-                        hookShotAnchorPointRb.transform.position = ropePosition;
-                        if(!distanceSet)
-                        {
-                            ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
-                            distanceSet = true;
-                        }
-                    }
-                    else
-                    {
-                        hookShotAnchorPointRb.transform.position = ropePosition; // current 
-                        if(!distanceSet)
-                        {
-                            ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
-                            distanceSet = true;
-                        }
-                    }
-                }
-                else if (i - 1 == ropePositions.IndexOf(ropePositions.Last())) // the current hinge/anchor point
-                {
-                    var ropePosition = ropePositions.Last();
-                    hookShotAnchorPointRb.transform.position = ropePosition;
-                    if(!distanceSet)
-                    {
-                        ropeJoint.distance = Vector2.Distance(transform.position , ropePosition);
-                        distanceSet = true;
-                    }
-                }
-            }
-            else
-            {
-                ropeRenderer.SetPosition(i , transform.position); // the hinge cannot be the player's location
-            }
-        }
+        gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
     }
 }
