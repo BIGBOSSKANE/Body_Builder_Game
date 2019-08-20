@@ -12,6 +12,13 @@ public class Pause : MonoBehaviour
     private bool isPaused = false; // a private(cannot be changed outside the script) on off switch called isPaused
     public GameObject pausePanel; // put a panel for the pause menu here
     public GameObject exitPanel; // put a panel for the exit clarification menu here
+    float pausedTimeScale;
+    timeSlow timeSlow;
+
+    void Start()
+    {
+        timeSlow = GameObject.Find("Player").GetComponent<timeSlow>();
+    }
 
     void Update() //on everyframe..
     {
@@ -32,8 +39,10 @@ public class Pause : MonoBehaviour
     void Paused () // a hidden(private) function called pause
     { 
         pausePanel.SetActive(true); // activate the Pause menu
+        pausedTimeScale = Time.timeScale;
         Time.timeScale = 0; // set time to stop (0)
         isPaused = true; // set the bool isPaused is set to true
+        TimeMaster(pausedTimeScale);
     }
 
     public void Resume () // a selectable(public) function called resume
@@ -42,6 +51,7 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1; // set time to normal (1)
         isPaused = false; // set the bool isPaused is set to false
         exitPanel.SetActive(false); // disable the Exit menu
+        TimeMaster(pausedTimeScale);
     }
 
     public void MainMenu() // a selectable(public) function called MainMenu
@@ -58,4 +68,9 @@ public class Pause : MonoBehaviour
     {
         SceneManager.LoadScene(0); // in the SceneManager (build settings) load the scene numbered 0 in the index
     } // you can have it use the name of the scene instaed of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
+
+    void TimeMaster(float pausedTimeScale) // references other time-adjusting scripts and takes complete control of time
+    {
+        timeSlow.TimeSlave(pausedTimeScale , isPaused);
+    }
 }

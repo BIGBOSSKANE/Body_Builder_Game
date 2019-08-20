@@ -25,6 +25,7 @@ public class Legs : MonoBehaviour
     public playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
+    PlatformEffector2D platEffect;
     timeSlow timeSlowScript;
     public float yCastOffset = -0.86f;
     public float raycastDistance = 0.17f;
@@ -44,6 +45,7 @@ public class Legs : MonoBehaviour
         playerScript = player.GetComponent<playerScript>();
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
+        platEffect = this.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
         this.name = legType + "Legs";
         CheckForParent();
@@ -109,6 +111,7 @@ public class Legs : MonoBehaviour
         groundbreakerDistance = groundbreakerDistanceCalled;
         transform.parent = null;
         solidBoxCollider.enabled = true;
+        platEffect.enabled = true;
         boxCol.enabled = true;
         attached = false;
         unavailableTimer = 0f;
@@ -124,6 +127,8 @@ public class Legs : MonoBehaviour
     {
         attached = true;
         solidBoxCollider.enabled = false;
+        platEffect.enabled = false;
+
         boxCol.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground

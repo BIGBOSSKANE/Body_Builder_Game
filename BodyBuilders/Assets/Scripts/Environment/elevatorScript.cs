@@ -184,7 +184,7 @@ public class elevatorScript : MonoBehaviour
         }
         else if(col.tag == "Arms" || col.tag == "Legs")
         {
-            col.gameObject.transform.parent.transform.parent = null;
+            col.gameObject.transform.parent.parent = null;
         }
         else if(col.tag == "Box" || col.tag == "Powercell")
         {

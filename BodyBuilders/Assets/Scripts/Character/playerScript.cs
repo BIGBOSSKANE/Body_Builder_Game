@@ -6,6 +6,19 @@ Last Edit 09/08/2019
 */
 
 /*
+
+
+To do:
+ - Bladebot
+ - Refine screenshake
+ - Laser Texture
+ - Sound implementation
+ - Animation Implementation
+ - Level Design
+
+
+
+
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
@@ -256,12 +269,12 @@ public class playerScript : MonoBehaviour
                 if(maxHeight > (groundbreakerDistance + transform.position.y))
                 {
                     float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , 1.5f);
+                    cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
                 }
                 else if(maxHeight > (1f + transform.position.y))
                 {
                     float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , 1f);
+                    cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
                 }
 
                 maxHeight = transform.position.y;

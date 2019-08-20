@@ -6,6 +6,7 @@ public class timeSlow : MonoBehaviour
 {
     public float slowedSpeed = 0.2f;
     bool slowTime = false;
+    bool pause = false;
     bool restoreTime = false;
     public float slowDownDuration = 2f;
     public float actualTimeScale;
@@ -26,36 +27,48 @@ public class timeSlow : MonoBehaviour
 
     void Update()
     {
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
-
-        if(slowTime == true)
+        if(!pause)
         {
-            Time.timeScale -= Mathf.Clamp((1f / (slowDownDuration * 0.15f)) * Time.unscaledDeltaTime , 0f , Time.timeScale);
-        }
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
-        if(Time.timeScale <= slowedSpeed)
-        {
-            slowTime = false;
-            
-            holdTimer += Time.deltaTime*(1f/slowedSpeed);
-            if(holdTimer >= (slowDownDuration * 0.4f))
+            if(slowTime == true)
             {
-                restoreTime = true;
+                Time.timeScale -= Mathf.Clamp((1f / (slowDownDuration * 0.15f)) * Time.unscaledDeltaTime , 0f , Time.timeScale);
+            }
+
+            if(Time.timeScale <= slowedSpeed)
+            {
+                slowTime = false;
+                
+                holdTimer += Time.deltaTime*(1f/slowedSpeed);
+                if(holdTimer >= (slowDownDuration * 0.4f))
+                {
+                    restoreTime = true;
+                }
+                
+            }
+            else if(Time.timeScale >= 1f && restoreTime == true)
+            {
+                restoreTime = false;
+            }
+
+            if(restoreTime == true)
+            {
+                holdTimer = 0f;
+                Time.timeScale += Mathf.Clamp((1f / (slowDownDuration * 0.45f)) * Time.unscaledDeltaTime , slowedSpeed , 1f - Time.timeScale);
             }
             
+            actualTimeScale = Time.timeScale;
+            Time.timeScale = Mathf.Clamp(Time.timeScale, slowedSpeed , 1f);
         }
-        else if(Time.timeScale >= 1f && restoreTime == true)
-        {
-            restoreTime = false;
-        }
+    }
 
-        if(restoreTime == true)
+    public void TimeSlave(float pausedTimeScale , bool isPaused)
+    {
+        pause = isPaused;
+        if(!pause)
         {
-            holdTimer = 0f;
-            Time.timeScale += Mathf.Clamp((1f / (slowDownDuration * 0.45f)) * Time.unscaledDeltaTime , slowedSpeed , 1f - Time.timeScale);
+            Time.timeScale = pausedTimeScale;
         }
-        
-        actualTimeScale = Time.timeScale;
-        Time.timeScale = Mathf.Clamp(Time.timeScale, slowedSpeed , 1f);
     }
 }
