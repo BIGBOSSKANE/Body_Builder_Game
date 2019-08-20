@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class bladebot : MonoBehaviour
 {
-    public float patrolDuration = 4f;
-    float patrolTimer = 0f;
+    public float patrolDuration = 4f; // how long does it take to move to each patrol point
+    float patrolTimer = 0f; // current patrol time
     public float pursuitDelay = 0.5f; // how long after seeing the player does the blade bot take to move
-    float pursuitDelayTimer = 1f;
-    public float pursuitSpeed = 2f;
-    public float disengeSpeed = 1.5f;
+    float pursuitDelayTimer = 1f; // time charging before the bladebot pursues the player
+    public float pursuitSpeed = 2f; // the speed at which the blade moves when pursuing the player
+    public float disengageSpeed = 1.5f; // the speed at which the blade returns to its original position
     bool verticalPatrol = true; // does the bladebot move vertically or horizontally? (it will aim at a 90 degree angle from the patrol route)
-    public bool positiveAim = true; // is the bladebot aiming at the positive access (right or up)?
-    bool pursuit = false;
-    bool disengage = false;
-    Rigidbody2D rb;
-    public GameObject spinningBlade;
-    Vector2 aimDirection;
-    Vector2 patrolPoint1;
-    Vector2 patrolPoint2;
-    Vector2 targetPoint;
+    public bool positiveAim = true; // is the bladebot aiming at the positive direction (right when moving vertically or up when moving horizontally)? if not, then it will be left or down
+    bool pursuit = false; // is the bladebot pursuing the player?
+    bool disengage = false; // is the bladebot returning to it's original position?
+    Rigidbody2D rb; // this kinematic rigidbody
+    public GameObject spinningBlade; // purely visual sprite for the spinning blades
+    Vector2 aimDirection; // direction of laser
+    Vector2 patrolPoint1; // childed gameObject that determines first patrol route point
+    Vector2 patrolPoint2; // childed gameObject that determines the second patrol route point
+    Vector2 targetPoint; // the position 
     Vector2 lastPatrolPoint;
     float patrolDistance;
     public LayerMask laserLayer;
@@ -95,7 +95,7 @@ public class bladebot : MonoBehaviour
         {
             if(Vector2.Distance((Vector2)transform.position , lastPatrolPoint) > 2f)
             {
-                rb.velocity = -aimDirection * disengeSpeed;
+                rb.velocity = -aimDirection * disengageSpeed;
             }
             else
             {
@@ -142,7 +142,10 @@ public class bladebot : MonoBehaviour
     {
         RaycastHit2D laser = Physics2D.Raycast(transform.position, aimDirection, Mathf.Infinity , laserLayer);
 
-        // potentially add more lasers
+        // potentially add more lasers (each offset to the edges of the blade bot in terms of height when moving vertically, and width when moving horizontally)
+        // draw the actual line renderer from the central laser only
+        // if any hit the player, while others are hitting environment, move to avoid the environment then move
+        // if any of them hit environment in a close enough range while moving, then stop, and disengage
 
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0 , transform.position);
