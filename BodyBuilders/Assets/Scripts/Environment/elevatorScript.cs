@@ -152,19 +152,19 @@ public class elevatorScript : MonoBehaviour
             {
                 if(col.gameObject.transform.parent == null)
                 {
-                    col.gameObject.transform.parent = holder.transform;
+                    col.gameObject.transform.SetParent(holder.transform);
                 }
                 else if(col.gameObject.transform.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.parent = holder.transform;
+                    col.gameObject.transform.parent.SetParent(holder.transform);
                 }
                 else if(col.gameObject.transform.parent.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.parent.parent = holder.transform;
+                    col.gameObject.transform.parent.parent.SetParent(holder.transform);
                 }
                 else if(col.gameObject.transform.parent.parent.parent.parent == null)
                 {
-                    col.gameObject.transform.parent.parent.parent.parent = holder.transform;
+                    col.gameObject.transform.parent.parent.parent.SetParent(holder.transform);
                 }
             }
         }

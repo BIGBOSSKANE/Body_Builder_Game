@@ -24,10 +24,12 @@ public class bladebot : MonoBehaviour
     float patrolDistance;
     public LayerMask laserLayer;
     LineRenderer lineRenderer;
+    float radius;
 
     void Start()
     {
         lineRenderer = gameObject.GetComponent<LineRenderer>();
+        radius = gameObject.GetComponent<CircleCollider2D>().radius;
         patrolPoint1 = GameObject.Find("patrolPoint1").gameObject.transform.position;
         patrolPoint2 = GameObject.Find("patrolPoint2").gameObject.transform.position;
 
@@ -142,10 +144,10 @@ public class bladebot : MonoBehaviour
     {
         RaycastHit2D laser = Physics2D.Raycast(transform.position, aimDirection, Mathf.Infinity , laserLayer);
 
-        // potentially add more lasers (each offset to the edges of the blade bot in terms of height when moving vertically, and width when moving horizontally)
+        // potentially add more lasers (each offset by the "radius" float in terms of height when moving vertically, and width when moving horizontally)
         // draw the actual line renderer from the central laser only
         // if any hit the player, while others are hitting environment, move to avoid the environment then move
-        // if any of them hit environment in a close enough range while moving, then stop, and disengage
+        // if any of them hit environment in a close enough range while moving (radius + 0.5f), then stop, and disengage
 
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0 , transform.position);
