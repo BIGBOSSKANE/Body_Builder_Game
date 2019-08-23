@@ -6653,7 +6653,7 @@ MonoBehaviour:
   patrolDuration: 4
   pursuitDelay: 0.5
   pursuitSpeed: 8
-  disengeSpeed: 4
+  disengageSpeed: 1.5
   positiveAim: 1
   spinningBlade: {fileID: 258306398}
   laserLayer:
@@ -8297,7 +8297,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2064581541640240586, guid: 4be9c8d8f46904d42b7aa8f0c7fbf924, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4be9c8d8f46904d42b7aa8f0c7fbf924, type: 3}
 --- !u!1 &1708301030
 GameObject:

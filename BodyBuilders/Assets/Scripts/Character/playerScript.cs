@@ -39,10 +39,15 @@ Still need to add:
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class playerScript : MonoBehaviour
 {
+// Checkpoint
+
+    private GameObject currentSpawnPoint;
+
 // BASIC MOVEMENT
 
     private float moveInput; // get player Input value
@@ -1187,6 +1192,24 @@ void BoxInteract()
         else
         {
             hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f, -45f);
+        }
+    }
+
+
+    public void SetSpawnPoint(GameObject spawnPoint)
+    {
+        currentSpawnPoint = spawnPoint;
+    }
+
+    public void Respawn() // this should eventually be moved to the scene manager
+    {
+        if(currentSpawnPoint != null)
+        {
+            transform.position = currentSpawnPoint.transform.position;
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }

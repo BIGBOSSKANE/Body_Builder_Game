@@ -12,6 +12,13 @@ public class Gyre : MonoBehaviour
 
     public Transform groundDetection;
 
+    playerScript playerScript;
+
+    void Start()
+    {
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -35,7 +42,7 @@ public class Gyre : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            playerScript.Respawn();
         }
     }
 }

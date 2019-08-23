@@ -409,6 +409,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3668254099366642090}
+  - component: {fileID: 8466673793646609876}
   - component: {fileID: 2039160038996249683}
   m_Layer: 0
   m_Name: CheckPoint Respawner
@@ -437,6 +438,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8466673793646609876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5191465029321758007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe2f88cc4a56304aab299d8f29694d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &2039160038996249683
 BoxCollider2D:
   m_ObjectHideFlags: 0
