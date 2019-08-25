@@ -24,6 +24,7 @@ public class laserRouter : MonoBehaviour
     public LayerMask laserLayer;
     powerCell powerCell;
     powerStation powerStation;
+    Vector2 laserEndpoint;
 
     void Start()
     {
@@ -115,7 +116,7 @@ public class laserRouter : MonoBehaviour
         RaycastHit2D laser = Physics2D.Raycast(transform.position, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
-            Vector2 laserEndpoint = laser.point;
+            laserEndpoint = laser.point;
 
             laserLine.positionCount = 2;
             laserLine.SetPosition(0 , laserOrigin);
@@ -128,6 +129,7 @@ public class laserRouter : MonoBehaviour
                 collisionNormalAngle = Mathf.PI * 2 + collisionNormalAngle;
             }
 
+            collisionEffect.SetActive(true);
             collisionEffect.transform.position = laser.point;
             collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
 
@@ -167,33 +169,6 @@ public class laserRouter : MonoBehaviour
                 }
             }
 
-            /*                                          // add this later for charging power cells
-            if(laser.collider.tag == "PowerCell")
-            {
-                if(laserTag != "PowerCell")
-                {
-                    powerCell = laser.transform.gameObject.GetComponent<powerCell>();
-                    powerCell.Charged();
-                    if(deathRay)
-                    {
-                        laserRouter.DeathRay(true);
-                    }
-                    else
-                    {
-                        laserRouter.DeathRay(false);
-                    }
-                }
-            }
-            else
-            {
-                if(powercell != null)
-                {
-                    laserRouter.Drained();
-                    laserRouter.DeathRay(false);
-                }
-            }          
-            */
-
             if(charged)
             {
                 if(laser.collider.tag == "Enemy" || laser.collider.tag == "Groundbreakable")
@@ -221,6 +196,14 @@ public class laserRouter : MonoBehaviour
             
             laserTag = laser.collider.tag;
         }
+        else
+        {
+            collisionEffect.SetActive(true);
+            laserEndpoint = laserOrigin + (laserOriginDirection * 10000f);
+        }
+        laserLine.positionCount = 2;
+        laserLine.SetPosition(0 , laserOrigin);
+        laserLine.SetPosition(1 , laserEndpoint);
     }
 
     public void Charged()

@@ -12,12 +12,10 @@ using UnityEngine;
 
 public class Arms : MonoBehaviour
 {
-    // int movementSpeed = 10;
-    // int jumpForce = 10;
-
     bool attached = false;
     float unavailableTimer = 1f;
     public BoxCollider2D boxCol;
+    PlatformEffector2D platEffect;
     float boxColTimer;
     public Rigidbody2D rb;
     public enum armIdentifier{ Basic, Lifter, Shield} // sets up for the dropdown menu of options
@@ -28,15 +26,6 @@ public class Arms : MonoBehaviour
     public playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
-    
-    /* - Use these in the future if a Lerp is required
-    public Vector2 headPos;
-    float playerDistance;
-    Vector2 snapPoint;
-    float snappingToLegsTimer = 0f;
-    bool snapToLegs = false;
-    bool snappingToLegs = false;
-    */
 
     void Start()
     {
@@ -47,6 +36,7 @@ public class Arms : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
+        platEffect = this.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
         this.name = armType + "Arms";
         CheckForParent();
@@ -58,7 +48,6 @@ public class Arms : MonoBehaviour
         if(unavailableTimer < 1f)
         {
             unavailableTimer += Time.deltaTime;
-            //maybe add a collision mask that prevents player collisions for the duration
         }
 
         if(boxColTimer < 0.2f)
@@ -87,6 +76,7 @@ public class Arms : MonoBehaviour
     {
         transform.parent = null;
         solidBoxCollider.enabled = true;
+        platEffect.enabled = true;
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
@@ -100,6 +90,7 @@ public class Arms : MonoBehaviour
         boxCol.enabled = false;
         rb.isKinematic = true;
         solidBoxCollider.enabled = false;
+        platEffect.enabled = false;
         gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
     }
 

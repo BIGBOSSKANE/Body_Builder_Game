@@ -6,6 +6,19 @@ Last Edit 09/08/2019
 */
 
 /*
+
+
+To do:
+ - Bladebot
+ - Refine screenshake
+ - Laser Texture
+ - Sound implementation
+ - Animation Implementation
+ - Level Design
+
+
+
+
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
@@ -17,28 +30,29 @@ Still need to fix:
 
 Still need to add:
 
-    shield arms
-
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
 
     Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
-
-    particle effects on impact
 */
 
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class playerScript : MonoBehaviour
 {
+// Checkpoint
+
+    private GameObject currentSpawnPoint;
+
 // BASIC MOVEMENT
 
     private float moveInput; // get player Input value
     private bool facingRight = true; // used to flip the character when turning
-    private float reverseDirectionTimer = 0f;
+    public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
     public float speed; // current movement speed
@@ -126,11 +140,14 @@ public class playerScript : MonoBehaviour
     GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
     GameObject hookshotAugment;
-    hookshotScript hookshotScript;
+    hookshot hookshotScript;
+    public float hookShotTimer;
+    bool wasGrounded; // was the player grounded on the last frame?
 
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
     CircleCollider2D heldBoxCol; // this collider is used for the held box
+    CapsuleCollider2D heldPowerCellCol; // the collider used for the power cell while held
     GameObject closestBox; // closest box as determined by the box assigner
     timeSlow timeSlowScript; // time slow script
     Camera2DFollow cameraScript;
@@ -153,6 +170,9 @@ public class playerScript : MonoBehaviour
     laserRouter laserRouter;
     powerCell powerCell;
     powerStation powerStation;
+    Vector2 laserEndpoint;
+    public float slam = 0f;
+    public Vector2 slamVector;
 
 
     void Start()
@@ -168,7 +188,9 @@ public class playerScript : MonoBehaviour
         scalerAugment.SetActive(false);
         gameObject.transform.Find("BoxHoldLocation").gameObject.SetActive(true);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
+        heldPowerCellCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CapsuleCollider2D>();
         boxHoldPos = gameObject.transform.Find("BoxHoldLocation").gameObject.transform;
+        heldPowerCellCol.enabled = false;
         heldBoxCol.enabled = false;
         camera = Camera.main;
         cameraScript = camera.GetComponent<Camera2DFollow>();
@@ -179,7 +201,7 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookshotScript = gameObject.GetComponent<hookshotScript>();
+        hookshotScript = gameObject.GetComponent<hookshot>();
         hookshotScript.enabled = false;
         hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
         hookshotAugment.SetActive(false);
@@ -201,6 +223,15 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(isGrounded)
+        {
+            wasGrounded = true;
+        }
+        else
+        {
+            wasGrounded = false;
+        }
+
         if(partConfiguration == 1) // this was added to fix a Unity bug where the box collider would be active whilst disabled
         {
             Destroy(boxCol);
@@ -208,8 +239,10 @@ public class playerScript : MonoBehaviour
 
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
-        if(isSwinging)
+        if(isSwinging) // disables the velocity defining parameters to allow a force to be applied
         {
+            hookShotTimer += Time.deltaTime;
+
             rb.gravityScale = 3f;
 
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
@@ -217,9 +250,18 @@ public class playerScript : MonoBehaviour
         else
         {
             rb.gravityScale = 2f;
-            if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+            if(slam < 2f)
             {
-                reverseDirectionTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+                if(slam > 0.2f && isGrounded == true)
+                {
+                    slam = 2f;
+                }
+                slam += Time.deltaTime;
+                rb.velocity = new Vector2((5f * slamVector.x - (slamVector.x * 5f * (slam / 2f))) + (moveInput * (movementSpeed * (slam / 2f))), rb.velocity.y);
+            }
+            else if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+            {
+                reverseDirectionTimer += Time.fixedDeltaTime;
                 rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
             }
             else if(climbingDismountTimer <= 0.1f && climbing == false)
@@ -231,45 +273,48 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
+        }
 
-            if(GroundCheck() == true)
+        if(GroundCheck() == true)
+        {
+            if(isSwinging && !wasGrounded)
             {
-                isGrounded = true;
-                timeSlowScript.TimeNormal();
-
-                if(maxHeight > (groundbreakerDistance + transform.position.y))
-                {
-                    float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , 1.5f);
-                }
-                else if(maxHeight > (1f + transform.position.y))
-                {
-                    float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , 1f);
-                }
-
-                maxHeight = transform.position.y;
-                lastGroundedHeight = transform.position.y;
-                leftGroundTimer = 0f;
-                remainingJumps = maximumJumps;
-                if(boostSprites != null)
-                {
-                    boostSprites.SetActive(false);
-                }
+                hookshotScript.DetachRope();
             }
-            else
+            isGrounded = true;
+            timeSlowScript.TimeNormal();
+            if(maxHeight > (groundbreakerDistance + transform.position.y))
             {
-                isGrounded = false;
-                leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-                speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-                if(transform.position.y > maxHeight)
+                float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
+            }
+            else if(maxHeight > (1f + transform.position.y))
+            {
+                   float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
+            }
+
+            maxHeight = transform.position.y;
+            lastGroundedHeight = transform.position.y;
+            leftGroundTimer = 0f;
+            remainingJumps = maximumJumps;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+        }
+        else
+        {
+            isGrounded = false;
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+            if(transform.position.y > maxHeight)
+            {
+                maxHeight = transform.position.y;
+            }
+            if(remainingJumps == maximumJumps && !jumpAfterFall)
                 {
-                    maxHeight = transform.position.y;
-                }
-                if(remainingJumps == maximumJumps && !jumpAfterFall)
-                {
-                    remainingJumps --;
-                }
+                remainingJumps --;
             }
         }
     }
@@ -453,6 +498,7 @@ public class playerScript : MonoBehaviour
         if(partConfiguration == 1)
         {
             climbing = false;
+
             if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
             {
                 return false;
@@ -610,7 +656,7 @@ void BoxInteract()
     {
         if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
         {
-            BoxAssigner();
+            BoxAssigner(); // sort through each available box, and find the one closest to the pickup point
             {
                 if(closestBox != null)
                 {
@@ -621,13 +667,20 @@ void BoxInteract()
                         closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
                         closestBox.GetComponent<Collider2D>().enabled = false;
                         closestBox.transform.rotation = Quaternion.identity;
-                        heldBoxCol.enabled = true;
                         holding = true;
+                        if(closestBox.tag == "powerCell")
+                        {
+                            heldPowerCellCol.enabled = true;
+                        }
+                        else
+                        {
+                            heldBoxCol.enabled = true;
+                        }
                     }
                 }
             }
         } 
-        else if(Input.GetKeyDown("f") && holding == true)
+        else if(Input.GetKeyDown("f") && holding == true) // while the player is holding a box, and presses the f key, drop the box
         {
             BoxDrop();
             // if we eventually do want the box to be thrown, add some alternative code here
@@ -640,6 +693,7 @@ void BoxInteract()
         {
             closestBox.transform.parent = null;
             heldBoxCol.enabled = false;
+            heldPowerCellCol.enabled = false;
             closestBox.GetComponent<Rigidbody2D>().isKinematic = false;
             closestBox.GetComponent<Collider2D>().enabled = true;
             holding = false;
@@ -723,11 +777,8 @@ void BoxInteract()
         RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
-            Vector2 laserEndpoint = laser.point;
-
-            laserLine.positionCount = 2;
-            laserLine.SetPosition(0 , laserOrigin);
-            laserLine.SetPosition(1 , laserEndpoint);
+            laserEndpoint = laser.point;
+            collisionEffect.SetActive(true);
 
             Vector2 laserCollisionNormal = laser.normal;
             float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
@@ -790,6 +841,14 @@ void BoxInteract()
             
             laserTag = laser.collider.tag;
         }
+        else
+        {
+            collisionEffect.SetActive(false);
+            laserEndpoint = laserOrigin + (laserOriginDirection * 1000f);
+        }
+        laserLine.positionCount = 2;
+        laserLine.SetPosition(0 , laserOrigin);
+        laserLine.SetPosition(1 , laserEndpoint);
     }
 
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
@@ -931,11 +990,19 @@ void BoxInteract()
             
             if(holding == true) // keep holding the box if you were
             {
-                heldBoxCol.enabled = true;
+                if(closestBox.tag == "powerCell")
+                {
+                    heldPowerCellCol.enabled = true;
+                }
+                else
+                {
+                    heldBoxCol.enabled = true;
+                }
             }
             else
             {
                 heldBoxCol.enabled = false;
+                heldPowerCellCol.enabled = false;
             }
         }
 
@@ -1046,13 +1113,21 @@ void BoxInteract()
             boxCol.size = new Vector2(0.6f , 2.08f);
             boxCol.offset = new Vector2(0f , 0.03f);
 
-            if(holding == true) // keep holding the box if you already were
+            if(holding == true) // keep holding the box if you were
             {
-                heldBoxCol.enabled = true;
+                if(closestBox.tag == "powerCell")
+                {
+                    heldPowerCellCol.enabled = true;
+                }
+                else
+                {
+                    heldBoxCol.enabled = true;
+                }
             }
             else
             {
                 heldBoxCol.enabled = false;
+                heldPowerCellCol.enabled = false;
             }
         }
 
@@ -1124,6 +1199,24 @@ void BoxInteract()
         else
         {
             hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f, -45f);
+        }
+    }
+
+
+    public void SetSpawnPoint(GameObject spawnPoint)
+    {
+        currentSpawnPoint = spawnPoint;
+    }
+
+    public void Respawn() // this should eventually be moved to the scene manager
+    {
+        if(currentSpawnPoint != null)
+        {
+            transform.position = currentSpawnPoint.transform.position;
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }

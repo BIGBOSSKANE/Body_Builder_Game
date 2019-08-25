@@ -34,6 +34,7 @@ public class lineAnimator : MonoBehaviour
         frameTimer += Time.unscaledDeltaTime;
         if(frameTimer >= frameDuration)
         {
+            Debug.Log("Switch");
             if(currentFrame == totalFrames)
             {
                 currentFrame = 0;

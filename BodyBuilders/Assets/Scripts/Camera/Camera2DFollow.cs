@@ -36,11 +36,14 @@ using Random=UnityEngine.Random;
         float t; // lerp time
 
         // Shake
-        public float shakeLimit = 3f;
+        public float shakeDurationLimit = 3f;
+        public float shakeMagnitudeLimit = 5f;
         public float shakeDivider = 25f;
+        float shakePartModifier = 0f; // the player part configuration effect on the screenshake
         Transform transformPos;
         private float shakeDuration = 0f;
         private float shakeMagnitude = 0.7f;
+        float groundBreakShakeAmplifier;
         Vector3 initialPosition;
 
 
@@ -53,11 +56,32 @@ using Random=UnityEngine.Random;
             }
         }
 
-        public void TriggerShake(float shakeAmount , float dampenEnhancer)
+        public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
         {
-            shakeDuration = Mathf.Clamp(shakeAmount/4f , 0f , 0.3f);
-            shakeAmount = Mathf.Clamp(shakeAmount/(shakeDivider * dampenEnhancer) , 0f , shakeLimit);
-            shakeMagnitude = shakeAmount;
+            if(partConfig == 1)
+            {
+                shakePartModifier = 8f;
+            }
+            else if (partConfig == 2 && partConfig == 3)
+            {
+                shakePartModifier = 6f;
+            }
+            else
+            {
+                shakePartModifier = 4f;
+            }
+
+            if(groundBreakDistance)
+            {
+                groundBreakShakeAmplifier = 1.5f;
+            }
+            else
+            {
+                groundBreakShakeAmplifier = 1f;
+            }
+            
+            shakeDuration = Mathf.Clamp(fallDistance * groundBreakShakeAmplifier /(shakeDivider * shakePartModifier) , 0f , shakeDurationLimit);
+            shakeMagnitude = Mathf.Clamp(fallDistance / shakeDivider, 0f , shakeMagnitudeLimit);
         }
 
         private void Start()

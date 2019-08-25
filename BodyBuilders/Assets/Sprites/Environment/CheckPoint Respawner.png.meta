@@ -1,19 +1,28 @@
 fileFormatVersion: 2
-guid: 31059ad8f84c47c4ea58e03ce9659115
+guid: 09e9e7dffabc83d44a171275c2e6596d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: Banshee_Turret_Closed
+      213: 7071136050673453972
+    second: CheckPoint Respawner_Pole
   - first:
-      213: 21300002
-    second: Banshee_Lazer
+      213: -455174874603168061
+    second: CheckPoint Respawner_Lightbulb0
   - first:
-      213: 21300004
-    second: Banshee_Stand
+      213: -6175485335210094234
+    second: CheckPoint Respawner_Lightbulb1
   - first:
-      213: 21300006
-    second: Banshee_Turret_Opened
+      213: -180329381780222227
+    second: CheckPoint Respawner_Base_Front
+  - first:
+      213: 5353887119203733637
+    second: CheckPoint Respawner_Door_Left
+  - first:
+      213: -3363492302846499
+    second: CheckPoint Respawner_Door_Right
+  - first:
+      213: 2332228686463082957
+    second: CheckPoint Respawner_Base_Back
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -43,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
+    filterMode: 0
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -57,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  spritePixelsToUnits: 200
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -115,17 +124,6 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
-    buildTarget: Windows Store Apps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-  - serializedVersion: 2
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -140,55 +138,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Banshee_Turret_Closed
+      name: CheckPoint Respawner_Pole
       rect:
         serializedVersion: 2
-        x: 194
-        y: 636
-        width: 388
-        height: 254
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 20cb3513a6e38e4429c19256d4b37164
-      internalID: 21300000
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Banshee_Lazer
-      rect:
-        serializedVersion: 2
-        x: 187
-        y: 92
-        width: 681
-        height: 301
-      alignment: 5
-      pivot: {x: 1, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6e8cb4e497925ae4eb8407ff6e0d95b3
-      internalID: 21300002
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Banshee_Stand
-      rect:
-        serializedVersion: 2
-        x: 1289
-        y: 122
-        width: 361
-        height: 318
+        x: 67
+        y: 526
+        width: 21
+        height: 243
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,29 +152,134 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63627c9bd01364744b96637537c3455c
-      internalID: 21300004
+      spriteID: 553f2373e0f727a46b23b4b81f78acff
+      internalID: 7071136050673453972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Banshee_Turret_Opened
+      name: CheckPoint Respawner_Lightbulb0
       rect:
         serializedVersion: 2
-        x: 1412
-        y: 620
-        width: 417
-        height: 254
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 100
+        y: 526
+        width: 62
+        height: 103
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 170d4034b85d5354da3a470ae8da61e3
-      internalID: 21300006
+      spriteID: 5e27f4a29e366824dbc055c059108909
+      internalID: -455174874603168061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CheckPoint Respawner_Lightbulb1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 526
+        width: 62
+        height: 103
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36afe2ef368aaba4ea86c9e5c0e4cd78
+      internalID: -6175485335210094234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CheckPoint Respawner_Base_Front
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 20
+        width: 618
+        height: 579
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac0ebe4438fb7854d9ae90549ed33f6f
+      internalID: -180329381780222227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CheckPoint Respawner_Door_Left
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 20
+        width: 250
+        height: 492
+      alignment: 8
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d08026c8ad75a464ab918e4bc3b555cf
+      internalID: 5353887119203733637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CheckPoint Respawner_Door_Right
+      rect:
+        serializedVersion: 2
+        x: 910
+        y: 22
+        width: 251
+        height: 491
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea241adf09bbb384aa86a72bf84cc50e
+      internalID: -3363492302846499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CheckPoint Respawner_Base_Back
+      rect:
+        serializedVersion: 2
+        x: 1173
+        y: 21
+        width: 571
+        height: 505
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8debf438f7368b429f62496cb147ec7
+      internalID: 2332228686463082957
       vertices: []
       indices: 
       edges: []
@@ -226,7 +287,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 32d125daf03c36d41940241bccb36ee4
+    spriteID: 915c3661ba9d36847b5b9997eba9152e
     internalID: 0
     vertices: []
     indices: 
