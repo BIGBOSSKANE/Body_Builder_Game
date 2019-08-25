@@ -136,10 +136,8 @@ public class hookshot : MonoBehaviour
                 distanceJoint.enabled = true;
                 lineRenderer.enabled = true;
                 playerScript.isSwinging = true;
-                if(!playerScript.isGrounded)
-                {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
-                }
+                gameObject.GetComponent<Rigidbody2D>().AddForce(aimDirection * 5f, ForceMode2D.Impulse);
+                playerScript.hookShotTimer = 0f;
             }
         }
         else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)

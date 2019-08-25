@@ -141,6 +141,8 @@ public class playerScript : MonoBehaviour
     GameObject hookshotAnchor;
     GameObject hookshotAugment;
     hookshot hookshotScript;
+    public float hookShotTimer;
+    bool wasGrounded; // was the player grounded on the last frame?
 
     // Arms
     Transform boxHoldPos; // determine where the held box is positioned
@@ -221,6 +223,15 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(isGrounded)
+        {
+            wasGrounded = true;
+        }
+        else
+        {
+            wasGrounded = false;
+        }
+
         if(partConfiguration == 1) // this was added to fix a Unity bug where the box collider would be active whilst disabled
         {
             Destroy(boxCol);
@@ -230,14 +241,11 @@ public class playerScript : MonoBehaviour
 
         if(isSwinging) // disables the velocity defining parameters to allow a force to be applied
         {
+            hookShotTimer += Time.deltaTime;
+
             rb.gravityScale = 3f;
 
             rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
-
-            if(GroundCheck() == true)
-            {
-                isGrounded = true;
-            }
         }
         else
         {
@@ -265,45 +273,48 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
+        }
 
-            if(GroundCheck() == true)
+        if(GroundCheck() == true)
+        {
+            if(isSwinging && !wasGrounded)
             {
-                isGrounded = true;
-                timeSlowScript.TimeNormal();
-
-                if(maxHeight > (groundbreakerDistance + transform.position.y))
-                {
-                    float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
-                }
-                else if(maxHeight > (1f + transform.position.y))
-                {
-                    float shakeAmount = maxHeight - transform.position.y;
-                    cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
-                }
-
-                maxHeight = transform.position.y;
-                lastGroundedHeight = transform.position.y;
-                leftGroundTimer = 0f;
-                remainingJumps = maximumJumps;
-                if(boostSprites != null)
-                {
-                    boostSprites.SetActive(false);
-                }
+                hookshotScript.DetachRope();
             }
-            else
+            isGrounded = true;
+            timeSlowScript.TimeNormal();
+            if(maxHeight > (groundbreakerDistance + transform.position.y))
             {
-                isGrounded = false;
-                leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-                speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-                if(transform.position.y > maxHeight)
+                float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
+            }
+            else if(maxHeight > (1f + transform.position.y))
+            {
+                   float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
+            }
+
+            maxHeight = transform.position.y;
+            lastGroundedHeight = transform.position.y;
+            leftGroundTimer = 0f;
+            remainingJumps = maximumJumps;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+        }
+        else
+        {
+            isGrounded = false;
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+            if(transform.position.y > maxHeight)
+            {
+                maxHeight = transform.position.y;
+            }
+            if(remainingJumps == maximumJumps && !jumpAfterFall)
                 {
-                    maxHeight = transform.position.y;
-                }
-                if(remainingJumps == maximumJumps && !jumpAfterFall)
-                {
-                    remainingJumps --;
-                }
+                remainingJumps --;
             }
         }
     }
@@ -487,10 +498,6 @@ public class playerScript : MonoBehaviour
         if(partConfiguration == 1)
         {
             climbing = false;
-            if(isSwinging && hitC.collider != null)
-            {
-                hookshotScript.DetachRope();
-            }
 
             if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
             {
