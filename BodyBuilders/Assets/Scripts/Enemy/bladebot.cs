@@ -8,8 +8,11 @@ public class bladebot : MonoBehaviour
     float patrolTimer = 0f; // current patrol time
     public float pursuitDelay = 0.5f; // how long after seeing the player does the blade bot take to move
     float pursuitDelayTimer = 1f; // time charging before the bladebot pursues the player
+    bool pursuitDelaying;
     public float pursuitSpeed = 2f; // the speed at which the blade moves when pursuing the player
     public float disengageSpeed = 1.5f; // the speed at which the blade returns to its original position
+    float disengageTimer;
+    float disengageMaxTime;
     bool verticalPatrol = true; // does the bladebot move vertically or horizontally? (it will aim at a 90 degree angle from the patrol route)
     public bool positiveAim = true; // is the bladebot aiming at the positive direction (right when moving vertically or up when moving horizontally)? if not, then it will be left or down
     bool pursuit = false; // is the bladebot pursuing the player?
@@ -28,6 +31,7 @@ public class bladebot : MonoBehaviour
 
     void Start()
     {
+        pursuit = false;
         lineRenderer = gameObject.GetComponent<LineRenderer>();
         radius = gameObject.GetComponent<CircleCollider2D>().radius;
         patrolPoint1 = GameObject.Find("patrolPoint1").gameObject.transform.position;
@@ -82,22 +86,25 @@ public class bladebot : MonoBehaviour
     {
         LaserCaster();
 
-        if(pursuitDelayTimer < pursuitDelay)
+        if(pursuitDelayTimer < pursuitDelay && pursuitDelaying)
         {
             pursuitDelayTimer += Time.deltaTime;
-            pursuit = true;
             spinningBlade.transform.Rotate(Vector3.forward * ((60f * (pursuitDelayTimer / pursuitDelay)) + 0.01f) * Time.deltaTime);
         }
-        else if(pursuit)
+        else if(pursuitDelayTimer >= pursuitDelay )
         {
-            rb.velocity = aimDirection * pursuitSpeed;
+            pursuit = true;
             spinningBlade.transform.Rotate(Vector3.forward * 60f * Time.deltaTime);
+            pursuitDelaying = false;
         }
-        else if(disengage)
+        
+        if(disengage)
         {
-            if(Vector2.Distance((Vector2)transform.position , lastPatrolPoint) > 2f)
+            disengageTimer -= Time.deltaTime;
+            if(disengageTimer > 0f)
             {
-                rb.velocity = -aimDirection * disengageSpeed;
+                float disengagingTimer = disengageTimer/disengageMaxTime;
+                transform.position = Vector2.Lerp(lastPatrolPoint , targetPoint , disengagingTimer);
             }
             else
             {
@@ -122,6 +129,7 @@ public class bladebot : MonoBehaviour
     void StartPursuit(Vector2 target)
     {
         lastPatrolPoint = gameObject.transform.position;
+        pursuitDelaying = true;
         pursuitDelayTimer = 0f;
         targetPoint = target;
     }
@@ -136,7 +144,7 @@ public class bladebot : MonoBehaviour
     {
         if(col.tag == "Player" || col.tag == "Groundbreakable" || col.tag == "Enemy")
         {
-            // kill things here
+            Destroy(col.gameObject);
         }
     }
 
@@ -158,10 +166,15 @@ public class bladebot : MonoBehaviour
 
             if(laser.collider.tag == "Shield" || laser.collider.tag == "Player")
             {
+                pursuitDelayTimer = 0f;
+                pursuitDelaying = true;
                 StartPursuit(laser.collider.gameObject.transform.position);
             }
-            else if(pursuit && Vector2.Distance(transform.position , laser.point) < 2f && (laser.collider.tag == "Environment" || laser.collider.tag == "WallJump" || laser.collider.tag == "Climbable"))
+            else if(pursuit && Vector2.Distance(transform.position , laser.point) < 2f && (laser.collider.tag == "Environment" || laser.collider.tag == "WallJump" || laser.collider.tag == "Climbable" || laser.collider.tag == "Untagged"))
             {
+                targetPoint = transform.position;
+                disengageTimer = Vector2.Distance((Vector2)transform.position , lastPatrolPoint)/disengageSpeed;
+                disengageMaxTime = disengageTimer;
                 Disengage();
             }
         }
