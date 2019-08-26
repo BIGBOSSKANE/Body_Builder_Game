@@ -198,7 +198,7 @@ public class laserRouter : MonoBehaviour
         }
         else
         {
-            collisionEffect.SetActive(true);
+            collisionEffect.SetActive(false);
             laserEndpoint = laserOrigin + (laserOriginDirection * 10000f);
         }
         laserLine.positionCount = 2;

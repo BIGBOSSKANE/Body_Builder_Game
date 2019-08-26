@@ -141,7 +141,6 @@ public class playerScript : MonoBehaviour
     GameObject hookshotAnchor;
     GameObject hookshotAugment;
     hookshot hookshotScript;
-    public float hookShotTimer;
     bool wasGrounded; // was the player grounded on the last frame?
 
     // Arms
@@ -173,6 +172,8 @@ public class playerScript : MonoBehaviour
     Vector2 laserEndpoint;
     public float slam = 0f;
     public Vector2 slamVector;
+    bool applyWallForce = false;
+    int facingDirection;
 
 
     void Start()
@@ -239,13 +240,66 @@ public class playerScript : MonoBehaviour
 
         moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
 
+        if(GroundCheck() == true)
+        {
+            if(applyWallForce)
+            {
+                if(Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0f && Mathf.Abs(Input.GetAxisRaw("Horizontal")) <= 0.1f) // allow for climbing rotation fix
+                {
+                    moveInput = facingDirection; // apply force towards wall to let player rotate
+                }
+            }
+            if(isSwinging && !wasGrounded)
+            {
+                hookshotScript.DetachRope();
+            }
+            isGrounded = true;
+            timeSlowScript.TimeNormal();
+            if(maxHeight > (groundbreakerDistance + transform.position.y))
+            {
+                float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
+            }
+            else if(maxHeight > (1f + transform.position.y))
+            {
+                float shakeAmount = maxHeight - transform.position.y;
+                cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
+            }
+
+            maxHeight = transform.position.y;
+            lastGroundedHeight = transform.position.y;
+            leftGroundTimer = 0f;
+            remainingJumps = maximumJumps;
+            if(boostSprites != null)
+            {
+                boostSprites.SetActive(false);
+            }
+        }
+        else
+        {
+            isGrounded = false;
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
+            if(transform.position.y > maxHeight)
+            {
+                maxHeight = transform.position.y;
+            }
+            if(remainingJumps == maximumJumps && !jumpAfterFall)
+                {
+                remainingJumps --;
+            }
+        }
+    
+    // Controls
+
         if(isSwinging) // disables the velocity defining parameters to allow a force to be applied
         {
-            hookShotTimer += Time.deltaTime;
-
             rb.gravityScale = 3f;
 
-            rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+            if(Mathf.Abs(moveInput) > 0.2f)
+            {
+                rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+            }
         }
         else
         {
@@ -272,49 +326,6 @@ public class playerScript : MonoBehaviour
             else
             {
                 rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
-            }
-        }
-
-        if(GroundCheck() == true)
-        {
-            if(isSwinging && !wasGrounded)
-            {
-                hookshotScript.DetachRope();
-            }
-            isGrounded = true;
-            timeSlowScript.TimeNormal();
-            if(maxHeight > (groundbreakerDistance + transform.position.y))
-            {
-                float shakeAmount = maxHeight - transform.position.y;
-                cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
-            }
-            else if(maxHeight > (1f + transform.position.y))
-            {
-                   float shakeAmount = maxHeight - transform.position.y;
-                cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
-            }
-
-            maxHeight = transform.position.y;
-            lastGroundedHeight = transform.position.y;
-            leftGroundTimer = 0f;
-            remainingJumps = maximumJumps;
-            if(boostSprites != null)
-            {
-                boostSprites.SetActive(false);
-            }
-        }
-        else
-        {
-            isGrounded = false;
-            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-            if(transform.position.y > maxHeight)
-            {
-                maxHeight = transform.position.y;
-            }
-            if(remainingJumps == maximumJumps && !jumpAfterFall)
-                {
-                remainingJumps --;
             }
         }
     }
@@ -511,6 +522,17 @@ public class playerScript : MonoBehaviour
                 }
                 else
                 {
+                    facingDirection = (facingRight)? 1 : -1;
+                    RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * new Vector2(facingDirection , 0f) , 0.6f , jumpLayer);
+                    Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
+                    if(sideHit.collider != null )
+                    {
+                        applyWallForce = true;
+                    }
+                    else
+                    {
+                        applyWallForce = false;
+                    }
                     return true;
                 }
             }
@@ -901,7 +923,6 @@ void BoxInteract()
             {
                 scaler = false;
                 jumpPower = jumpForce * 7f;
-                fallMultiplier = 2.5f;
             }
 
             if(headString == "HookshotHead" || hookShot) // if the player already has a head augment, they keep it when they get a new one
@@ -909,6 +930,7 @@ void BoxInteract()
                 hookShot = true;
                 hookshotAugment.SetActive(true);
                 hookshotScript.enabled = true;
+                fallMultiplier = 1f;
                 // do stuff here
             }
             else
