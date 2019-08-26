@@ -121,7 +121,7 @@ public class hookshot : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
-            if(hit.collider != null)
+            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y))
             {
                 if(hit.collider.gameObject.tag == "TetherPoint")
                 {
