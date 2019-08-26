@@ -4,71 +4,31 @@ using UnityEngine;
 
 public class lineAnimator : MonoBehaviour
 {
-    public float frameDuration = 0.2f;
-    float frameTimer;
-    public int spriteSheetColumns = 1;
-    public int spriteSheetRows = 1;
-    public int singleSpriteSize = 64;
-    public int totalFrames = 1;
-    int currentFrame = 1;
-
-    LineRenderer lineRenderer;
-
+     int spriteSheetColumns = 4; // number of horizontal sprite frames
+     int spriteSheetRows = 6; // number of vertical sprite frames
+     int emptyTiles = 0; // number of empty sprite frames
+     int index; // current frame
+     Vector2 size; // size of each sprite
+     
+     [Range (0 , 200)]public int framesPerSecond = 100; // speed through which frames cycle
+     LineRenderer lineRenderer; // the renderer we are changing the material for
+     
     void Start()
     {
         lineRenderer = gameObject.GetComponent<LineRenderer>();
-        if(spriteSheetColumns == 0)
-        {
-            spriteSheetColumns = 1;
-        }
-        
-        if(spriteSheetRows == 0)
-        {
-            spriteSheetColumns = 1;
-        }
+        size = new Vector2(1.0f / spriteSheetColumns , 1.0f / spriteSheetRows);
     }
 
-    // Update is called once per frame
-    void Update()
+     void Update()
     {
-        frameTimer += Time.unscaledDeltaTime;
-        if(frameTimer >= frameDuration)
-        {
-            Debug.Log("Switch");
-            if(currentFrame == totalFrames)
-            {
-                currentFrame = 0;
-            }
-            else
-            {
-                currentFrame ++;
-            }
+        index = (int)(Time.time * framesPerSecond);
+        index = index % (spriteSheetColumns * spriteSheetRows - emptyTiles);
+        int uIndex = index % spriteSheetColumns;
+        int vIndex = index % spriteSheetRows; 
 
-        }
-
-        if(currentFrame == 0) // isolate the 0 frame, so you don't get errors from dividing by 0
-        {
-            float offsetX = 0f;
-            float offsetY = 0f;
-            lineRenderer.material.SetTextureOffset("_MainTex", new Vector2(offsetX, offsetY));
-            currentFrame ++;
-            frameTimer = 0f;
-        }
-        else if((currentFrame % spriteSheetColumns) == 0)
-        {
-            float offsetX = 0f;
-            float offsetY = singleSpriteSize * (currentFrame / spriteSheetColumns);
-            lineRenderer.material.SetTextureOffset("_MainTex", new Vector2(offsetX, offsetY));
-            currentFrame ++;
-            frameTimer = 0f;           
-        }
-        else
-        {
-            float offsetX = singleSpriteSize * (currentFrame / spriteSheetRows);
-            float offsetY = singleSpriteSize * (currentFrame / spriteSheetColumns);
-            lineRenderer.material.SetTextureOffset("_MainTex", new Vector2(offsetX, offsetY));
-            currentFrame ++;
-            frameTimer = 0f;
-        }
+        Vector2 offset = new Vector2(uIndex * size.x, 1.0f - size.y - vIndex * size.y);
+     
+        lineRenderer.material.SetTextureOffset("_MainTex", offset);
+        lineRenderer.material.SetTextureScale("_MainTex", size);
     }
 }

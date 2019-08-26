@@ -39,6 +39,7 @@ public class bansheeScript : MonoBehaviour
         collisionEffect.SetActive(false);
         circleCol = gameObject.GetComponent<CircleCollider2D>();
         laserLine = gameObject.GetComponent<LineRenderer>();
+        laserLine.enabled = true;
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
     }
