@@ -16,6 +16,7 @@ public class hookshot : MonoBehaviour
     // Hookshot
     public bool ropeAttached = false;
     public float ropeClimbSpeed = 2f;
+    public float maxropeLength = 8f;
     Vector3 augmentAimDirection;
     playerScript playerScript;
     GameObject hookShotAnchorPoint;
@@ -113,6 +114,11 @@ public class hookshot : MonoBehaviour
             {
                 distanceJoint.distance += 5f * Time.deltaTime;
             }
+        }
+
+        if(distanceJoint.distance >= maxropeLength)
+        {
+            distanceJoint.distance = maxropeLength;
         }
     }
 
