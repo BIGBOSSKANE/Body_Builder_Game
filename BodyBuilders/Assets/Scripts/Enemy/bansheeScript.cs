@@ -14,7 +14,7 @@ public class bansheeScript : MonoBehaviour
     public float laserFireTime = 3f;
     public LayerMask laserLayer;
     public LayerMask playerLayer;
-    public LineRenderer laserLine;
+    LineRenderer laserLine;
     public GameObject laserOriginPoint;
     Vector2 laserOrigin;
     CircleCollider2D circleCol;
@@ -39,6 +39,7 @@ public class bansheeScript : MonoBehaviour
         collisionEffect.SetActive(false);
         circleCol = gameObject.GetComponent<CircleCollider2D>();
         laserLine = gameObject.GetComponent<LineRenderer>();
+        laserLine.enabled = true;
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
     }

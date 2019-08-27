@@ -16,6 +16,7 @@ public class hookshot : MonoBehaviour
     // Hookshot
     public bool ropeAttached = false;
     public float ropeClimbSpeed = 2f;
+    public float maxropeLength = 8f;
     Vector3 augmentAimDirection;
     playerScript playerScript;
     GameObject hookShotAnchorPoint;
@@ -114,6 +115,11 @@ public class hookshot : MonoBehaviour
                 distanceJoint.distance += 5f * Time.deltaTime;
             }
         }
+
+        if(distanceJoint.distance >= maxropeLength)
+        {
+            distanceJoint.distance = maxropeLength;
+        }
     }
 
     private void HookShotFire()
@@ -121,7 +127,7 @@ public class hookshot : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
-            if(hit.collider != null)
+            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y))
             {
                 if(hit.collider.gameObject.tag == "TetherPoint")
                 {
@@ -137,7 +143,6 @@ public class hookshot : MonoBehaviour
                 lineRenderer.enabled = true;
                 playerScript.isSwinging = true;
                 gameObject.GetComponent<Rigidbody2D>().AddForce(aimDirection * 5f, ForceMode2D.Impulse);
-                playerScript.hookShotTimer = 0f;
             }
         }
         else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)
