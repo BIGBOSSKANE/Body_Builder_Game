@@ -19,6 +19,15 @@ To do:
 
 
 
+
+Should use a variable for velocity, then add it at the end of physics update
+Collect all external forces and apply them afterwards
+
+
+
+
+
+
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
@@ -49,7 +58,7 @@ public class playerScript : MonoBehaviour
     private GameObject currentSpawnPoint;
 
 // BASIC MOVEMENT
-
+    Vector2 externalVelocity;
     private float moveInput; // get player Input value
     private bool facingRight = true; // used to flip the character when turning
     public float reverseDirectionTimer = 0f;
@@ -96,7 +105,7 @@ public class playerScript : MonoBehaviour
 
 // AUGMENTS AND PARTS
 
-    public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
+    [Range (1 , 4)] public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
     public string headString; // this is referenced from the name of the head augment
     public bool scaler = false;
     public bool hookShot = false;
@@ -224,7 +233,9 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(isGrounded)
+        Vector2 velocityToApply = Vector2.zero;
+
+        if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
         {
             wasGrounded = true;
         }
@@ -242,50 +253,40 @@ public class playerScript : MonoBehaviour
 
         if(GroundCheck() == true)
         {
-            if(applyWallForce)
-            {
-                if(Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0f && Mathf.Abs(Input.GetAxisRaw("Horizontal")) <= 0.1f) // allow for climbing rotation fix
-                {
-                    moveInput = facingDirection; // apply force towards wall to let player rotate
-                }
-            }
-            if(isSwinging && !wasGrounded)
+            isGrounded = true;
+
+            if(isSwinging && !wasGrounded) // if you are swinging, and hit the ground, detach the rope
             {
                 hookshotScript.DetachRope();
             }
-            isGrounded = true;
-            timeSlowScript.TimeNormal();
-            if(maxHeight > (groundbreakerDistance + transform.position.y))
-            {
-                float shakeAmount = maxHeight - transform.position.y;
-                cameraScript.TriggerShake(shakeAmount , true , partConfiguration);
-            }
-            else if(maxHeight > (1f + transform.position.y))
+
+            timeSlowScript.TimeNormal(); // disable any time slow effects
+
+            if(maxHeight > (1f + transform.position.y)) // cause the ground to shake if you just landed
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
             }
 
-            maxHeight = transform.position.y;
-            lastGroundedHeight = transform.position.y;
-            leftGroundTimer = 0f;
-            remainingJumps = maximumJumps;
-            if(boostSprites != null)
+            maxHeight = transform.position.y; // reset maxHeight
+            lastGroundedHeight = transform.position.y; // reset lastGroundedHeight
+            leftGroundTimer = 0f; // reset the jump time
+            remainingJumps = maximumJumps; // reset remaining jumps
+            if(boostSprites != null) // disable jump booster sprites if they were active
             {
                 boostSprites.SetActive(false);
             }
         }
-        else
+        else // if not grounded
         {
-            isGrounded = false;
+            isGrounded = false; // not grounded
             leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
-            speed = Mathf.Clamp(speed , 0f , movementSpeed / 1.1f); // slow player movement in the air
-            if(transform.position.y > maxHeight)
+            if(transform.position.y > maxHeight) // set the maximum height of the current air time
             {
                 maxHeight = transform.position.y;
             }
-            if(remainingJumps == maximumJumps && !jumpAfterFall)
-                {
+            if(remainingJumps == maximumJumps && !jumpAfterFall) // if coyoteTime is not enabled, then you lose a jump immediately if you fall from a ledge
+            {
                 remainingJumps --;
             }
         }
@@ -294,40 +295,50 @@ public class playerScript : MonoBehaviour
 
         if(isSwinging) // disables the velocity defining parameters to allow a force to be applied
         {
-            rb.gravityScale = 3f;
+            rb.gravityScale = 3f; // lower gravity for a floatier swing
 
             if(Mathf.Abs(moveInput) > 0.2f)
             {
-                rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force);
+                rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
             }
         }
         else
         {
-            rb.gravityScale = 2f;
-            if(slam < 2f)
-            {
-                if(slam > 0.2f && isGrounded == true)
-                {
-                    slam = 2f;
-                }
-                slam += Time.deltaTime;
-                rb.velocity = new Vector2((5f * slamVector.x - (slamVector.x * 5f * (slam / 2f))) + (moveInput * (movementSpeed * (slam / 2f))), rb.velocity.y);
-            }
-            else if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
+            rb.gravityScale = 2f; // restore gravity to normal value
+            
+            if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime;
-                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
+                velocityToApply = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
             }
-            else if(climbingDismountTimer <= 0.1f && climbing == false)
+            else if(climbingDismountTimer <= 0.1f && climbing == false) // if jumping from wall, give some extra force
             {
-                rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+                velocityToApply = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
                 climbingDismountTimer += Time.deltaTime;
             }
             else
             {
-                rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
+                velocityToApply = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
         }
+
+        if(applyWallForce && isGrounded) // if the player is in scaler mode, and rolling up a wall, force them against it, causing them to spin
+        {
+            if(Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0f) // allow for climbing rotation fix
+            {
+                if(Mathf.Abs(Input.GetAxisRaw("Horizontal")) <= 0f)
+                {
+                    moveInput = facingDirection; // apply force towards wall to let player rotate
+                }
+                else if(Mathf.Sign(moveInput) != Mathf.Sign(facingDirection))
+                {
+                    velocityToApply += new Vector2(moveInput * movementSpeed * facingDirection * 10f, 0);
+                }
+            }
+        }
+
+        rb.velocity = velocityToApply + externalVelocity;
+        externalVelocity = Vector2.zero; // reset external forces
     }
 
     void Update()
@@ -949,6 +960,7 @@ void BoxInteract()
             //boxCol.enabled = false; // don't use the typical vertical standing collider
             if(headCol != null && headCol.enabled != true)
             {
+                headCol.enabled = false;
                 headCol.enabled = true;
             }
             rb.constraints = RigidbodyConstraints2D.None; // can roll
