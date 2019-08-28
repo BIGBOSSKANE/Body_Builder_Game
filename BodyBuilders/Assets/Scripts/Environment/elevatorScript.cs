@@ -1,19 +1,16 @@
-﻿
-/*
+﻿/*
 Creator: Daniel
 Created 09/08/2019
 Last Edited by: Daniel
 Last Edit 29/08/2019
 */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class elevatorScript : MonoBehaviour
+public class elevatorScript : activate
 {
-    public bool activated = true; // is it powered and working?
     [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Range (0.1f , 10f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
     public bool jumpBooster = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
@@ -194,7 +191,6 @@ public class elevatorScript : MonoBehaviour
                 if(playerScript.partConfiguration == 1) // prevent unity issues where ghost colliders would activate
                 {
                     Destroy(player.GetComponent<BoxCollider2D>());
-                    print("attached");
                 }
                 playerOnboard = true; // the player is now on board
             }
@@ -237,7 +233,6 @@ public class elevatorScript : MonoBehaviour
             if(playerScript.partConfiguration == 1) // destroy colliders to prevent unity collider ghosting error
             {
                 Destroy(player.GetComponent<BoxCollider2D>());
-                print("Detached");
             }
             playerOnboard = false; // player is no longer on board
         }

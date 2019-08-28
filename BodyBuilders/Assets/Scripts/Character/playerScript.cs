@@ -11,7 +11,6 @@ Last Edit 09/08/2019
 To do:
  - Bladebot
  - Refine screenshake
- - Laser Texture
  - Sound implementation
  - Animation Implementation
  - Level Design
@@ -58,7 +57,6 @@ public class playerScript : MonoBehaviour
     private GameObject currentSpawnPoint;
 
 // BASIC MOVEMENT
-    Vector2 externalVelocity;
     private float moveInput; // get player Input value
     private bool facingRight = true; // used to flip the character when turning
     public float reverseDirectionTimer = 0f;
@@ -337,8 +335,7 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        rb.velocity = velocityToApply + externalVelocity;
-        externalVelocity = Vector2.zero; // reset external forces
+        rb.velocity = velocityToApply;
     }
 
     void Update()
