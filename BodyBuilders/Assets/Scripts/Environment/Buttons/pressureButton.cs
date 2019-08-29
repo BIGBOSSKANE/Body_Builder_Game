@@ -13,6 +13,7 @@ public class pressureButton : MonoBehaviour
 {
     public bool activated;
     public bool heavyButton; // does the button require a heavyliftable or powercell to weigh it down?
+    public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
     public GameObject [] activates;
 
     void OnTriggerExit2D(Collider2D col)
@@ -53,7 +54,12 @@ public class pressureButton : MonoBehaviour
     {
         foreach (GameObject activateable in activates)
         {
-            activateable.GetComponent<activate>().Activate(active);
+            if(activateable != null)
+            {
+                activate activateScript = activateable.GetComponent<activate>();
+                activateScript.Activate(active);
+                activateScript.ActivateDirection(right);
+            }
         }
     }
 }

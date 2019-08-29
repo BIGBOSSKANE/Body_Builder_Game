@@ -231,8 +231,6 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector2 velocityToApply = Vector2.zero;
-
         if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
         {
             wasGrounded = true;
@@ -307,16 +305,16 @@ public class playerScript : MonoBehaviour
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime;
-                velocityToApply = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
+                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
             }
             else if(climbingDismountTimer <= 0.1f && climbing == false) // if jumping from wall, give some extra force
             {
-                velocityToApply = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+                rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
                 climbingDismountTimer += Time.deltaTime;
             }
             else
             {
-                velocityToApply = new Vector2(moveInput * movementSpeed, rb.velocity.y);
+                rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
             }
         }
 
@@ -330,12 +328,10 @@ public class playerScript : MonoBehaviour
                 }
                 else if(Mathf.Sign(moveInput) != Mathf.Sign(facingDirection))
                 {
-                    velocityToApply += new Vector2(moveInput * movementSpeed * facingDirection * 10f, 0);
+                    rb.velocity += new Vector2(moveInput * movementSpeed * facingDirection * 10f, 0);
                 }
             }
         }
-
-        rb.velocity = velocityToApply;
     }
 
     void Update()

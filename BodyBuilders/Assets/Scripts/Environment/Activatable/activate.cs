@@ -25,4 +25,9 @@ public class activate : MonoBehaviour
             activated = activateSignal;
         }
     }
+
+    virtual public void ActivateDirection(bool right)
+    {
+        // overwrite with laser router code here
+    }
 }

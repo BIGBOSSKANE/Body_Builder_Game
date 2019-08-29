@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class laserRouter : MonoBehaviour
+public class laserRouter : activate
 {
-    public bool canStoreCharge = false;
-    bool charged = false;
-    bool deathRay = false;
-    float colRadius;
-    GameObject aim;
-    GameObject core;
+    public bool charged = false; // is the laser router charged?
+    bool wasCharged; // was the laser router charged in the last frame? - this is used to send an activate signal to doors/fanse/etc that use the laser router as a switch
+    public bool canStoreCharge = false; // can the laser router store a charge, or does it only route lasers while a laser is colliding with it?
+    public bool canRotate = true; // does the laser router rotate when sent a right or !right signal
+    bool rotating; // is the laser router currently rotating?
+    public bool reverseRotate = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
+    public bool patrol = false; // does the laser router move between points when activated?
+    public bool patrolLoop = false; // does the laser router move back and forth between points?
+    public bool patrolReverseOnReactivate = false; // if patrol loop is untrue, this means that pressing a button again will cause the laser Router to move to the other position each time it is pressed
+    Vector2 originalPosition; // starting point if moving due to an activate call
+    public Vector2 moveTo; // end point when moving due to an activate call
+    Vector2 targetPosition; // the endpoint of the movement, put into world space
+    bool deathRay = false; // will the ray kill?
+    float colRadius; // radius of the circle collider
+    GameObject aimSprite; // sprite indicating the aim direction
+    GameObject coreSprite; // sprite representing if the laser router is storing a charge
     GameObject collisionEffect;
     Quaternion targetRotation;
-    public bool rotating;
     float rotateTimer = 0f;
-    bool clockwiseButtonUntriggered = true;
-    bool anticlockwiseButtonUntriggered = true;
-    buttonSwitchScript clockwiseButton;
-    buttonSwitchScript anticlockwiseButton;
     LineRenderer laserLine;
     string laserTag;
     playerScript playerScript;
@@ -25,33 +30,35 @@ public class laserRouter : MonoBehaviour
     powerCell powerCell;
     powerStation powerStation;
     Vector2 laserEndpoint;
+    public GameObject [] activates; // does the laser router activate something while it stores a charge
 
     void Start()
     {
-        aim = gameObject.transform.Find("Direction").gameObject;
-        core = gameObject.transform.Find("Direction").gameObject.transform.Find("Core").gameObject;
-        core.SetActive(false);
+        aimSprite = gameObject.transform.Find("Direction").gameObject;
+        coreSprite = gameObject.transform.Find("Direction").gameObject.transform.Find("coreSprite").gameObject;
+        coreSprite.SetActive(false);
         rotateTimer = 0f;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         collisionEffect.SetActive(false);
-        clockwiseButton = gameObject.transform.Find("clockwiseTrigger").gameObject.GetComponent<buttonSwitchScript>();
-        anticlockwiseButton = gameObject.transform.Find("anticlockwiseTrigger").gameObject.GetComponent<buttonSwitchScript>();
         colRadius = gameObject.GetComponent<CircleCollider2D>().radius * transform.localScale.x;
         laserLine = gameObject.GetComponent<LineRenderer>();
         laserLine.enabled = false;
         playerScript= GameObject.Find("Player").GetComponent<playerScript>();
+        originalPosition = (Vector2)transform.position;
+        targetPosition = moveTo + (Vector2)transform.position;
+        wasCharged = false;
     }
 
     public void RotateAnticlockwise()
     {
-        targetRotation = aim.transform.rotation;
+        targetRotation = aimSprite.transform.rotation;
         targetRotation *= Quaternion.Euler(0f, 0f, 90f);
         rotating = true;
     }
 
     public void RotateClockwise()
     {
-        targetRotation = aim.transform.rotation;
+        targetRotation = aimSprite.transform.rotation;
         targetRotation *= Quaternion.Euler(0f, 0f, -90f);
         rotating = true;
     }
@@ -60,20 +67,7 @@ public class laserRouter : MonoBehaviour
     {
         if(rotating == true)
         {
-            aim.transform.rotation = Quaternion.Slerp(aim.transform.rotation, targetRotation, rotateTimer);
-        }
-        else
-        {
-            if(clockwiseButton.triggered && clockwiseButtonUntriggered)
-            {
-                rotateTimer = 0f;
-                RotateClockwise();
-            }
-            else if(anticlockwiseButton.triggered && anticlockwiseButtonUntriggered)
-            {
-                rotateTimer = 0f;
-                RotateAnticlockwise();
-            }
+            aimSprite.transform.rotation = Quaternion.Slerp(aimSprite.transform.rotation, targetRotation, rotateTimer);
         }
 
         rotateTimer += Time.deltaTime;
@@ -82,33 +76,23 @@ public class laserRouter : MonoBehaviour
             rotating = false; 
         }
 
-        if(clockwiseButton.triggered == false)
-        {
-            clockwiseButtonUntriggered = true;
-        }
-        else
-        {
-            clockwiseButtonUntriggered = false;
-        }
-
-        if(anticlockwiseButton.triggered == false)
-        {
-            anticlockwiseButtonUntriggered = true;
-        }
-        else
-        {
-            anticlockwiseButtonUntriggered = false;
-        }
-
         if(charged)
         {
             LaserCaster();
         }
+
+
+        if(wasCharged != charged)
+        {
+            StateChange(charged);
+        }
+
+        wasCharged = charged;
     }
 
     void LaserCaster()
     {
-        Vector2 laserOriginDirection = (aim.transform.up + aim.transform.right).normalized;
+        Vector2 laserOriginDirection = (aimSprite.transform.up + aimSprite.transform.right).normalized;
         Vector2 laserOrigin = transform.position * colRadius;
         laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
         laserOrigin = transform.position;
@@ -209,7 +193,7 @@ public class laserRouter : MonoBehaviour
     public void Charged()
     {
         charged = true;
-        core.SetActive(true);
+        coreSprite.SetActive(true);
         laserLine.enabled = true;
     }
 
@@ -218,7 +202,7 @@ public class laserRouter : MonoBehaviour
         if(!canStoreCharge)
         {
             charged = false;
-            core.SetActive(false);
+            coreSprite.SetActive(false);
             laserLine.enabled = false;
         }
     }
@@ -233,6 +217,52 @@ public class laserRouter : MonoBehaviour
         {
             deathRay = false;
         }
+    }
+
+
+    void StateChange(bool active)
+    {
+        foreach (GameObject activateable in activates)
+        {
+            if(activateable != null)
+            {
+                activateable.GetComponent<activate>().Activate(active);
+            }
+        }
+    }
+
+    override public void ActivateDirection(bool right)
+    {
+        if(canRotate)
+        {
+            if(reverseRotate)
+            {
+                right = !right;
+            }
+
+            if(right)
+            {
+                rotateTimer = 0f;
+                RotateClockwise();
+            }
+            else
+            {
+                rotateTimer = 0f;
+                RotateAnticlockwise();
+            }
+        }
+    }
+
+    void OnDrawGizmos() // shows the waypoints in both editor and in game
+    {
+        Gizmos.color = Color.blue;
+        float locationIdentifier = 0.3f;
+        
+        Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
+        Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+        Gizmos.DrawLine(originalPosition - Vector2.up * locationIdentifier , originalPosition + Vector2.up * locationIdentifier);
+        Gizmos.DrawLine(originalPosition - Vector2.left * locationIdentifier , originalPosition + Vector2.left * locationIdentifier);
+        Gizmos.DrawLine(originalPosition , targetPosition); // draw a line so we can see where the laser router moves
     }
 }
 

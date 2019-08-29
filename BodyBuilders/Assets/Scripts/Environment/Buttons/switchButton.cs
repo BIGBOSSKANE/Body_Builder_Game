@@ -12,6 +12,7 @@ using UnityEngine;
 public class switchButton : MonoBehaviour
 {
     public bool activated;
+    public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
     public GameObject [] activates;
     int triggerCounter;
 
@@ -40,7 +41,12 @@ public class switchButton : MonoBehaviour
     {
         foreach (GameObject activateable in activates)
         {
-            activateable.GetComponent<activate>().Activate(active);
+            if(activateable != null)
+            {
+                activate activateScript = activateable.GetComponent<activate>();
+                activateScript.Activate(active);
+                activateScript.ActivateDirection(right);
+            }
         }
     }
 }
