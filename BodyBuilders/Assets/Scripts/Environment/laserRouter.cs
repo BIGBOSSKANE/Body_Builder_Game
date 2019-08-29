@@ -12,7 +12,8 @@ public class laserRouter : activate
     public bool reverseRotate = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
     public bool patrol = false; // does the laser router move between points when activated?
     public bool patrolLoop = false; // does the laser router move back and forth between points?
-    public bool patrolReverseOnReactivate = false; // if patrol loop is untrue, this means that pressing a button again will cause the laser Router to move to the other position each time it is pressed
+    bool patrolForwards = true; // moving forwards in patrol route
+    public bool patrolSwitch = false; // if patrol loop is untrue, this means that deactivating the router will cause it to return to the original position
     Vector2 originalPosition; // starting point if moving due to an activate call
     public Vector2 moveTo; // end point when moving due to an activate call
     Vector2 targetPosition; // the endpoint of the movement, put into world space
@@ -20,16 +21,19 @@ public class laserRouter : activate
     float colRadius; // radius of the circle collider
     GameObject aimSprite; // sprite indicating the aim direction
     GameObject coreSprite; // sprite representing if the laser router is storing a charge
-    GameObject collisionEffect;
-    Quaternion targetRotation;
-    float rotateTimer = 0f;
-    LineRenderer laserLine;
-    string laserTag;
-    playerScript playerScript;
-    public LayerMask laserLayer;
-    powerCell powerCell;
-    powerStation powerStation;
-    Vector2 laserEndpoint;
+    GameObject collisionEffect; // collision burst effect
+    GameObject burstEffect; // emanating from shield burst effect
+    Quaternion targetRotation; // point to rotate towards
+    float rotateTimer = 0f; // time tracker for rotation
+    float moveTimer = 0f; // time tracker for movement
+    public float moveTimeTotal = 1f; // time taken to move between points
+    LineRenderer laserLine; // the line renderer for the laser
+    string laserTag; // name of the thing hit by the laser
+    playerScript playerScript; // get a reference to the player script
+    public LayerMask laserLayer; // what can the laser collide with? 
+    powerCell powerCell; // the powercell script of the powercell hit
+    powerStation powerStation; // the script of the powerstation hit
+    Vector2 laserEndpoint; // the endpoint of the laser
     public GameObject [] activates; // does the laser router activate something while it stores a charge
 
     void Start()
@@ -39,8 +43,10 @@ public class laserRouter : activate
         coreSprite.SetActive(false);
         rotateTimer = 0f;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
+        burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
         collisionEffect.SetActive(false);
-        colRadius = gameObject.GetComponent<CircleCollider2D>().radius * transform.localScale.x;
+        burstEffect.SetActive(false);
+        colRadius = gameObject.GetComponent<CircleCollider2D>().radius * transform.localScale.x + 0.01f;
         laserLine = gameObject.GetComponent<LineRenderer>();
         laserLine.enabled = false;
         playerScript= GameObject.Find("Player").GetComponent<playerScript>();
@@ -88,16 +94,17 @@ public class laserRouter : activate
         }
 
         wasCharged = charged;
+
+
+        Patrol(); // check if the laser router is being prompted to move
     }
 
     void LaserCaster()
     {
         Vector2 laserOriginDirection = (aimSprite.transform.up + aimSprite.transform.right).normalized;
-        Vector2 laserOrigin = transform.position * colRadius;
-        laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
-        laserOrigin = transform.position;
+        Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * colRadius);
 
-        RaycastHit2D laser = Physics2D.Raycast(transform.position, laserOriginDirection, Mathf.Infinity , laserLayer);
+        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
             laserEndpoint = laser.point;
@@ -188,6 +195,16 @@ public class laserRouter : activate
         laserLine.positionCount = 2;
         laserLine.SetPosition(0 , laserOrigin);
         laserLine.SetPosition(1 , laserEndpoint);
+
+        float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
+        if(laserAngle < 0f)
+        {
+            laserAngle = Mathf.PI * 2 + laserAngle;
+        }
+            
+        burstEffect.SetActive(true);
+        burstEffect.transform.position = (Vector2)transform.position + (laserOriginDirection * (colRadius - 0.01f));
+        burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
     }
 
     public void Charged()
@@ -216,6 +233,75 @@ public class laserRouter : activate
         else
         {
             deathRay = false;
+        }
+    }
+
+    void Patrol()
+    {
+        if(patrol)
+        {
+            if(patrolLoop) // the router will move back and forwards while activated
+            {
+                if(activated)
+                {
+                    if(patrolForwards)
+                    {
+                        moveTimer += Time.deltaTime / moveTimeTotal;
+                        if(moveTimer > 1)
+                        {
+                            moveTimer = 1;
+                            patrolForwards = false;
+                        }
+                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                    }
+                    else
+                    {
+                        moveTimer -= Time.deltaTime / moveTimeTotal;
+                        if(moveTimer < 0f)
+                        {
+                            moveTimer = 0f;
+                            patrolForwards = true;
+                        }
+                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                    }
+                }   
+            }
+            else // movement occurs at set increments
+            {
+                if(patrolSwitch) // when deactivated, move back to the original position
+                {
+                    if(activated)
+                    {
+                        moveTimer += Time.deltaTime / moveTimeTotal;
+                        if(moveTimer > 1)
+                        {
+                            moveTimer = 1;
+                        }
+                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                    }
+                    else
+                    {
+                        moveTimer -= Time.deltaTime / moveTimeTotal;
+                        if(moveTimer < 0f)
+                        {
+                            moveTimer = 0f;
+                        }
+                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                    }
+                }
+                else // cannot move back
+                {
+                    if(activated)
+                    {
+                        moveTimer += Time.deltaTime / moveTimeTotal;
+                        if(moveTimer > 1)
+                        {
+                            moveTimer = 1;
+                        }
+                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                    }
+                }
+            }
         }
     }
 

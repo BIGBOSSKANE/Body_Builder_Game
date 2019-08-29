@@ -164,6 +164,7 @@ public class playerScript : MonoBehaviour
     bool isDeflecting = false; // is the player currently deflecting
     bool firingLaser = false;
     GameObject collisionEffect;
+    GameObject burstEffect;
     Vector2 laserOrigin;
     float shieldUnmodifiedRadius;
     float shieldModifiedRadius;
@@ -219,12 +220,14 @@ public class playerScript : MonoBehaviour
         shieldBubble = gameObject.transform.Find("shieldBubble").gameObject;
         shieldUnmodifiedRadius = shieldBubble.GetComponent<CircleCollider2D>().radius;
         shieldModifiedRadius = shieldBubble.transform.localScale.x;
-        shieldRadius = shieldUnmodifiedRadius * shieldModifiedRadius;
+        shieldRadius = shieldUnmodifiedRadius * shieldModifiedRadius + 0.01f;
         shieldBubble.SetActive(false);
         cameraAdjuster = true;
         laserLine = gameObject.GetComponent<LineRenderer>();
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
+        burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
         collisionEffect.SetActive(false);
+        burstEffect.SetActive(false);
         isSwinging = false;
         UpdateParts();
     }
@@ -791,6 +794,7 @@ void BoxInteract()
         isDeflecting = false;
         laserLine.enabled = false;
         collisionEffect.SetActive(false);
+        burstEffect.SetActive(false);
     }
 
     public void LaserCaster()
@@ -798,8 +802,8 @@ void BoxInteract()
         Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
         Vector2 laserOriginDirection = new Vector2(mouseDirection.x , mouseDirection.y);
         laserOriginDirection.Normalize();
-        Vector2 laserOrigin = laserOriginDirection * shieldRadius;
-        laserOrigin = new Vector2(laserOrigin.x + transform.position.x , laserOrigin.y + transform.position.y);
+        Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * shieldRadius);
+
         RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
         if(laser.collider != null)
         {
@@ -875,6 +879,16 @@ void BoxInteract()
         laserLine.positionCount = 2;
         laserLine.SetPosition(0 , laserOrigin);
         laserLine.SetPosition(1 , laserEndpoint);
+
+        float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
+        if(laserAngle < 0f)
+        {
+            laserAngle = Mathf.PI * 2 + laserAngle;
+        }
+            
+        burstEffect.SetActive(true);
+        burstEffect.transform.position = (Vector2)transform.position + (laserOriginDirection * (shieldRadius - 0.01f));
+        burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
     }
 
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance

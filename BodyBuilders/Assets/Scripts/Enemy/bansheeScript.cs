@@ -8,6 +8,7 @@ public class bansheeScript : MonoBehaviour
     bool isFiring = false;
     GameObject target;
     GameObject collisionEffect;
+    GameObject burstEffect;
     float  laserChargeTimer = 0f;
     public float laserChargeTime = 1.5f;
     float laserFireTimer = 0f;
@@ -15,7 +16,7 @@ public class bansheeScript : MonoBehaviour
     public LayerMask laserLayer;
     public LayerMask playerLayer;
     LineRenderer laserLine;
-    public GameObject laserOriginPoint;
+    GameObject laserOriginPoint;
     Vector2 laserOrigin;
     CircleCollider2D circleCol;
     float laserRange = 100f;
@@ -36,7 +37,9 @@ public class bansheeScript : MonoBehaviour
         playerScript = target.GetComponent<playerScript>();
         laserOriginPoint = gameObject.transform.Find("laserOrigin").gameObject;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
+        burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
         collisionEffect.SetActive(false);
+        burstEffect.SetActive(false);
         circleCol = gameObject.GetComponent<CircleCollider2D>();
         laserLine = gameObject.GetComponent<LineRenderer>();
         laserLine.enabled = true;
@@ -211,6 +214,7 @@ public class bansheeScript : MonoBehaviour
             }
         }
 
+        burstEffect.SetActive(false);
         if(isFiring)
         {
             isCharging = false;
@@ -221,7 +225,16 @@ public class bansheeScript : MonoBehaviour
                 isFiring = false;
                 laserFireTimer = 0f;
             }
+   
+            float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
+            if(laserAngle < 0f)
+            {
+                laserAngle = Mathf.PI * 2 + laserAngle;
+            }
+                
+            burstEffect.SetActive(true);
+            burstEffect.transform.position = laserOrigin;
+            burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
         }
-
     }
 }
