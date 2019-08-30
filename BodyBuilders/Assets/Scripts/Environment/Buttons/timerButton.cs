@@ -13,6 +13,7 @@ public class timerButton : MonoBehaviour
 {
     public bool activated = false;
     public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
+    public bool overcharger = false; // does the button overcharge activatable dependent objects?
     public float totalTime = 5f;
     float timeRemaining;
     public GameObject [] activates;
@@ -75,6 +76,10 @@ public class timerButton : MonoBehaviour
                 activate activateScript = activateable.GetComponent<activate>();
                 activateScript.Activate(active);
                 activateScript.ActivateDirection(right);
+                if(overcharger)
+                {
+                    activateScript.Overcharge(active); // if the button is active, overcharge the activatable dependent object
+                }
             }
         }
     }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class conveyorBelt : MonoBehaviour
+public class conveyorBelt : activate
 {
     GameObject belt;
     AreaEffector2D effector;
-    public float movementSpeed = 30f;
+    public float standardSpeed = 60f;
+    public float overloadSpeed = 100f;
+    float speed;
 
     void Start()
     {
@@ -16,6 +18,21 @@ public class conveyorBelt : MonoBehaviour
 
     void Update()
     {
-        effector.forceMagnitude = movementSpeed;
+        if(!activated)
+        {
+            effector.forceMagnitude = 0f;
+            return;
+        }
+
+        if(overcharge)
+        {
+            speed = overloadSpeed;
+        }
+        else
+        {
+            speed = standardSpeed;
+        }
+
+        effector.forceMagnitude = speed;
     }
 }

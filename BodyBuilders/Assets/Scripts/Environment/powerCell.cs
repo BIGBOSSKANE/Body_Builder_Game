@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class powerCell : MonoBehaviour
+public class powerCell : activate
 {
-    public bool charged = false;
-
     void Update()
     {
-        if(charged)
+        if(activated) // if the power cell is charged
         {
-            gameObject.name = "chargedPowerCell";
+            if(overcharge)
+            {
+                gameObject.name = "overchargedPowerCell";
+            }
+            else
+            {
+                gameObject.name = "chargedPowerCell";
+            }
         }
         else
         {

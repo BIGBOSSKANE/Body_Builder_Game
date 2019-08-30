@@ -13,7 +13,7 @@ public class elevatorScript : activate
 {
     [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Range (0.1f , 10f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
-    public bool jumpBooster = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
+    // public bool overcharge = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
     [Range (0f , 10f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
     [Range (0f , 10f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
     [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
@@ -72,9 +72,9 @@ public class elevatorScript : activate
             moveTimer = 0f;
         }
         
-        if(jumpBooster && ascending)
+        if(overcharge && ascending)
         {
-            if(moveTimer >= (1f - jumpTimeOffset) && jumpBooster) // when nearing the apex, the elevator gives the player a brief period to time to jump and use the boost
+            if(moveTimer >= (1f - jumpTimeOffset) && overcharge) // when nearing the apex, the elevator gives the player a brief period to time to jump and use the boost
             {
                 slam = true;
             }
@@ -92,7 +92,7 @@ public class elevatorScript : activate
 
         if(ascending)
         {
-            if(jumpBooster) // move timer speeds up
+            if(overcharge) // move timer speeds up
             {
                 moveTimer += Time.fixedDeltaTime / slamUpTime;
             }

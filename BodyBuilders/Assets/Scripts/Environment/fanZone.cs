@@ -14,7 +14,9 @@ using UnityEngine;
 
 public class fanZone : activate
 {
-    public float fanForce; // force the fan applies
+    public float standardFanForce = 20f; // force the fan applies when not overcharged
+    public float overchargeFanForce = 100f; // force the fan applies when overcharged
+    float fanForce; // force the fan applies
     public float lockHeight; // height at which objects settle at
     public float lockHeightBounds = 0.2f; // if the player stays within these bounds of the lock height, lock their height
     public float lockVelocityBounds = 0.25f; // if the player is moving beneath this speed, it can be locked
@@ -25,12 +27,15 @@ public class fanZone : activate
     {
         player = GameObject.Find("Player").gameObject;
     }
+    
     void OnTriggerStay2D(Collider2D col)
     {
         if(!activated)
         {
             return;
         }
+
+        fanForce = (overcharge)? overchargeFanForce : standardFanForce;
 
         if(col.tag == "Player")
         {

@@ -173,7 +173,7 @@ public class laserRouter : activate
                 if(laserTag != "powerCell")
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
-                    powerCell.charged = true;
+                    powerCell.activated = true;
                 }
             }
             else if(laser.collider.tag == "PowerStation")
@@ -181,7 +181,7 @@ public class laserRouter : activate
                 if(laserTag != "PowerStation")
                 {
                     powerStation = laser.transform.gameObject.GetComponent<powerStation>();
-                    powerStation.energised = true;
+                    powerStation.activated = true;
                 }
             }
             
@@ -312,7 +312,13 @@ public class laserRouter : activate
         {
             if(activateable != null)
             {
-                activateable.GetComponent<activate>().Activate(active);
+                activate activateScript = activateable.GetComponent<activate>();
+                activateScript.Activate(active);
+                // don't need to send a signal to change the right variable
+                if(overcharge)
+                {
+                    activateScript.Overcharge(charged);
+                }
             }
         }
     }

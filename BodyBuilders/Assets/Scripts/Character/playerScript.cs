@@ -841,7 +841,7 @@ void BoxInteract()
                 if(laserTag != "powerCell")
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
-                    powerCell.charged = true;
+                    powerCell.activated = true;
                 }
             }
             else if(laser.collider.tag == "PowerStation")
@@ -849,7 +849,7 @@ void BoxInteract()
                 if(laserTag != "PowerStation")
                 {
                     powerStation = laser.transform.gameObject.GetComponent<powerStation>();
-                    powerStation.energised = true;
+                    powerStation.activated = true;
                 }
             }
             else

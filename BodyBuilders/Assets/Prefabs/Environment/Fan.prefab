@@ -154,10 +154,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 1
+  overcharge: 0
+  overchargeable: 1
   antiSync: 1
-  fanForce: 20
+  standardFanForce: 20
+  overchargeFanForce: 100
   lockHeight: 4
-  posY: 0
+  lockHeightBounds: 0.2
+  lockVelocityBounds: 0.25
 --- !u!212 &4281081075188009681
 SpriteRenderer:
   m_ObjectHideFlags: 0
