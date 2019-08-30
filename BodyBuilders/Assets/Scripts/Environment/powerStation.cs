@@ -8,6 +8,7 @@ public class powerStation : activate
     public bool canStoreCharge = false;
     public string currentCore = "Empty";
     GameObject attachedPowerCell;
+    Rigidbody2D attachedRb;
     powerCell powerCell;
     public GameObject [] activates;
 
@@ -18,7 +19,8 @@ public class powerStation : activate
         {
             currentCore = transform.GetChild(0).gameObject.name;
             attachedPowerCell = transform.GetChild(0).gameObject;
-            attachedPowerCell.GetComponent<Rigidbody2D>().isKinematic = true;
+            attachedRb = attachedPowerCell.GetComponent<Rigidbody2D>();
+            attachedRb.isKinematic = true;
             powerCell = attachedPowerCell.GetComponent<powerCell>();
         }
     }
@@ -59,6 +61,11 @@ public class powerStation : activate
                 activated = false;
             }
         }
+
+        if(attachedRb != null)
+        {
+            Debug.Log(attachedRb.isKinematic);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -66,10 +73,19 @@ public class powerStation : activate
         if(col.tag == "powerCell" && !holdingPowerCell)
         {
             attachedPowerCell = col.gameObject;
-
-            attachedPowerCell.GetComponent<Rigidbody2D>().isKinematic = true;
+            attachedRb = attachedPowerCell.GetComponent<Rigidbody2D>();
+            attachedRb.isKinematic = true;
+            attachedRb.velocity = Vector2.zero;
             attachedPowerCell.transform.position = transform.position;
             attachedPowerCell.transform.parent = gameObject.transform;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.tag == "powerCell" && holdingPowerCell)
+        {
+            attachedPowerCell = null;
         }
     }
 
