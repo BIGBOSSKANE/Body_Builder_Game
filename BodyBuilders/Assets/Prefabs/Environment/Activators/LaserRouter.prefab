@@ -82,6 +82,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 0
+  overcharge: 0
+  overchargeable: 1
   antiSync: 1
   charged: 0
   canStoreCharge: 1
@@ -94,7 +96,7 @@ MonoBehaviour:
   moveTimeTotal: 0.5
   laserLayer:
     serializedVersion: 2
-    m_Bits: 13561600
+    m_Bits: 5148416
   activates: []
 --- !u!212 &7430382189106502756
 SpriteRenderer:
@@ -177,7 +179,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 100
   m_Materials:
-  - {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
+  - {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -376,7 +378,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7430382189578474547}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.481579, y: -2.3502588, z: 6.658528}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.8447869, y: 1.8447869, z: 1.8447869}
   m_Children:
   - {fileID: 7430382189597157136}

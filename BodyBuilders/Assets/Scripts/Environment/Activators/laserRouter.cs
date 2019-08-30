@@ -84,9 +84,9 @@ public class laserRouter : activate
 
         if(charged)
         {
+            laserLine.enabled = true;
             LaserCaster();
         }
-
 
         if(wasCharged != charged)
         {
@@ -124,7 +124,23 @@ public class laserRouter : activate
             collisionEffect.transform.position = laser.point;
             collisionEffect.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
 
-            if(laser.collider.tag == "Shield")
+            if(laser.collider.tag == "LaserRouter")
+            {
+                if(laserTag != "laserRouter")
+                {
+                    laserRouter laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
+                    laserRouter.Charged();
+                    if(deathRay)
+                    {
+                        laserRouter.DeathRay(true);
+                    }
+                    else
+                    {
+                        laserRouter.DeathRay(false);
+                    }
+                }
+            }
+            else if(laser.collider.tag == "Shield")
             {
                 if(laserTag != "Shield") // if the most recent collider hit was not the player
                 {
