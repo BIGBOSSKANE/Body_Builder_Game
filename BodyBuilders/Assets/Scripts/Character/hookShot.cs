@@ -137,6 +137,7 @@ public class hookshot : MonoBehaviour
                 {
                     ropeAnchorPoint = hit.point;
                 }
+                playerScript.forceSlaved = false;
                 hookShotAnchorPoint.SetActive(true);
                 ropeAttached = true;
                 distanceJoint.enabled = true;
@@ -161,7 +162,9 @@ public class hookshot : MonoBehaviour
     }
 
     public void DetachRope()
-        {
+    {
+        //playerScript.forceSlaved = true;
+        //playerScript.forceSlavedTimer = 0f;
         hookShotAnchorPoint.SetActive(false);
         ropeAttached = false;
         distanceJoint.enabled = false;

@@ -4,42 +4,52 @@ using UnityEngine;
 
 public class laserRouter : activate
 {
+    public bool laserSplitter; // does the laser router fire 2 lasers? (the second is projected from the laser aim splitter sprite)
     public bool charged = false; // is the laser router charged?
     bool wasCharged; // was the laser router charged in the last frame? - this is used to send an activate signal to doors/fanse/etc that use the laser router as a switch
     public bool canStoreCharge = false; // can the laser router store a charge, or does it only route lasers while a laser is colliding with it?
     public bool canRotate = true; // does the laser router rotate when sent a right or !right signal
     bool rotating; // is the laser router currently rotating?
-    public bool reverseRotate = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
+    public bool anticlockwise = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
     public bool patrol = false; // does the laser router move between points when activated?
+    public bool rotationalPatrol; // does the laser router rotate instead of moving?
     public bool patrolLoop = false; // does the laser router move back and forth between points?
     bool patrolForwards = true; // moving forwards in patrol route
     public bool patrolSwitch = false; // if patrol loop is untrue, this means that deactivating the router will cause it to return to the original position
     Vector2 originalPosition; // starting point if moving due to an activate call
     public Vector2 moveTo; // end point when moving due to an activate call
     Vector2 targetPosition; // the endpoint of the movement, put into world space
-    bool deathRay = false; // will the ray kill?
-    float colRadius; // radius of the circle collider
-    GameObject aimSprite; // sprite indicating the aim direction
+    protected bool deathRay = false; // will the ray kill?
+    protected float colRadius; // radius of the circle collider
+    protected GameObject aimSprite; // sprite indicating the aim direction
     GameObject coreSprite; // sprite representing if the laser router is storing a charge
-    GameObject collisionEffect; // collision burst effect
-    GameObject burstEffect; // emanating from shield burst effect
+    protected GameObject collisionEffect; // collision burst effect
+    protected GameObject burstEffect; // emanating from shield burst effect
     Quaternion targetRotation; // point to rotate towards
     float rotateTimer = 0f; // time tracker for rotation
     float moveTimer = 0f; // time tracker for movement
     public float moveTimeTotal = 1f; // time taken to move between points
-    LineRenderer laserLine; // the line renderer for the laser
-    string laserTag; // name of the thing hit by the laser
-    playerScript playerScript; // get a reference to the player script
+    public float rotatePatrolSpeed = 1f; // speed of rotation;
+    protected LineRenderer laserLine; // the line renderer for the laser
+    protected string laserTag; // name of the thing hit by the laser
+    protected playerScript playerScript; // get a reference to the player script
     public LayerMask laserLayer; // what can the laser collide with? 
-    powerCell powerCell; // the powercell script of the powercell hit
-    powerStation powerStation; // the script of the powerstation hit
-    Vector2 laserEndpoint; // the endpoint of the laser
+    protected powerCell powerCell; // the powercell script of the powercell hit
+    protected powerStation powerStation; // the script of the powerstation hit
+    protected Vector2 laserEndpoint; // the endpoint of the laser
     public GameObject [] activates; // does the laser router activate something while it stores a charge
+    Quaternion initialRotation;
+    
+    GameObject aimSpriteSplit;
+    GameObject burstEffectSplit;
+    GameObject collisionEffectSplit;
+    LineRenderer laserLineSplit;
+    Vector2 laserEndpointSplit;
 
     void Start()
     {
-        aimSprite = gameObject.transform.Find("Direction").gameObject;
-        coreSprite = gameObject.transform.Find("Direction").gameObject.transform.Find("coreSprite").gameObject;
+        aimSprite = gameObject.transform.Find("aimSprite").gameObject;
+        coreSprite = aimSprite.transform.Find("coreSprite").gameObject;
         coreSprite.SetActive(false);
         rotateTimer = 0f;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
@@ -47,22 +57,41 @@ public class laserRouter : activate
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
         colRadius = gameObject.GetComponent<CircleCollider2D>().radius * transform.localScale.x + 0.01f;
-        laserLine = gameObject.GetComponent<LineRenderer>();
+        laserLine = aimSprite.GetComponent<LineRenderer>();
         laserLine.enabled = false;
         playerScript= GameObject.Find("Player").GetComponent<playerScript>();
         originalPosition = (Vector2)transform.position;
         targetPosition = moveTo + (Vector2)transform.position;
         wasCharged = false;
+        initialRotation = transform.rotation;
+
+        // splitter lasercaster
+        aimSpriteSplit = gameObject.transform.Find("aimSpriteSplit").gameObject;
+        burstEffectSplit = gameObject.transform.Find("burstEffectSplit").gameObject;
+        collisionEffectSplit = gameObject.transform.Find("collisionEffectSplit").gameObject;
+        laserLineSplit = aimSpriteSplit.GetComponent<LineRenderer>();
+        laserLineSplit.enabled = false;
+        collisionEffectSplit.SetActive(false);
+        burstEffectSplit.SetActive(false);
+
+        if(laserSplitter)
+        {
+            aimSpriteSplit.SetActive(true);
+        }
+        else
+        {
+            aimSpriteSplit.SetActive(false);
+        }
     }
 
-    public void RotateAnticlockwise()
+    void RotateAnticlockwise()
     {
         targetRotation = aimSprite.transform.rotation;
         targetRotation *= Quaternion.Euler(0f, 0f, 90f);
         rotating = true;
     }
 
-    public void RotateClockwise()
+    void RotateClockwise()
     {
         targetRotation = aimSprite.transform.rotation;
         targetRotation *= Quaternion.Euler(0f, 0f, -90f);
@@ -85,6 +114,10 @@ public class laserRouter : activate
         if(charged)
         {
             laserLine.enabled = true;
+            if(laserSplitter)
+            {
+                laserLineSplit.enabled = true;
+            }
             LaserCaster();
         }
 
@@ -99,8 +132,12 @@ public class laserRouter : activate
         Patrol(); // check if the laser router is being prompted to move
     }
 
-    void LaserCaster()
+    public virtual void LaserCaster()
     {
+        if(laserSplitter)
+        {
+            SecondaryLaserCaster();
+        }
         Vector2 laserOriginDirection = (aimSprite.transform.up + aimSprite.transform.right).normalized;
         Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * colRadius);
 
@@ -223,11 +260,139 @@ public class laserRouter : activate
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
     }
 
+    void SecondaryLaserCaster()
+    {
+        Vector2 laserOriginDirection = (aimSpriteSplit.transform.up + aimSpriteSplit.transform.right).normalized;
+        Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * colRadius);
+
+        RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, Mathf.Infinity , laserLayer);
+        if(laser.collider != null)
+        {
+            laserEndpointSplit = laser.point;
+
+            laserLineSplit.positionCount = 2;
+            laserLineSplit.SetPosition(0 , laserOrigin);
+            laserLineSplit.SetPosition(1 , laserEndpointSplit);
+
+            Vector2 laserCollisionNormal = laser.normal;
+            float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
+            if(collisionNormalAngle < 0f)
+            {
+                collisionNormalAngle = Mathf.PI * 2 + collisionNormalAngle;
+            }
+
+            collisionEffectSplit.SetActive(true);
+            collisionEffectSplit.transform.position = laser.point;
+            collisionEffectSplit.transform.up = Quaternion.Euler(0 , 0 , (collisionNormalAngle * Mathf.Rad2Deg)) * Vector2.right;
+
+            if(laser.collider.tag == "LaserRouter")
+            {
+                if(laserTag != "laserRouter")
+                {
+                    laserRouter laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
+                    laserRouter.Charged();
+                    if(deathRay)
+                    {
+                        laserRouter.DeathRay(true);
+                    }
+                    else
+                    {
+                        laserRouter.DeathRay(false);
+                    }
+                }
+            }
+            else if(laser.collider.tag == "Shield")
+            {
+                if(laserTag != "Shield") // if the most recent collider hit was not the player
+                {
+                    playerScript playerScript = laser.transform.gameObject.GetComponent<playerScript>();
+                    playerScript.InitiateDeflect();
+                    if(deathRay)
+                    {
+                        playerScript.DeathRay(true);
+                    }
+                    else
+                    {
+                        playerScript.DeathRay(false);
+                    }
+                }
+            }
+            else if(laser.collider.tag == "Player")
+            {
+                if(laserTag != "Player") // if the most recent collider hit was not the player
+                {
+                    if(charged)
+                    {
+                        //Destroy(target);
+                        Debug.Log("Killed");
+                    }
+                }               
+            }
+            else
+            {
+                if(playerScript != null && laserTag == "Shield")
+                {
+                    playerScript.EndDeflect();
+                    playerScript.DeathRay(false);
+                }
+            }
+
+            if(charged)
+            {
+                if(laser.collider.tag == "Enemy" || laser.collider.tag == "Groundbreakable")
+                {
+                    Destroy(laser.collider.gameObject);
+                }
+            }
+
+            if(laser.collider.tag == "powerCell")
+            {
+                if(laserTag != "powerCell")
+                {
+                    powerCell = laser.transform.gameObject.GetComponent<powerCell>();
+                    powerCell.activated = true;
+                }
+            }
+            else if(laser.collider.tag == "PowerStation")
+            {
+                if(laserTag != "PowerStation")
+                {
+                    powerStation = laser.transform.gameObject.GetComponent<powerStation>();
+                    powerStation.activated = true;
+                }
+            }
+            
+            laserTag = laser.collider.tag;
+        }
+        else
+        {
+            collisionEffect.SetActive(false);
+            laserEndpointSplit = laserOrigin + (laserOriginDirection * 10000f);
+        }
+        laserLineSplit.positionCount = 2;
+        laserLineSplit.SetPosition(0 , laserOrigin);
+        laserLineSplit.SetPosition(1 , laserEndpointSplit);
+
+        float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
+        if(laserAngle < 0f)
+        {
+            laserAngle = Mathf.PI * 2 + laserAngle;
+        }
+            
+        burstEffectSplit.SetActive(true);
+        burstEffectSplit.transform.position = (Vector2)transform.position + (laserOriginDirection * (colRadius - 0.01f));
+        burstEffectSplit.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
+    }
+
     public void Charged()
     {
         charged = true;
         coreSprite.SetActive(true);
         laserLine.enabled = true;
+        if(laserSplitter)
+        {
+           laserLineSplit.enabled = true;
+        }
     }
 
     public void Drained()
@@ -237,6 +402,10 @@ public class laserRouter : activate
             charged = false;
             coreSprite.SetActive(false);
             laserLine.enabled = false;
+            if(laserSplitter)
+            {
+                laserLineSplit.enabled = true;
+            }
         }
     }
 
@@ -256,65 +425,82 @@ public class laserRouter : activate
     {
         if(patrol)
         {
-            if(patrolLoop) // the router will move back and forwards while activated
+            if(rotationalPatrol) // rotate
             {
                 if(activated)
                 {
                     if(patrolForwards)
                     {
-                        moveTimer += Time.deltaTime / moveTimeTotal;
-                        if(moveTimer > 1)
-                        {
-                            moveTimer = 1;
-                            patrolForwards = false;
-                        }
-                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                        transform.Rotate(0f , 0f, rotatePatrolSpeed * Time.deltaTime);
                     }
                     else
                     {
-                        moveTimer -= Time.deltaTime / moveTimeTotal;
-                        if(moveTimer < 0f)
-                        {
-                            moveTimer = 0f;
-                            patrolForwards = true;
-                        }
-                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                        transform.Rotate(0f , 0f, -rotatePatrolSpeed * Time.deltaTime);
                     }
-                }   
+                }       
             }
-            else // movement occurs at set increments
+            else
             {
-                if(patrolSwitch) // when deactivated, move back to the original position
+                if(patrolLoop) // the router will move back and forwards while activated
                 {
                     if(activated)
                     {
-                        moveTimer += Time.deltaTime / moveTimeTotal;
-                        if(moveTimer > 1)
+                        if(patrolForwards)
                         {
-                            moveTimer = 1;
+                            moveTimer += Time.deltaTime / moveTimeTotal;
+                            if(moveTimer > 1)
+                            {
+                                moveTimer = 1;
+                                patrolForwards = false;
+                            }
+                            gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
                         }
-                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
-                    }
-                    else
-                    {
-                        moveTimer -= Time.deltaTime / moveTimeTotal;
-                        if(moveTimer < 0f)
+                        else
                         {
-                            moveTimer = 0f;
+                            moveTimer -= Time.deltaTime / moveTimeTotal;
+                            if(moveTimer < 0f)
+                            {
+                                moveTimer = 0f;
+                                patrolForwards = true;
+                            }
+                            gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
                         }
-                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
-                    }
+                    }   
                 }
-                else // cannot move back
+                else // movement occurs at set increments
                 {
-                    if(activated)
+                    if(patrolSwitch) // when deactivated, move back to the original position
                     {
-                        moveTimer += Time.deltaTime / moveTimeTotal;
-                        if(moveTimer > 1)
+                        if(activated)
                         {
-                            moveTimer = 1;
+                            moveTimer += Time.deltaTime / moveTimeTotal;
+                            if(moveTimer > 1)
+                            {
+                                moveTimer = 1;
+                            }
+                            gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
                         }
-                        gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                        else
+                        {
+                            moveTimer -= Time.deltaTime / moveTimeTotal;
+                            if(moveTimer < 0f)
+                            {
+                                moveTimer = 0f;
+                            }
+                            gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                        }
+                    }
+                    else // cannot move back
+                    {
+                        if(activated)
+                        {
+                            moveTimer += Time.deltaTime / moveTimeTotal;
+                            if(moveTimer > 1)
+                            {
+                                moveTimer = 1;
+                            }
+                            gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTimer);
+                        }
                     }
                 }
             }
@@ -343,7 +529,7 @@ public class laserRouter : activate
     {
         if(canRotate)
         {
-            if(reverseRotate)
+            if(anticlockwise)
             {
                 right = !right;
             }

@@ -57,8 +57,10 @@ public class playerScript : MonoBehaviour
     private GameObject currentSpawnPoint;
 
 // BASIC MOVEMENT
-    private float moveInput; // get player Input value
-    private bool facingRight = true; // used to flip the character when turning
+    public bool forceSlaved = false;
+    public bool scalingWall = false;
+    private float inputX; // get player Input value
+    [HideInInspector] public int facingDirection; // used to flip the character when turning
     public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
@@ -70,6 +72,7 @@ public class playerScript : MonoBehaviour
 // JUMPING
     float jumpPower; // the current jump force based on augments
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
+    public float wallJumpForce = 20f; // force of wall jump sideways propulsion
     public bool jumpAfterFall; // if the player just fell of a platform, they can still use their first jump in mid air
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
@@ -138,7 +141,6 @@ public class playerScript : MonoBehaviour
     float boxDetectorHeight = 1.96f;
     float boxDetectorWidth = 1.93f;
     Vector2 boxDetectorSize;
-    float direction = 1f;
     Rigidbody2D rb; // this object's rigidbody
     BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
@@ -180,8 +182,10 @@ public class playerScript : MonoBehaviour
     Vector2 laserEndpoint;
     public float slam = 0f;
     public Vector2 slamVector;
-    bool applyWallForce = false;
-    int facingDirection;
+    [HideInInspector] public float forceSlavedTimer = 0f;
+    int previousFacingDirection;
+    bool scalerTrueGrounded = false;
+    int rawInputX;
 
 
     void Start()
@@ -229,11 +233,27 @@ public class playerScript : MonoBehaviour
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
         isSwinging = false;
+        facingDirection = 1;
         UpdateParts();
     }
 
     void FixedUpdate()
     {
+        Vector2 previousVelocity = rb.velocity;
+        Vector2 targetVelocity = Vector2.zero;
+
+        inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
+        rawInputX = Mathf.FloorToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
+
+        if((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0)
+        {
+            reverseDirectionTimer = 0f;
+            Vector3 Scaler = transform.localScale;
+            Scaler.x *= -1;
+            transform.localScale = Scaler;
+            facingDirection = Mathf.RoundToInt(Mathf.Sign(rawInputX));
+        }
+
         if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
         {
             wasGrounded = true;
@@ -248,13 +268,11 @@ public class playerScript : MonoBehaviour
             Destroy(boxCol);
         }
 
-        moveInput = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
-
         if(GroundCheck() == true)
         {
             isGrounded = true;
 
-            if(isSwinging && !wasGrounded) // if you are swinging, and hit the ground, detach the rope
+            if(isSwinging && !wasGrounded && scalerTrueGrounded) // if you are swinging, and hit the ground, detach the rope
             {
                 hookshotScript.DetachRope();
             }
@@ -296,43 +314,81 @@ public class playerScript : MonoBehaviour
         {
             rb.gravityScale = 3f; // lower gravity for a floatier swing
 
-            if(Mathf.Abs(moveInput) > 0.2f)
+            if(Mathf.Abs(inputX) > 0.2f)
             {
-                rb.AddForce(new Vector2(moveInput * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
+                rb.AddForce(new Vector2(inputX * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
             }
         }
         else
         {
             rb.gravityScale = 2f; // restore gravity to normal value
-            
+
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime;
-                rb.velocity = new Vector2(Mathf.Lerp(rb.velocity.x, moveInput * movementSpeed, reverseDirectionTimer/1f), rb.velocity.y);
+                reverseDirectionTimer = (reverseDirectionTimer > 1f)? 1f : reverseDirectionTimer;
+                targetVelocity = new Vector2(Mathf.Lerp(targetVelocity.x, inputX * movementSpeed, reverseDirectionTimer), rb.velocity.y);
             }
             else if(climbingDismountTimer <= 0.1f && climbing == false) // if jumping from wall, give some extra force
             {
-                rb.velocity = new Vector2(moveInput * movementSpeed * 1.2f, rb.velocity.y);
+                targetVelocity = new Vector2(inputX * movementSpeed * 1.2f, rb.velocity.y);
                 climbingDismountTimer += Time.deltaTime;
             }
             else
             {
-                rb.velocity = new Vector2(moveInput * movementSpeed, rb.velocity.y);
+                targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
             }
-        }
 
-        if(applyWallForce && isGrounded) // if the player is in scaler mode, and rolling up a wall, force them against it, causing them to spin
-        {
-            if(Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0f) // allow for climbing rotation fix
+            if(scalingWall && Input.GetAxisRaw("Vertical") > 0) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
             {
-                if(Mathf.Abs(Input.GetAxisRaw("Horizontal")) <= 0f)
+                if(Mathf.Abs(rawInputX) >= 0.1f)
                 {
-                    moveInput = facingDirection; // apply force towards wall to let player rotate
+                    if(rawInputX != Mathf.Sign(previousFacingDirection)) // wall leap
+                    {
+                        forceSlaved = true;
+                        forceSlavedTimer = 0f;
+                        scalingWall = false;
+                        targetVelocity = new Vector2(inputX * movementSpeed * wallJumpForce, 9f);
+                    }
+                    else
+                    {
+                        inputX = facingDirection; // apply force towards wall to let player rotate
+                        targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+                    }
                 }
-                else if(Mathf.Sign(moveInput) != Mathf.Sign(facingDirection))
+                else
                 {
-                    rb.velocity += new Vector2(moveInput * movementSpeed * facingDirection * 10f, 0);
+                    inputX = facingDirection; // apply force towards wall to let player rotate
+                    targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
                 }
+            }
+
+            if(!isSwinging)
+            {
+                if(forceSlaved)
+                {
+                    forceSlavedTimer += Time.deltaTime;
+                    if(forceSlavedTimer >= 0.3f)
+                    {
+                        forceSlaved = false;
+                        forceSlavedTimer = 0f;
+                    }
+
+                    if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // || facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)))
+                    {
+                        rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
+                    }
+                        if(Mathf.Abs(targetVelocity.y) > Mathf.Abs(previousVelocity.y)) // || facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.y)))
+                    {
+                        rb.velocity = new Vector2(rb.velocity.x , targetVelocity.y);
+                    }
+                }
+                else
+                {
+                    rb.velocity = targetVelocity;
+                }
+
+                previousFacingDirection = facingDirection;
             }
         }
     }
@@ -355,7 +411,7 @@ public class playerScript : MonoBehaviour
             cameraAdjuster = true;
         }
 
-        boxDetectorCentre = new Vector2(boxDetectorOffsetX * direction + transform.position.x , boxDetectorOffsetY + transform.position.y);
+        boxDetectorCentre = new Vector2(boxDetectorOffsetX * facingDirection + transform.position.x , boxDetectorOffsetY + transform.position.y);
         boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
@@ -367,6 +423,7 @@ public class playerScript : MonoBehaviour
 
         if(climbing == true)
         {
+            scalingWall = true;
             climbingDismountTimer = 0f;
             wasClimbing = true;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -412,23 +469,12 @@ public class playerScript : MonoBehaviour
             wasClimbing = false;
         }
 
-        // turn around
-        if((facingRight == false && moveInput > 0) || facingRight == true && moveInput < 0)
-        {
-            facingRight = !facingRight;
-            direction = -direction;
-            reverseDirectionTimer = 0f;
-            Vector3 Scaler = transform.localScale;
-            Scaler.x *= -1;
-            transform.localScale = Scaler;
-        }
-
 
 // JUMPING ------------------------------------------------------------------------------------------------------------------
 
-        if(Input.GetButton("Jump") && remainingJumps > 0f && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // this last bit ensures the player can always jump, which is how the spiderclimb works
+        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !forceSlaved && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
-            if(isGrounded == true || (leftGroundTimer < 0.3f))
+            if(isGrounded || leftGroundTimer < 0.3f)
             {
                 rb.velocity = Vector2.up * jumpPower;
             }
@@ -452,7 +498,6 @@ public class playerScript : MonoBehaviour
         }
 
 // JUMP TUNING --------------------------------------------------------------------------------------------
-        rb.gravityScale = 2f;
 
         if(transform.position.y <= (maxHeight - groundbreakerDistance))
         {
@@ -512,41 +557,55 @@ public class playerScript : MonoBehaviour
         RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         wallSliding = false;
+        scalingWall = false;
+        scalerTrueGrounded = false;
 
         if(partConfiguration == 1)
         {
             climbing = false;
 
-            if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
+            if(hitC.collider != null)
             {
-                return false;
-            }
-            else if(scaler == true && Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
-            {
-                if(hitC.collider!= null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
+                if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms" || hitC.collider.gameObject.tag == "Parts") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
                 {
                     return false;
                 }
                 else
                 {
-                    facingDirection = (facingRight)? 1 : -1;
-                    RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * new Vector2(facingDirection , 0f) , 0.6f , jumpLayer);
+                    scalerTrueGrounded = true;
+                    return true;
+                }
+            }
+            else if(scaler == true && Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
+            {
+                if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
+                {
+                    return false;
+                }
+                else
+                {
+                    RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , jumpLayer);
                     Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
                     if(sideHit.collider != null )
                     {
-                        applyWallForce = true;
+                        scalingWall = true;
                     }
-                    else
+                    
+                    RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , jumpLayer);
+                    Debug.DrawRay(transform.position, Vector2.up * 0.6f, Color.green);
+                    if(upHit.collider != null )
                     {
-                        applyWallForce = false;
+                        scalingWall = false;
+                        forceSlaved = false;
                     }
+                    
                     return true;
                 }
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
         {
-            if(moveInput > 0 || (facingRight == true && moveInput == 0))
+            if(inputX > 0 || (facingDirection == 1 && inputX == 0))
             {
                 Vector2 raycastAltPosR = new Vector2(raycastPos.x , raycastPos.y - 0.75f);
                 RaycastHit2D sideHitR = Physics2D.Raycast(raycastAltPosR , Vector2.right, 0.6f , ladderLayer);
@@ -564,7 +623,7 @@ public class playerScript : MonoBehaviour
                     return true;
                 }
             } 
-            else if(moveInput < 0 || (facingRight == false && moveInput == 0))
+            else if(inputX < 0 || (facingDirection == 1 && inputX == 0))
             {
                 Vector2 raycastAltPosL = new Vector2(raycastPos.x , raycastPos.y - 0.75f);
                 RaycastHit2D sideHitL = Physics2D.Raycast(raycastAltPosL , Vector2.left, 0.6f , ladderLayer);
@@ -968,6 +1027,8 @@ void BoxInteract()
             if(headCol != null && headCol.enabled != true)
             {
                 headCol.enabled = false;
+                head.SetActive(false);
+                head.SetActive(true);
                 headCol.enabled = true;
             }
             rb.constraints = RigidbodyConstraints2D.None; // can roll
@@ -1224,7 +1285,7 @@ void BoxInteract()
         isGrounded = false;
         fallMultiplier = 4f;
         rb.velocity = Vector2.zero;
-        moveInput = 0f;
+        inputX = 0f;
         jumpGate = true;
         jumpGateDuration = 0.6f;
         jumpGateTimer = jumpGateDuration - 0.12f;
@@ -1233,7 +1294,7 @@ void BoxInteract()
         maxHeight = transform.position.y;
         isSwinging = false;
         hookshotScript.enabled = false;
-        if(facingRight)
+        if(facingDirection == 1)
         {
             hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
         }

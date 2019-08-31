@@ -10,10 +10,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pass_Through_Platform_Script : MonoBehaviour
+public class passThroughPlatform : MonoBehaviour
 {
     PlatformEffector2D effector;
-    float waitTime;
+    float waitTimer;
+    float resetTimer;
     bool playerAbove;
     playerScript playerScript;
 
@@ -21,7 +22,8 @@ public class Pass_Through_Platform_Script : MonoBehaviour
     {
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
         effector = gameObject.GetComponent<PlatformEffector2D>();
-        waitTime = 0.1f;
+        waitTimer = 0.1f;
+        resetTimer = 0.1f;
         playerAbove = false;
     }
 
@@ -38,20 +40,31 @@ public class Pass_Through_Platform_Script : MonoBehaviour
 
         if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
         {
-            waitTime = 0.1f;
+            waitTimer = 0.1f;
         }
 
         if(playerAbove == true && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)))
         {
-            if(waitTime <= 0f)
+            if(waitTimer <= 0f)
             {
                 effector.rotationalOffset = 180f;
-                waitTime = 0.1f;
+                waitTimer = 0.1f;
+                resetTimer = 0.4f;
             }
             else
             {
-                waitTime -= Time.deltaTime;
+                waitTimer -= Time.deltaTime;
             }        
+        }
+
+        if(!playerAbove || resetTimer <= 0f)
+        {
+            effector.rotationalOffset = 0f;
+            resetTimer = 0.6f;
+        }
+        else
+        {
+            resetTimer -= Time.deltaTime;
         }
 
         if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))

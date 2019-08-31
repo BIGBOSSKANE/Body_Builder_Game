@@ -61,11 +61,6 @@ public class powerStation : activate
                 activated = false;
             }
         }
-
-        if(attachedRb != null)
-        {
-            Debug.Log(attachedRb.isKinematic);
-        }
     }
 
     void OnTriggerEnter2D(Collider2D col)

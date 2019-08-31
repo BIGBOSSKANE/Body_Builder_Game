@@ -171,32 +171,40 @@ public class bansheeScript : MonoBehaviour
                     }
                 }
 
-                if(laser.collider.tag == "powerCell")
+                if(laserTag != laser.collider.tag)
                 {
-                    if(laserTag != "powerCell")
+                    if(laserTag == "Shield")
                     {
-                        powerCell = laser.transform.gameObject.GetComponent<powerCell>();
-                        powerCell.activated = true;
-                    }
-                }
-                else if(laser.collider.tag == "PowerStation")
-                {
-                    if(laserTag != "PowerStation")
-                    {
-                        powerStation = laser.transform.gameObject.GetComponent<powerStation>();
-                        powerStation.activated = true;
+                        playerScript.EndDeflect();
+                        playerScript.DeathRay(false);
+                        Debug.Log("Did it");
                     }
                 }
                 laserTag = laser.collider.tag;
             }
             else
             {
+                if(laserTag != laser.collider.tag)
+                {
+                    if(laserTag == "Shield")
+                    {
+                        playerScript.EndDeflect();
+                        playerScript.DeathRay(false);
+                        Debug.Log("Did it");
+                    }
+                }
                 laserTag = "null";
                 collisionEffect.SetActive(false);
             }
         }
         else
         {
+            if(laserTag == "Shield")
+            {
+                playerScript.EndDeflect();
+                playerScript.DeathRay(false);
+                laserTag = "null";
+            }
             isCharging = false;
             collisionEffect.SetActive(false);
             laserLine.enabled = false;

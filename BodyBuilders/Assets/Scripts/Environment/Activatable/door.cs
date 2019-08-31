@@ -24,16 +24,6 @@ public class door : activate
         targetPosition = moveTo + (Vector2)transform.position;
     }
 
-    void OnTriggerExit2D(Collider2D col)
-    {
-        activated = false;
-    }
-
-    void OnTriggerStay2D(Collider2D col)
-    {
-        activated = true;
-    }
-
     void Update()
     {
         if(activated == true)

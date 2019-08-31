@@ -133,6 +133,10 @@ public class elevatorScript : activate
         {
             if(col.tag == "Player")
             {
+                playerScript.forceSlaved = true;
+                playerScript.forceSlavedTimer = 0f;
+                playerScript.facingDirection = Mathf.RoundToInt(Mathf.Sign(slamDirection.x));
+
                 if(Input.GetAxisRaw("Vertical") > 0f) // if the player is holding up, apply extra force, otherwise apply normal force
                 {
                     player.GetComponent<Rigidbody2D>().AddForce(slamDirection * jumpLaunchForce , ForceMode2D.Impulse);
@@ -238,7 +242,13 @@ public class elevatorScript : activate
         }
         else if(col.tag == "Arms" || col.tag == "Legs") // set the leg or arm full game object so that it is no longer the child of the holder
         {
-            col.gameObject.transform.parent.parent = null;
+            if(col.gameObject.transform.parent != null)
+            {
+                if(col.gameObject.transform.parent.parent != null)
+                {
+                    col.gameObject.transform.parent.parent = null;
+                }
+            }
         }
         else if(col.tag == "Box" || col.tag == "Powercell") // unchild boxes or powercells
         {
