@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿/*
+Creator: Daniel
+Created 04/08/2019
+Last Edited by: Daniel
+Last Edit 01/09/2019
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -199,8 +206,7 @@ public class laserRouter : activate
                 {
                     if(charged)
                     {
-                        //Destroy(target);
-                        Debug.Log("Killed");
+                        playerScript.Respawn(0.5f);
                     }
                 }               
             }

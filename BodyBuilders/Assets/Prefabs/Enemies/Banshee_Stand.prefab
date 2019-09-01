@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laserChargeTime: 3
+  laserPauseTime: 0.5
   laserFireTime: 2
   laserLayer:
     serializedVersion: 2
@@ -373,6 +374,9 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 33024
+  materialCharge: {fileID: 0}
+  materialPause: {fileID: 0}
+  materialFire: {fileID: 0}
 --- !u!61 &1509266148
 BoxCollider2D:
   m_ObjectHideFlags: 0

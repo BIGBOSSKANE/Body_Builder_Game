@@ -42,7 +42,7 @@ public class Gyre : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            playerScript.Respawn();
+            playerScript.Respawn(0.2f);
         }
     }
 }

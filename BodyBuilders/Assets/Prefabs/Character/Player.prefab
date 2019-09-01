@@ -715,9 +715,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10eb0163482abe54eb46e9d5ebae012c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forceSlaved: 0
+  scalingWall: 0
+  facingDirection: 0
   reverseDirectionTimer: 0
   speed: 0
   jumpForce: 1
+  wallJumpForce: 20
   jumpAfterFall: 0
   lastGroundedHeight: 0
   isGrounded: 0
@@ -754,6 +758,9 @@ MonoBehaviour:
   slipperyMaterial: {fileID: 6200000, guid: b2792fdbe3d804146aff0f4ccc054a39, type: 2}
   slam: 0
   slamVector: {x: 0, y: 0}
+  forceSlavedTimer: 0
+  laserMaterialAim: {fileID: 0}
+  laserMaterialFire: {fileID: 0}
 --- !u!114 &5744412106282342316
 MonoBehaviour:
   m_ObjectHideFlags: 0

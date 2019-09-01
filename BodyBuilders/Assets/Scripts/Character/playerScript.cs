@@ -54,12 +54,13 @@ public class playerScript : MonoBehaviour
 {
 // Checkpoint
 
-    private GameObject currentSpawnPoint;
+    private Vector2 currentSpawnPoint;
 
 // BASIC MOVEMENT
     public bool forceSlaved = false;
     public bool scalingWall = false;
     private float inputX; // get player Input value
+    int rawInputX;
     [HideInInspector] public int facingDirection; // used to flip the character when turning
     public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
@@ -185,7 +186,11 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public float forceSlavedTimer = 0f;
     int previousFacingDirection;
     bool scalerTrueGrounded = false;
-    int rawInputX;
+    float deathTimer = 0;
+    bool dying;
+
+    public Material laserMaterialAim;
+    public Material laserMaterialFire;
 
 
     void Start()
@@ -230,6 +235,7 @@ public class playerScript : MonoBehaviour
         laserLine = gameObject.GetComponent<LineRenderer>();
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
+        currentSpawnPoint = transform.position;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
         isSwinging = false;
@@ -239,6 +245,24 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(dying)
+        {
+            deathTimer -= Time.fixedDeltaTime;
+            if(deathTimer <= 0 )
+            {
+                if(currentSpawnPoint != null)
+                {
+                    transform.position = currentSpawnPoint;
+                    dying = false;
+                }
+                else
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
+            }
+            return; // stop the player from doing anything, we could later replace this with a time slow effect
+        }
+
         Vector2 previousVelocity = rb.velocity;
         Vector2 targetVelocity = Vector2.zero;
 
@@ -367,7 +391,7 @@ public class playerScript : MonoBehaviour
             {
                 if(forceSlaved)
                 {
-                    forceSlavedTimer += Time.deltaTime;
+                    forceSlavedTimer += Time.fixedDeltaTime;
                     if(forceSlavedTimer >= 0.3f)
                     {
                         forceSlaved = false;
@@ -395,6 +419,11 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
+        if(dying)
+        {
+            return;
+        }
+
         if(rb.velocity.y < 0f && cameraAdjuster == true)
         {
             cameraScript.SpeedUp();
@@ -832,19 +861,21 @@ void BoxInteract()
         {
             isDeflecting = true;
             laserLine.enabled = true;
+            laserLine.material = laserMaterialAim;
             collisionEffect.SetActive(true);
         }
     }
 
     public void DeathRay(bool firing)
     {
-        if(firing)
+        firingLaser = firing;
+        if(firingLaser)
         {
-            firingLaser = true;
+            laserLine.material = laserMaterialFire;
         }
         else
         {
-            firingLaser = false;
+            laserLine.material = laserMaterialAim;
         }
     }
 
@@ -854,6 +885,7 @@ void BoxInteract()
         laserLine.enabled = false;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
+        laserLine.material = laserMaterialAim;
     }
 
     public void LaserCaster()
@@ -884,10 +916,10 @@ void BoxInteract()
                 if(laserTag != "laserRouter")
                 {
                     laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
-                    laserRouter.Charged();
                     if(firingLaser)
                     {
                         laserRouter.DeathRay(true);
+                        laserRouter.Charged();
                     }
                     else
                     {
@@ -1304,21 +1336,14 @@ void BoxInteract()
         }
     }
 
-
-    public void SetSpawnPoint(GameObject spawnPoint)
+    public void SetSpawnPoint(Vector2 spawnPoint)
     {
         currentSpawnPoint = spawnPoint;
     }
 
-    public void Respawn() // this should eventually be moved to the scene manager
+    public void Respawn(float time) // this should eventually be moved to the scene manager
     {
-        if(currentSpawnPoint != null)
-        {
-            transform.position = currentSpawnPoint.transform.position;
-        }
-        else
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
+        deathTimer = time;
+        dying = true;
     }
 }

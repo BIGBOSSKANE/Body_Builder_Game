@@ -16,7 +16,7 @@ public class Destroyer : MonoBehaviour
     {
         if(col.gameObject.tag == "Player")
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameObject.Find("Player").GetComponent<playerScript>().Respawn(0.2f);
         }
     }
 }

@@ -1,18 +1,28 @@
-﻿using System.Collections;
+﻿/*
+Creator: Daniel
+Created 21/06/2019
+Last Edited by: Daniel
+Last Edit 01/08/2019
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class bansheeScript : MonoBehaviour
 {
-    bool isCharging = false;
-    bool isFiring = false;
     GameObject target;
     GameObject collisionEffect;
     GameObject burstEffect;
-    float  laserChargeTimer = 0f;
     public float laserChargeTime = 1.5f;
-    float laserFireTimer = 0f;
+    float  laserChargeTimer = 0f;    
+    bool isCharging = false;
+    public float laserPauseTime = 0.5f;
+    float laserPauseTimer = 0f;
+    bool isPaused = false;
     public float laserFireTime = 3f;
+    float laserFireTimer = 0f;
+    bool isFiring = false;
     public LayerMask laserLayer;
     public LayerMask playerLayer;
     LineRenderer laserLine;
@@ -30,6 +40,11 @@ public class bansheeScript : MonoBehaviour
     powerCell powerCell;
     powerStation powerStation;
 
+    public Material materialCharge;
+    public Material materialPause;
+    public Material materialFire;
+    bool killedPlayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +60,7 @@ public class bansheeScript : MonoBehaviour
         laserLine.enabled = true;
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
+        laserLine.material = materialCharge;
     }
 
     // Update is called once per frame
@@ -55,7 +71,7 @@ public class bansheeScript : MonoBehaviour
             collisionEffect.SetActive(true);
             laserLine.enabled = true;
 
-            if(!isFiring)
+            if(!isFiring && !isPaused)
             {
                 targetPosition = target.transform.position;
                 laserOrigin = laserOriginPoint.transform.position;
@@ -98,16 +114,23 @@ public class bansheeScript : MonoBehaviour
                 if(laser.collider.tag == "Player") // if hitting the player and they do not have the deflector shield
                 {
                     collisionEffect.transform.position = targetPosition;
-                    playerScript.DeathRay(false);
-                    playerScript.EndDeflect();
-                    if(isFiring == true)
+                    if(laserTag != "Player")
                     {
-                        //Destroy(target);
-                        Debug.Log("Killed");
-                    }
-                    else
-                    {
-                        isCharging = true;
+                        playerScript.DeathRay(false);
+                        playerScript.EndDeflect();
+                        if(isFiring)
+                        {
+                            if(!killedPlayer)
+                            {
+                                playerScript.Respawn(0.4f);
+                                Debug.Log("Killed");
+                                killedPlayer = true;
+                            }
+                        }
+                        else if(!isPaused)
+                        {
+                            isCharging = true;
+                        }
                     }
                 }
                 else if(laser.collider.tag == "Shield") // if it hits the player's force field shield
@@ -117,16 +140,19 @@ public class bansheeScript : MonoBehaviour
                     {
                         playerScript.InitiateDeflect();
                         laserChargeTimer = 0f;
-                    }
-
-                    if(isFiring == true)
-                    {
-                        playerScript.DeathRay(true);
-                    }
-                    else
-                    {
-                        playerScript.DeathRay(false);
-                        isCharging = true;
+                        
+                        if(isFiring == true)
+                        {
+                            playerScript.DeathRay(true);
+                        }
+                        else
+                        {
+                            playerScript.DeathRay(false);
+                            if(!isPaused)
+                            {      
+                                isCharging = true;
+                            }
+                        }
                     }
                 }
                 else if(laser.collider.tag == "LaserRouter") // if it hits a laser router
@@ -213,25 +239,43 @@ public class bansheeScript : MonoBehaviour
 
         if(isCharging)
         {
-            isFiring = false;
-            laserFireTimer = 0f;
+            laserLine.material = materialCharge;
             laserChargeTimer += Time.deltaTime;
             if(laserChargeTimer >= laserChargeTime)
             {
-                isFiring = true;
+                laserTag = "null";
+                laserLine.material = materialPause;
+                laserPauseTimer = 0f;
+                isPaused = true;
+                isCharging = false;
             }
         }
 
-        burstEffect.SetActive(false);
+        if(isPaused)
+        {
+            laserPauseTimer += Time.deltaTime;
+            if(laserPauseTimer >= laserPauseTime)
+            {
+                laserTag = "null";
+                laserLine.material = materialFire;
+                laserFireTimer = 0f;
+                isFiring = true;
+                isPaused = false;
+            }            
+        }
+
         if(isFiring)
         {
-            isCharging = false;
+            isPaused = false;
             laserChargeTimer = 0f;
             laserFireTimer += Time.deltaTime;
             if(laserFireTimer > laserFireTime)
             {
+                laserTag = "null";
+                laserLine.material = materialCharge;
                 isFiring = false;
                 laserFireTimer = 0f;
+                killedPlayer = false;
             }
    
             float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
@@ -243,6 +287,10 @@ public class bansheeScript : MonoBehaviour
             burstEffect.SetActive(true);
             burstEffect.transform.position = laserOrigin;
             burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
+        }
+        else
+        {
+            burstEffect.SetActive(false);
         }
     }
 }
