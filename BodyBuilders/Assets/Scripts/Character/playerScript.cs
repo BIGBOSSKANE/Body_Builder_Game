@@ -50,7 +50,7 @@ public class playerScript : MonoBehaviour
     public bool forceSlaved = false;
     public bool scalingWall = false;
     private float inputX; // get player Input value
-    int rawInputX;
+    [HideInInspector] public int rawInputX;
     [HideInInspector] public int facingDirection; // used to flip the character when turning
     public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
@@ -178,6 +178,7 @@ public class playerScript : MonoBehaviour
     bool scalerTrueGrounded = false;
     float deathTimer = 0;
     bool dying;
+    bool shiftHeld = false;
 
     public Material laserMaterialAim;
     public Material laserMaterialFire;
@@ -256,8 +257,25 @@ public class playerScript : MonoBehaviour
         Vector2 previousVelocity = rb.velocity;
         Vector2 targetVelocity = Vector2.zero;
 
-        inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
-        rawInputX = Mathf.FloorToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            cameraScript.Resize(5 , cameraScript.standardResizeDuration); // resize the camera for scout mode
+            shiftHeld = true;
+            inputX = 0f;
+            rawInputX = 0;
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            cameraScript.Resize(partConfiguration , 0.4f);
+            shiftHeld = false;
+        }
+
+        if(!shiftHeld)
+        {
+            inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
+            rawInputX = Mathf.FloorToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
+        }
 
         if((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0)
         {
@@ -436,7 +454,7 @@ public class playerScript : MonoBehaviour
             cameraAdjuster = false;
         }
 
-        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true))
+        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true) && !shiftHeld)
         {
             cameraAdjuster = true;
         }
@@ -465,7 +483,7 @@ public class playerScript : MonoBehaviour
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 transform.rotation = Quaternion.identity;
             }
-            else
+            else if(!shiftHeld)
             {
                 //rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -502,7 +520,7 @@ public class playerScript : MonoBehaviour
 
 // JUMPING ------------------------------------------------------------------------------------------------------------------
 
-        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !forceSlaved && !climbing && (!jumpGate || (scaler && partConfiguration == 1))) // this last bit ensures the player can always jump, which is how the spiderclimb works
+        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !forceSlaved && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld) // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
             if(isGrounded || leftGroundTimer < 0.3f)
             {
@@ -538,7 +556,7 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space"))) // afterburner glide
+        if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space")) && !shiftHeld) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -556,7 +574,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && !Input.GetButton("Jump") && !Input.GetKey("space")) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && !Input.GetButton("Jump") && !Input.GetKey("space") && !shiftHeld) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
@@ -1291,7 +1309,7 @@ void BoxInteract()
             hookshotAnchor.SetActive(false);
             // cancel things here
         }
-        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration);
+        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration);
     }
 
     void NonHeadConfig()

@@ -25,6 +25,7 @@ using Random=UnityEngine.Random;
         bool resize;
         float resizeTimer;
         public float resizeDuration = 0.8f;
+        [HideInInspector] public float standardResizeDuration;
 
         new Camera camera;
         float initialCameraSize;
@@ -33,6 +34,7 @@ using Random=UnityEngine.Random;
         public float torsoSize = 5.5f;
         public float legSize = 6f;
         public float completeSize = 6.5f;
+        public float scoutSize = 10f;
         float t; // lerp time
 
         // Shake
@@ -45,6 +47,10 @@ using Random=UnityEngine.Random;
         private float shakeMagnitude = 0.7f;
         float groundBreakShakeAmplifier;
         Vector3 initialPosition;
+        Vector2 rawInput;
+        public float scoutSpeed = 5f;
+        public float scoutSpeedTime = 1f;
+        bool shiftHeld = false;
 
 
         private void Awake()
@@ -54,6 +60,7 @@ using Random=UnityEngine.Random;
             {
                 transformPos = gameObject.transform;
             }
+            standardResizeDuration = resizeDuration;
         }
 
         public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
@@ -115,56 +122,95 @@ using Random=UnityEngine.Random;
         // Update is called once per frame
         private void Update()
         {
-            if(damping <= 0f)
+            if(Input.GetKeyDown(KeyCode.LeftShift))
             {
-                speedUp = false;
-                damping = 0f;
-            }
-            else if(speedUp == true)
-            {
-                t += Time.unscaledDeltaTime / 1f;
-                damping = Mathf.SmoothStep(currentDamping , 0f , t);
-            }
-            
-            if(slowDown == true && damping >= initialDamping)
-            {
-                damping = initialDamping;
-                slowDown = false;
-            }
-            else if (slowDown == true && damping < initialDamping)
-            {
-                t += Time.unscaledDeltaTime / 1f;
-                damping = Mathf.SmoothStep(currentDamping , initialDamping , t);
+                shiftHeld = true;
             }
 
-            // only update lookahead pos if accelerating or changed direction
-            float xMoveDelta = (target.position - m_LastTargetPosition).x;
-
-            bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > lookAheadMoveThreshold;
-
-            if (updateLookAheadTarget)
+            if(Input.GetKeyUp(KeyCode.LeftShift))
             {
-                m_LookAheadPos = lookAheadFactor*Vector3.right*Mathf.Sign(xMoveDelta);
+                shiftHeld = false;
+            }
+
+            if(shiftHeld)
+            {
+                Vector2 previousRawInput = rawInput;
+                rawInput = new Vector2(Input.GetAxisRaw("Horizontal") , Input.GetAxisRaw("Vertical"));
+                scoutSpeedTime += Time.deltaTime;
+                if(rawInput != previousRawInput)
+                {
+                    scoutSpeedTime = 0f;
+                }
+                scoutSpeedTime = Mathf.Clamp(scoutSpeedTime , 0f , 1f);
+                transform.position = new Vector3(Mathf.Clamp(transform.position.x + (scoutSpeed * rawInput.x * scoutSpeedTime) , -(Mathf.Abs(target.position.x) + 20f) , Mathf.Abs(target.position.x) + 20f),
+                                                 Mathf.Clamp(transform.position.y + (scoutSpeed * rawInput.y * scoutSpeedTime) , -(Mathf.Abs(target.position.y) + 20f) , Mathf.Abs(target.position.y) + 20f),
+                                                 transform.position.z);
             }
             else
             {
-                m_LookAheadPos = Vector3.MoveTowards(m_LookAheadPos, Vector3.zero, Time.deltaTime*lookAheadReturnSpeed);
+                if(damping <= 0f)
+                {
+                    speedUp = false;
+                    damping = 0f;
+                }
+                else if(speedUp == true)
+                {
+                    t += Time.unscaledDeltaTime / 1f;
+                    damping = Mathf.SmoothStep(currentDamping , 0f , t);
+                }
+                
+                if(slowDown == true && damping >= initialDamping)
+                {
+                    damping = initialDamping;
+                    slowDown = false;
+                }
+                else if (slowDown == true && damping < initialDamping)
+                {
+                    t += Time.unscaledDeltaTime / 1f;
+                    damping = Mathf.SmoothStep(currentDamping , initialDamping , t);
+                }
+
+                // only update lookahead pos if accelerating or changed direction
+                float xMoveDelta = (target.position - m_LastTargetPosition).x;
+
+                bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > lookAheadMoveThreshold;
+
+                if (updateLookAheadTarget)
+                {
+                    m_LookAheadPos = lookAheadFactor*Vector3.right*Mathf.Sign(xMoveDelta);
+                }
+                else
+                {
+                    m_LookAheadPos = Vector3.MoveTowards(m_LookAheadPos, Vector3.zero, Time.deltaTime*lookAheadReturnSpeed);
+                }
+
+                Vector3 aheadTargetPos = target.position + m_LookAheadPos + Vector3.forward*m_OffsetZ;
+                //Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
+
+                Vector3 newPos = new Vector3(Mathf.SmoothDamp(transform.position.x , aheadTargetPos.x , ref m_CurrentVelocity.x , initialDamping),
+                                             Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
+                                             Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
+
+                transform.position = newPos;
+
+                m_LastTargetPosition = target.position;
+
+                if (shakeDuration > 0)
+                {
+                    transformPos.localPosition = transformPos.position + Random.insideUnitSphere * shakeMagnitude;
+                    shakeDuration -= Time.unscaledDeltaTime;
+                    shakeMagnitude -= Time.unscaledDeltaTime;
+                }
+                else
+                {
+                    shakeDuration = 0f;
+                    transformPos.localPosition = transformPos.position;
+                }
             }
-
-            Vector3 aheadTargetPos = target.position + m_LookAheadPos + Vector3.forward*m_OffsetZ;
-            //Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
-
-            Vector3 newPos = new Vector3(Mathf.SmoothDamp(transform.position.x , aheadTargetPos.x , ref m_CurrentVelocity.x , initialDamping),
-                                         Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
-                                         Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
-
-            transform.position = newPos;
-
-            m_LastTargetPosition = target.position;
-
+            
             if(resize == true && resizeTimer < resizeDuration)
             {
-                camera.orthographicSize = Mathf.Lerp(initialCameraSize , targetCameraSize , resizeTimer);
+                    camera.orthographicSize = Mathf.Lerp(initialCameraSize , targetCameraSize , resizeTimer);
                 resizeTimer += Time.deltaTime;
             }
             else
@@ -172,21 +218,9 @@ using Random=UnityEngine.Random;
                 resize = false;
                 resizeTimer = 0f;
             }
-
-            if (shakeDuration > 0)
-            {
-                transformPos.localPosition = transformPos.position + Random.insideUnitSphere * shakeMagnitude;
-                shakeDuration -= Time.unscaledDeltaTime;
-                shakeMagnitude -= Time.unscaledDeltaTime;
-            }
-            else
-            {
-                shakeDuration = 0f;
-                transformPos.localPosition = transformPos.position;
-            }
         }
 
-        public void Resize(int updatedPlayerParts)
+        public void Resize(int updatedPlayerParts , float resizeTime)
         {
             initialCameraSize = camera.orthographicSize;
             playerPartConfiguration = updatedPlayerParts;
@@ -206,7 +240,15 @@ using Random=UnityEngine.Random;
             {
                 targetCameraSize = completeSize;
             }
+            else if(playerPartConfiguration == 5) // this one is just parsed from the shift controls
+            {
+                targetCameraSize = scoutSize;
+            }
             resize = true;
             resizeTimer = 0f;
+            if(resizeTime > 0.1f)
+            {
+                resizeDuration = resizeTime;
+            }
         }
     }
