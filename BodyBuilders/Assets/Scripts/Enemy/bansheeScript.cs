@@ -71,7 +71,7 @@ public class bansheeScript : MonoBehaviour
             collisionEffect.SetActive(true);
             laserLine.enabled = true;
 
-            if(!isFiring && !isPaused)
+            if(!isFiring && !isPaused) // aim
             {
                 targetPosition = target.transform.position;
                 laserOrigin = laserOriginPoint.transform.position;
@@ -203,7 +203,6 @@ public class bansheeScript : MonoBehaviour
                     {
                         playerScript.EndDeflect();
                         playerScript.DeathRay(false);
-                        Debug.Log("Did it");
                     }
                 }
                 laserTag = laser.collider.tag;

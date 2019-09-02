@@ -178,7 +178,7 @@ public class playerScript : MonoBehaviour
     bool scalerTrueGrounded = false;
     float deathTimer = 0;
     bool dying;
-    bool shiftHeld = false;
+    [HideInInspector] public bool shiftHeld = false;
 
     public Material laserMaterialAim;
     public Material laserMaterialFire;
@@ -259,7 +259,7 @@ public class playerScript : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
-            cameraScript.Resize(5 , cameraScript.standardResizeDuration); // resize the camera for scout mode
+            cameraScript.Resize(5 , cameraScript.standardResizeDuration , 1f); // resize the camera for scout mode
             shiftHeld = true;
             inputX = 0f;
             rawInputX = 0;
@@ -267,7 +267,7 @@ public class playerScript : MonoBehaviour
 
         if(Input.GetKeyUp(KeyCode.LeftShift))
         {
-            cameraScript.Resize(partConfiguration , 0.4f);
+            cameraScript.Resize(partConfiguration , 0.4f , 1f);
             shiftHeld = false;
         }
 
@@ -1309,7 +1309,7 @@ void BoxInteract()
             hookshotAnchor.SetActive(false);
             // cancel things here
         }
-        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration);
+        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
 
     void NonHeadConfig()
@@ -1362,6 +1362,7 @@ void BoxInteract()
 
     public void Respawn(float time) // this should eventually be moved to the scene manager
     {
+        hookshotScript.DetachRope();
         deathTimer = time;
         dying = true;
     }
