@@ -17,16 +17,6 @@ To do:
 
 
 
-
-
-Should use a variable for velocity, then add it at the end of physics update
-Collect all external forces and apply them afterwards
-
-
-
-
-
-
 Still need to fix:
 
     try to get animations in from > sprites > V's Animations
@@ -65,8 +55,8 @@ public class playerScript : MonoBehaviour
     public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
-    public float speed; // current movement speed
-    float movementSpeed = 10f; // the max horizontal movement speed
+    float speed; // current movement speed
+    public float movementSpeed = 10f; // the max horizontal movement speed
     float augmentedMovementSpeed = 1f; // scales the movement limit with parts
 
 
@@ -295,6 +285,10 @@ public class playerScript : MonoBehaviour
         if(GroundCheck() == true)
         {
             isGrounded = true;
+            if(forceSlavedTimer > 0.3f)
+            {
+                forceSlaved = false;
+            }
 
             if(isSwinging && !wasGrounded && scalerTrueGrounded) // if you are swinging, and hit the ground, detach the rope
             {
@@ -389,22 +383,29 @@ public class playerScript : MonoBehaviour
 
             if(!isSwinging)
             {
-                if(forceSlaved)
+                if(forceSlaved) // in air after elevator slam or wall jump
                 {
                     forceSlavedTimer += Time.fixedDeltaTime;
-                    if(forceSlavedTimer >= 0.3f)
-                    {
-                        forceSlaved = false;
-                        forceSlavedTimer = 0f;
-                    }
 
-                    if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // || facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)))
+                    if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
                     {
                         rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
                     }
-                        if(Mathf.Abs(targetVelocity.y) > Mathf.Abs(previousVelocity.y)) // || facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.y)))
+
+                    if(Mathf.Abs(targetVelocity.y) > Mathf.Abs(previousVelocity.y)) // don't allow speed to be added in the y direction of the force, unless the speed is greater than that provided by the force
                     {
                         rb.velocity = new Vector2(rb.velocity.x , targetVelocity.y);
+                    }
+                    else if(facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) && Mathf.Abs(targetVelocity.x) < Mathf.Abs(previousVelocity.x)) // air control after elevator slam or wall jump
+                    {
+                        //rb.velocity += new Vector2(targetVelocity.x * forceSlavedTimer * 10f , 0f);
+
+                        // smoothing
+                        float targetClamp = targetVelocity.x;
+                        targetVelocity.x = Mathf.Abs((Mathf.Abs(targetVelocity.x) / (forceSlavedTimer + 1f) + Mathf.Abs(targetVelocity.x)));
+                        Mathf.Clamp(targetVelocity.x , 0f , targetClamp);
+                        rb.velocity += new Vector2(facingDirection * targetVelocity.x , 0f);
+                        
                     }
                 }
                 else
