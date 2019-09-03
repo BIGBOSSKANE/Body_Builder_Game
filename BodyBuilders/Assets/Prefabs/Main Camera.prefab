@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 1818753904618218935}
   - component: {fileID: 1818753904618218920}
   - component: {fileID: 1818753904618218921}
-  - component: {fileID: 1818753904618218922}
   - component: {fileID: 1818753904618218934}
+  - component: {fileID: 6792185939291178853}
+  - component: {fileID: 730068550}
+  - component: {fileID: 730068551}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -27,7 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1818753904618218923}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.38, y: 2.99, z: -10}
   m_LocalScale: {x: 2.1023438, y: 0.2, z: 1}
   m_Children: []
@@ -85,14 +87,6 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1818753904618218923}
   m_Enabled: 1
---- !u!81 &1818753904618218922
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1818753904618218923}
-  m_Enabled: 1
 --- !u!114 &1818753904618218934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +105,7 @@ MonoBehaviour:
   lookAheadReturnSpeed: 0.5
   lookAheadMoveThreshold: 0.1
   resizeDuration: 0.8
+  playerLocked: 0
   standardResizeDuration: 0
   headSize: 5
   torsoSize: 5.5
@@ -122,3 +117,69 @@ MonoBehaviour:
   shakeDivider: 25
   scoutSpeed: 2
   scoutSpeedTime: 1
+  waypointCycling: 0
+  unlockOnInput: 0
+  waypointMoveTime: 1
+  wayPointResizeDuration: 0
+  previousWaypointPos: {x: 0, y: 0, z: 0}
+--- !u!114 &6792185939291178853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818753904618218923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4736a65f8a9f0b4a9a981ef9a5469c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerList: f7e1664c
+  useOtherObject: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: f52a14513a946a949acedc1a21a42d2a,
+      type: 2}
+  decodeBank: 0
+  loadAsynchronous: 0
+  saveDecodedBank: 0
+  unloadTriggerList: 958ca0ea
+  bankNameInternal: 
+  valueGuidInternal: 
+--- !u!114 &730068550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818753904618218923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a10c868c8cb534c41b169655b7703ec1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDefaultListener: 1
+  listenerId: 0
+--- !u!114 &730068551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818753904618218923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f69eb96a70ec4f46a0d04f207face79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 0
+  isStaticObject: 0
+  m_positionOffsetData:
+    KeepMe: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1

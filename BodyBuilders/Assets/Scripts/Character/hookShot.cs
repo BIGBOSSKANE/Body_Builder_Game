@@ -165,6 +165,7 @@ public class hookshot : MonoBehaviour
     {
         //playerScript.forceSlaved = true;
         //playerScript.forceSlavedTimer = 0f;
+        playerScript.forceSlaved = true;
         hookShotAnchorPoint.SetActive(false);
         ropeAttached = false;
         distanceJoint.enabled = false;

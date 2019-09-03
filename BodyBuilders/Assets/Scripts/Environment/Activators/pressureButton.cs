@@ -53,6 +53,7 @@ public class pressureButton : MonoBehaviour
 
     void StateChange(bool active)
     {
+        AkSoundEngine.PostEvent("ButtonPress" , gameObject);
         foreach (GameObject activateable in activates)
         {
             if(activateable != null)

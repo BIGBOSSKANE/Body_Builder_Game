@@ -50,6 +50,7 @@ public class jumpPad : activate
 
         if(col.gameObject.tag == "Player")
         {
+            player.GetComponent<playerScript>().forceSlaved = true;
             colRb = player.GetComponent<Rigidbody2D>();
             if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
             {

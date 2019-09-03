@@ -178,10 +178,11 @@ public class playerScript : MonoBehaviour
     bool scalerTrueGrounded = false;
     float deathTimer = 0;
     bool dying;
-    bool shiftHeld = false;
+    [HideInInspector] public bool shiftHeld = false;
 
     public Material laserMaterialAim;
     public Material laserMaterialFire;
+    int previousPartConfiguration;
 
 
     void Start()
@@ -231,6 +232,7 @@ public class playerScript : MonoBehaviour
         burstEffect.SetActive(false);
         isSwinging = false;
         facingDirection = 1;
+        previousPartConfiguration = 0;
         UpdateParts();
     }
 
@@ -259,7 +261,7 @@ public class playerScript : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
-            cameraScript.Resize(5 , cameraScript.standardResizeDuration); // resize the camera for scout mode
+            cameraScript.Resize(5 , cameraScript.standardResizeDuration , 1f); // resize the camera for scout mode
             shiftHeld = true;
             inputX = 0f;
             rawInputX = 0;
@@ -267,7 +269,7 @@ public class playerScript : MonoBehaviour
 
         if(Input.GetKeyUp(KeyCode.LeftShift))
         {
-            cameraScript.Resize(partConfiguration , 0.4f);
+            cameraScript.Resize(partConfiguration , 0.4f , 1f);
             shiftHeld = false;
         }
 
@@ -319,6 +321,7 @@ public class playerScript : MonoBehaviour
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
+                AkSoundEngine.PostEvent("Land" , gameObject);
             }
 
             maxHeight = transform.position.y; // reset maxHeight
@@ -385,6 +388,7 @@ public class playerScript : MonoBehaviour
                         forceSlavedTimer = 0f;
                         scalingWall = false;
                         targetVelocity = new Vector2(inputX * movementSpeed * wallJumpForce, 9f);
+                        AkSoundEngine.PostEvent("Jump" , gameObject);
                     }
                     else
                     {
@@ -525,11 +529,13 @@ public class playerScript : MonoBehaviour
             if(isGrounded || leftGroundTimer < 0.3f)
             {
                 rb.velocity = Vector2.up * jumpPower;
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
             }
             else if(afterburner == true && !climbing && remainingJumps == 1f)
             {
                 boostSprites.SetActive(true);
                 rb.velocity = Vector2.up * jumpPower * 1.1f;
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
             }
             remainingJumps --;
             jumpGateTimer = 0f;
@@ -798,6 +804,7 @@ void BoxInteract()
                 {
                     if(((closestBox.tag != "HeavyLiftable")||(closestBox.tag != "powerCell")) || lifter)
                     {
+                        AkSoundEngine.PostEvent("PickUpBox" , gameObject);
                         closestBox.transform.parent = this.transform;
                         closestBox.transform.position = boxHoldPos.position;
                         closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -827,6 +834,7 @@ void BoxInteract()
     {
         if(closestBox != null)
         {
+            AkSoundEngine.PostEvent("PutDownBox" , gameObject);
             closestBox.transform.parent = null;
             heldBoxCol.enabled = false;
             heldPowerCellCol.enabled = false;
@@ -1019,10 +1027,21 @@ void BoxInteract()
             }
         }
 
+        previousPartConfiguration = partConfiguration;
+
         Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
 
         if(!hasArms && !hasLegs)
         {
+            if(previousPartConfiguration == 2)
+            {
+                AkSoundEngine.PostEvent("DetachArms" , gameObject);
+            }
+            else if(previousPartConfiguration > 2)
+            {
+                AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+            }
+
             rb.sharedMaterial = frictionMaterial;
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
@@ -1097,6 +1116,15 @@ void BoxInteract()
 
         else if (hasArms && !hasLegs)
         {
+            if(previousPartConfiguration > 2)
+            {
+                AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+            }
+            else if(previousPartConfiguration < 2)
+            {
+                AkSoundEngine.PostEvent("AttachBasicArms" , gameObject);
+            }
+
             partConfiguration = 2; // just a head and arms
             movementSpeed = augmentedMovementSpeed * 7.5f;
             jumpPower = jumpForce * 8.5f;
@@ -1162,6 +1190,11 @@ void BoxInteract()
 
         else if (!hasArms && hasLegs) // need to change collider
         {
+            if(previousPartConfiguration == 1)
+            {
+                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
+            }
+
             partConfiguration = 3;
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
@@ -1208,6 +1241,15 @@ void BoxInteract()
 
         else if(hasArms && hasLegs) // need to change collider
         {
+            if(previousPartConfiguration == 2)
+            {
+                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
+            }
+            else if(previousPartConfiguration == 3)
+            {
+                AkSoundEngine.PostEvent("AttachArms" , gameObject);
+            }
+
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
@@ -1309,7 +1351,7 @@ void BoxInteract()
             hookshotAnchor.SetActive(false);
             // cancel things here
         }
-        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration);
+        camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
 
     void NonHeadConfig()
@@ -1362,7 +1404,11 @@ void BoxInteract()
 
     public void Respawn(float time) // this should eventually be moved to the scene manager
     {
+        AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
+        hookshotScript.DetachRope();
         deathTimer = time;
+        isGrounded = false;
+        cameraScript.TriggerShake(15f , true , 4);
         dying = true;
     }
 }
