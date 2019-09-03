@@ -63,6 +63,8 @@ using Random=UnityEngine.Random;
         float waypointPauseTimer = 0f;
         float waypointPauseTime = 1f;
         cameraWaypoint camPoint;
+        int waypointCount;
+        int waypointCounter = 0;
 
 
         private void Awake()
@@ -112,6 +114,7 @@ using Random=UnityEngine.Random;
             m_OffsetZ = (transform.position - target.position).z;
             transform.parent = null;
             initialDamping = damping;
+            waypointCounter = 0;
             t = 0f;
         }
 
@@ -139,11 +142,13 @@ using Random=UnityEngine.Random;
                 if(Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     shiftHeld = true;
+                    AkSoundEngine.PostEvent("EnterFan" , gameObject);
                 }
 
                 if(Input.GetKeyUp(KeyCode.LeftShift))
                 {
                     shiftHeld = false;
+                    AkSoundEngine.PostEvent("ExitFan" , gameObject);
                 }
 
                 if(shiftHeld)
@@ -224,22 +229,31 @@ using Random=UnityEngine.Random;
             }
             else // waypoint cycling
             {
-                //if(activated == true)
+                waypointMoveTimer += Time.deltaTime;
+                if(waypointMoveTimer >= waypointMoveTime) // move to position
                 {
-                    waypointMoveTimer += Time.deltaTime;
-                    if(waypointMoveTimer >= waypointMoveTime)
-                    {
-                        waypointMoveTimer = waypointMoveTime;
+                    waypointMoveTimer = waypointMoveTime;
 
-                        waypointPauseTimer += Time.deltaTime;
-                        if(waypointPauseTimer > waypointMoveTime)
+                    waypointPauseTimer += Time.deltaTime;
+                    if(waypointPauseTimer > waypointMoveTime)
+                    {
+                        waypointPauseTimer = waypointPauseTime;
+                        waypointCounter++;
+                        if(waypointCounter == waypointCount)
                         {
-                            waypointPauseTimer = waypointPauseTime;
+                            Debug.Log("end" + waypointCounter);
+                            //camPoint.NextCoordinate();
+                            EndCycle();
+                            Debug.Log("next");
+                        }
+                        else
+                        {
+                            Debug.Log("next");
                             camPoint.NextCoordinate();
                         }
                     }
-                    gameObject.transform.position = Vector3.Lerp(previousWaypointPos , wayPointPos , waypointMoveTimer/waypointMoveTime);
                 }
+                gameObject.transform.position = Vector3.Lerp(previousWaypointPos , wayPointPos , waypointMoveTimer/waypointMoveTime);
             }
             
             // resize is always on
@@ -256,11 +270,14 @@ using Random=UnityEngine.Random;
             }
         }
 
-        public void WayPointCycle(Vector2 waypoint , Vector2 prevPos , float pauseTime , float size , bool locked , cameraWaypoint camWay) // lock and unlock the screen
+        public void WayPointCycle(Vector2 waypoint , Vector2 prevPos , float pauseTime , float size , bool locked , float moveTime , cameraWaypoint camWay , int waypointNumber) // lock and unlock the screen
         {
             camPoint = camWay;
+            waypointNumber = waypointCount;
             previousWaypointPos = new Vector3(prevPos.x , prevPos.y , transform.position.z); // the previous waypoint position
             waypointMoveTimer = 0f;
+            waypointMoveTime = moveTime;
+            resizeDuration = moveTime;
             waypointPauseTimer = 0f;
             wayPointPos = new Vector3(waypoint.x , waypoint.y , transform.position.z); // location of the next waypoint
             wayPointDistance = Vector2.Distance(previousWaypointPos , wayPointPos); // distance between waypoints
@@ -275,11 +292,20 @@ using Random=UnityEngine.Random;
             {
                 Resize(6 , resizeDuration , size);
             }
-            else // leave waypoint cycle
+        }
+
+        public void EndCycle()
+        {
+            waypointCycling = false;
+            waypointCounter = 0;
+            if(camPoint.onlyOnce)
             {
-                playerScript.shiftHeld = false;
-                Resize(playerScript.partConfiguration , resizeDuration , size);
+                Destroy(camPoint.gameObject);
             }
+            shiftHeld = false;
+            resizeDuration = standardResizeDuration;
+            playerScript.shiftHeld = false;
+            playerScript.UpdateParts();
         }
 
         public void Resize(int configuration , float resizeTime , float size) // resize the camera for scout mode, and different part configurations

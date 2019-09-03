@@ -48,6 +48,7 @@ public class passThroughPlatform : MonoBehaviour
             if(waitTimer <= 0f)
             {
                 effector.rotationalOffset = 180f;
+                AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
                 waitTimer = 0.1f;
                 resetTimer = 0.4f;
             }

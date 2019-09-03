@@ -11,12 +11,11 @@ using UnityEngine;
 
 public class cameraWaypoint : MonoBehaviour
 {
-    bool onlyOnce = true;
+    public bool onlyOnce = true;
     bool alreadyDone = false;
     public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
     public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
     public float waypointResizeDuration = 2f; // time for camera zoom out
-    public float waypointMoveTime = 1f; // time for camera movement
     int waypointCount; // number of waypoints
     int currentWaypoint = 0; // current waypoint
     Camera2DFollow cameraScript;
@@ -47,7 +46,7 @@ public class cameraWaypoint : MonoBehaviour
             {
                 if(alreadyDone)
                 {
-                    previousPosition = waypointCycle[waypointCount].waypointPos;
+                    previousPosition = waypointCycle[waypointCount + 1].waypointPos;
                 }
                 else
                 {
@@ -73,7 +72,6 @@ public class cameraWaypoint : MonoBehaviour
         if(col.tag == "Player" && ((onlyOnce && !alreadyDone) || !onlyOnce))
         {
             cameraScript.unlockOnInput = unlockOnInput;
-            cameraScript.waypointMoveTime = waypointMoveTime;
             cameraScript.wayPointResizeDuration = waypointResizeDuration;
             playerPos = col.gameObject.transform.position;
             NextCoordinate();
@@ -88,13 +86,21 @@ public class cameraWaypoint : MonoBehaviour
             {
                 previousPosition = playerPos;
             }
+            else
+            {
+                previousPosition = waypointCycle[currentWaypoint - 1].waypointPos;
+            }
             cameraScript.waypointCycling = true;
-            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , this);
+            Debug.Log(waypointCount);
+            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
             currentWaypoint ++;
         }
         else
         {
             cameraScript.waypointCycling = false;
+            cameraScript.EndCycle();
+            Debug.Log("Should be disabled");
+            //cameraScript.WayPointCycle(playerPos , previousPosition , 0f , 0f , false , 0f , this);
             currentWaypoint = 0;
         }
     }
@@ -104,6 +110,7 @@ public class cameraWaypoint : MonoBehaviour
     {
         public Vector2 waypointPos;
         public float waypointPauseTime;
-        public float waypointSize; 
+        public float waypointSize;
+        public float waypointMoveTime = 1f; // time for camera movement
     }
 }

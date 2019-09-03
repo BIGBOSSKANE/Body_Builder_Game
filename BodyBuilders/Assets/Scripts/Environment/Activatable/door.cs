@@ -16,6 +16,7 @@ public class door : activate
     public Vector2 moveTo;
     Vector2 targetPosition;
     float moveTime;
+    bool previousState;
 
     void Start()
     {
@@ -26,7 +27,7 @@ public class door : activate
 
     void Update()
     {
-        if(activated == true)
+        if(activated)
         {
             moveTime += Time.deltaTime;
             if(moveTime > moveTimeTotal)
@@ -36,7 +37,7 @@ public class door : activate
             gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTime/moveTimeTotal);
 
         }
-        else if(activated == false)
+        else if(!activated)
         {
             moveTime -= Time.deltaTime;
             if(moveTime < 0f)
@@ -45,6 +46,12 @@ public class door : activate
             }
             gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTime/moveTimeTotal);
         }
+
+        if(activated != previousState) // play sound effect on a state change
+        {
+            AkSoundEngine.PostEvent("DoorMoves" , gameObject);
+        }
+        previousState = activated;
     }
 
     void OnDrawGizmos() // shows the waypoints in both editor and in game
@@ -53,7 +60,17 @@ public class door : activate
         float locationIdentifier = 0.3f;
         
         // if in game, the waypoints don't move, so use the world positions
-        Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
-        Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+
+        if(Application.isPlaying)
+        {
+            Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+        }
+        else
+        {
+            targetPosition = moveTo + (Vector2)transform.position;
+            Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+        }
     }
 }

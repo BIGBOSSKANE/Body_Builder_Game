@@ -555,14 +555,32 @@ public class laserRouter : activate
 
     void OnDrawGizmos() // shows the waypoints in both editor and in game
     {
-        Gizmos.color = Color.blue;
-        float locationIdentifier = 0.3f;
-        
-        Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
-        Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
-        Gizmos.DrawLine(originalPosition - Vector2.up * locationIdentifier , originalPosition + Vector2.up * locationIdentifier);
-        Gizmos.DrawLine(originalPosition - Vector2.left * locationIdentifier , originalPosition + Vector2.left * locationIdentifier);
-        Gizmos.DrawLine(originalPosition , targetPosition); // draw a line so we can see where the laser router moves
+        if(!rotationalPatrol || !patrol)
+        {
+            Gizmos.color = Color.blue;
+            float locationIdentifier = 0.3f;
+            
+
+            if(Application.isPlaying)
+            {
+                Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
+                Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+                Gizmos.DrawLine(originalPosition - Vector2.up * locationIdentifier , originalPosition + Vector2.up * locationIdentifier);
+                Gizmos.DrawLine(originalPosition - Vector2.left * locationIdentifier , originalPosition + Vector2.left * locationIdentifier);
+
+                Gizmos.DrawLine(originalPosition , targetPosition); // draw a line so we can see where the laser router moves
+            }
+            else
+            {
+                targetPosition = moveTo + (Vector2)transform.position;
+                Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
+                Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
+                Gizmos.DrawLine(originalPosition - Vector2.up * locationIdentifier , originalPosition + Vector2.up * locationIdentifier);
+                Gizmos.DrawLine(originalPosition - Vector2.left * locationIdentifier , originalPosition + Vector2.left * locationIdentifier);
+
+                Gizmos.DrawLine(transform.position , targetPosition); // draw a line so we can see where the laser router moves
+            }
+        }
     }
 }
 

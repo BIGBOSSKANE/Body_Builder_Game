@@ -717,9 +717,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forceSlaved: 0
   scalingWall: 0
+  rawInputX: 0
   facingDirection: 0
   reverseDirectionTimer: 0
-  speed: 0
+  movementSpeed: 10
   jumpForce: 1
   wallJumpForce: 20
   jumpAfterFall: 0
@@ -730,7 +731,7 @@ MonoBehaviour:
   remainingJumps: 0
   jumpLayer:
     serializedVersion: 2
-    m_Bits: 9389568
+    m_Bits: 9127424
   ladderLayer:
     serializedVersion: 2
     m_Bits: 524288
@@ -759,6 +760,7 @@ MonoBehaviour:
   slam: 0
   slamVector: {x: 0, y: 0}
   forceSlavedTimer: 0
+  shiftHeld: 0
   laserMaterialAim: {fileID: 0}
   laserMaterialFire: {fileID: 0}
 --- !u!114 &5744412106282342316

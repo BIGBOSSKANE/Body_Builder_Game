@@ -22,12 +22,21 @@ public class fanZone : activate
     public float lockVelocityBounds = 0.25f; // if the player is moving beneath this speed, it can be locked
     Rigidbody2D colRb; // the rigidbodies of effected objects
     GameObject player; // the player game object
+    bool actingOnPlayer = false;
 
     void Start()
     {
         player = GameObject.Find("Player").gameObject;
     }
     
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.tag == "Player")
+        {
+            actingOnPlayer = false;
+        }
+    }
+
     void OnTriggerStay2D(Collider2D col)
     {
         if(!activated)
@@ -39,6 +48,12 @@ public class fanZone : activate
 
         if(col.tag == "Player")
         {
+            if(actingOnPlayer == false)
+            {
+                AkSoundEngine.PostEvent("EnterFan" , gameObject);
+                actingOnPlayer = true;
+            }
+
             colRb = player.GetComponent<Rigidbody2D>();
 
             if(colRb.velocity.y < 0f) // if moving down, reduce velocity
