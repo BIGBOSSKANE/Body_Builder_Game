@@ -241,10 +241,7 @@ using Random=UnityEngine.Random;
                         waypointCounter++;
                         if(waypointCounter == waypointCount)
                         {
-                            Debug.Log("end" + waypointCounter);
-                            //camPoint.NextCoordinate();
                             EndCycle();
-                            Debug.Log("next");
                         }
                         else
                         {
@@ -258,15 +255,18 @@ using Random=UnityEngine.Random;
             
             // resize is always on
 
-            if(resize == true && resizeTimer < resizeDuration)
+            if(resize == true)
             {
+                if(resizeTimer < 1f)
+                {
+                    resizeTimer += Time.deltaTime / resizeDuration;
+                }
+                else
+                {
+                    resizeTimer = 1f;
+                    resize = false;
+                }
                 camera.orthographicSize = Mathf.Lerp(initialCameraSize , targetCameraSize , resizeTimer);
-                resizeTimer += Time.deltaTime;
-            }
-            else
-            {
-                resize = false;
-                resizeTimer = 0f;
             }
         }
 
