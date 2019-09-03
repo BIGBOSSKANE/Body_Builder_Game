@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class jumpPad : activate
 {
+    public bool jumpBooster = true;
     public float normalJumpForce; // standard bounce force applied
     public float overchargeJumpForce; // boosted bounce force applied
     public float jumpForceMultiplier = 1.2f; // increase the amount of bounce force applied if the player is pressing up
@@ -26,6 +27,10 @@ public class jumpPad : activate
         if(!forceReflection) // disable the bouncy physics material to prevent velocity reflection if force refelction is off
         {
             gameObject.GetComponent<BoxCollider2D>().sharedMaterial = null;
+        }
+        if(!jumpBooster)
+        {
+            jumpForceMultiplier = 1f;
         }
     }
 
@@ -64,7 +69,7 @@ public class jumpPad : activate
         else // provide a generic force upwards
         {
             colRb = col.gameObject.GetComponent<Rigidbody2D>();
-            colRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            colRb.AddForce(Vector2.up * jumpForce / 2f, ForceMode2D.Impulse);
         }
     }
 }

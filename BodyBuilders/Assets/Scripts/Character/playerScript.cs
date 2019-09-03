@@ -180,6 +180,7 @@ public class playerScript : MonoBehaviour
     bool dying;
     [HideInInspector] public bool shiftHeld = false;
 
+    bool wallHang = false;
     public Material laserMaterialAim;
     public Material laserMaterialFire;
     int previousPartConfiguration;
@@ -378,17 +379,25 @@ public class playerScript : MonoBehaviour
                 targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
             }
 
-            if(scalingWall && Input.GetAxisRaw("Vertical") > 0) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
+            if(scalingWall)
             {
-                if(Mathf.Abs(rawInputX) >= 0.1f)
+                if(Input.GetAxisRaw("Vertical") > 0) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
                 {
-                    if(rawInputX != Mathf.Sign(previousFacingDirection)) // wall leap
+                    if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
-                        forceSlaved = true;
-                        forceSlavedTimer = 0f;
-                        scalingWall = false;
-                        targetVelocity = new Vector2(inputX * movementSpeed * wallJumpForce, 9f);
-                        AkSoundEngine.PostEvent("Jump" , gameObject);
+                        if(rawInputX != Mathf.Sign(previousFacingDirection)) // wall leap
+                        {
+                            forceSlaved = true;
+                            forceSlavedTimer = 0f;
+                            scalingWall = false;
+                            targetVelocity = new Vector2(inputX * movementSpeed * wallJumpForce, 9f);
+                            AkSoundEngine.PostEvent("Jump" , gameObject);
+                        }
+                        else
+                        {
+                            inputX = facingDirection; // apply force towards wall to let player rotate
+                            targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+                        }
                     }
                     else
                     {
@@ -396,12 +405,14 @@ public class playerScript : MonoBehaviour
                         targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
                     }
                 }
-                else
+                else if(Input.GetAxisRaw("Vertical") == 0 && rawInputX == Mathf.Sign(previousFacingDirection) && wallHang)
                 {
-                    inputX = facingDirection; // apply force towards wall to let player rotate
-                    targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+                    targetVelocity = new Vector2(inputX * movementSpeed , 0f);
                 }
             }
+
+            Debug.Log(wallHang);
+
 
             if(!isSwinging)
             {
@@ -643,6 +654,11 @@ public class playerScript : MonoBehaviour
                     if(sideHit.collider != null )
                     {
                         scalingWall = true;
+                        float wallAngle = Vector2.Angle(sideHit.normal, Vector2.up);
+                        if(wallAngle > 80f)
+                        {
+                            wallHang = true;
+                        }
                     }
                     
                     RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , jumpLayer);

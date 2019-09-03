@@ -731,7 +731,7 @@ MonoBehaviour:
   remainingJumps: 0
   jumpLayer:
     serializedVersion: 2
-    m_Bits: 9127424
+    m_Bits: 76498432
   ladderLayer:
     serializedVersion: 2
     m_Bits: 524288
@@ -761,8 +761,8 @@ MonoBehaviour:
   slamVector: {x: 0, y: 0}
   forceSlavedTimer: 0
   shiftHeld: 0
-  laserMaterialAim: {fileID: 0}
-  laserMaterialFire: {fileID: 0}
+  laserMaterialAim: {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
+  laserMaterialFire: {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
 --- !u!114 &5744412106282342316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -826,7 +826,7 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
-  m_RendererPriority: -60
+  m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2bb267ed0d21deb42b09ca495926cf6f, type: 2}
   m_StaticBatchInfo:
@@ -877,7 +877,7 @@ LineRenderer:
         outWeight: 0
       - serializedVersion: 3
         time: 0.4619338
-        value: 0.23076963
+        value: 0.4926715
         inSlope: 0
         outSlope: 0
         tangentMode: 0

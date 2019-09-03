@@ -33,7 +33,7 @@ public class cameraWaypoint : MonoBehaviour
 
     void OnDrawGizmos() // show all of the camera waypoints
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.yellow;
         float locationIdentifier = 0.3f;
 
         for(int i = 0 ; i < waypointCycle.Length ; i++)
