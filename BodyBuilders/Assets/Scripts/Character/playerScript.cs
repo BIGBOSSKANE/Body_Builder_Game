@@ -62,9 +62,10 @@ public class playerScript : MonoBehaviour
 
 // JUMPING
     float jumpPower; // the current jump force based on augments
-    public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
+    public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios`
     public Vector2 wallJumpForce = new Vector2(20f , 9f); // force of wall jump sideways propulsion
-    public bool jumpAfterFall; // if the player just fell of a platform, they can still use their first jump in mid air
+    public bool coyoteTime; // if the player just fell of a platform, they can still use their first jump in mid air
+    public float coyoteTimeLimit = 0.3f;
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
@@ -344,7 +345,7 @@ public class playerScript : MonoBehaviour
             {
                 maxHeight = transform.position.y;
             }
-            if(remainingJumps == maximumJumps && !jumpAfterFall) // if coyoteTime is not enabled, then you lose a jump immediately if you fall from a ledge
+            if(remainingJumps == maximumJumps && !coyoteTime) // if coyoteTime is not enabled, then you lose a jump immediately if you fall from a ledge
             {
                 remainingJumps --;
             }
