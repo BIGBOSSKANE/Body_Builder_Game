@@ -91,7 +91,6 @@ public class cameraWaypoint : MonoBehaviour
                 previousPosition = waypointCycle[currentWaypoint - 1].waypointPos;
             }
             cameraScript.waypointCycling = true;
-            Debug.Log(waypointCount);
             cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
             currentWaypoint ++;
         }
@@ -99,7 +98,6 @@ public class cameraWaypoint : MonoBehaviour
         {
             cameraScript.waypointCycling = false;
             cameraScript.EndCycle();
-            Debug.Log("Should be disabled");
             //cameraScript.WayPointCycle(playerPos , previousPosition , 0f , 0f , false , 0f , this);
             currentWaypoint = 0;
         }

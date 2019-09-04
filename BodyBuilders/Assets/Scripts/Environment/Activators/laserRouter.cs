@@ -329,7 +329,7 @@ public class laserRouter : activate
                 {
                     if(charged)
                     {
-                        //Destroy(target);
+                        playerScript.Respawn(0.5f);
                         Debug.Log("Killed");
                     }
                 }               

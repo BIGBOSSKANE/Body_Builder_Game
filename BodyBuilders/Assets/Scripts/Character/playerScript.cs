@@ -63,7 +63,7 @@ public class playerScript : MonoBehaviour
 // JUMPING
     float jumpPower; // the current jump force based on augments
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios
-    public float wallJumpForce = 20f; // force of wall jump sideways propulsion
+    public Vector2 wallJumpForce = new Vector2(20f , 9f); // force of wall jump sideways propulsion
     public bool jumpAfterFall; // if the player just fell of a platform, they can still use their first jump in mid air
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
@@ -177,13 +177,14 @@ public class playerScript : MonoBehaviour
     int previousFacingDirection;
     bool scalerTrueGrounded = false;
     float deathTimer = 0;
-    bool dying;
+    [HideInInspector] public bool dying;
     [HideInInspector] public bool shiftHeld = false;
 
     bool wallHang = false;
     public Material laserMaterialAim;
     public Material laserMaterialFire;
     int previousPartConfiguration;
+    float jumpDisableTimer = 10f;
 
 
     void Start()
@@ -239,9 +240,10 @@ public class playerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(dying)
+        if(dying) // hold the death frame of death for a short while to let the player know what killed them
         {
             deathTimer -= Time.fixedDeltaTime;
+            rb.velocity = Vector2.zero;
             if(deathTimer <= 0 )
             {
                 if(currentSpawnPoint != null)
@@ -389,9 +391,9 @@ public class playerScript : MonoBehaviour
                         {
                             forceSlaved = true;
                             forceSlavedTimer = 0f;
-                            scalingWall = false;
-                            targetVelocity = new Vector2(inputX * movementSpeed * wallJumpForce, 9f);
+                            targetVelocity = new Vector2(inputX * wallJumpForce.x, wallJumpForce.y);
                             AkSoundEngine.PostEvent("Jump" , gameObject);
+                            jumpDisableTimer = 0f;
                         }
                         else
                         {
@@ -410,9 +412,6 @@ public class playerScript : MonoBehaviour
                     targetVelocity = new Vector2(inputX * movementSpeed , 0f);
                 }
             }
-
-            Debug.Log(wallHang);
-
 
             if(!isSwinging)
             {
@@ -438,7 +437,6 @@ public class playerScript : MonoBehaviour
                         targetVelocity.x = Mathf.Abs((Mathf.Abs(targetVelocity.x) / (forceSlavedTimer + 1f) + Mathf.Abs(targetVelocity.x)));
                         Mathf.Clamp(targetVelocity.x , 0f , targetClamp);
                         rb.velocity += new Vector2(facingDirection * targetVelocity.x , 0f);
-                        
                     }
                 }
                 else
@@ -573,7 +571,7 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (Input.GetButton("Jump") || Input.GetKey("space")) && !shiftHeld) // afterburner glide
+        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !shiftHeld) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -591,7 +589,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && !Input.GetButton("Jump") && !Input.GetKey("space") && !shiftHeld) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !shiftHeld) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
@@ -614,7 +612,8 @@ public class playerScript : MonoBehaviour
 
     bool GroundCheck()
     {
-        if(jumpBan)
+        jumpDisableTimer += Time.fixedDeltaTime; // jumpDisableTimer is applied by walljumping, preventing the grounded state from triggering interfering jumps for 0.2 seconds
+        if(jumpBan || jumpDisableTimer < 0.2f) // jump ban is applied by the elevator script to lock the player to it when slamming upwards
         {
             return false;
         }

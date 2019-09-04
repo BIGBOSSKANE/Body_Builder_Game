@@ -22,8 +22,11 @@ public class checkPoint : MonoBehaviour
     {
         if(col.tag == "Player")
         {
-            playerScript.SetSpawnPoint(new Vector2(transform.position.x , transform.position.y + 1f));
-            Debug.Log("Checkpoint Reached");
+            if(!playerScript.dying)
+            {
+                playerScript.SetSpawnPoint(new Vector2(transform.position.x , transform.position.y + 1f));
+                Debug.Log("Checkpoint Reached");
+            }
         }
     }
 }
