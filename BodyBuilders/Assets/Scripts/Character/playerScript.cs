@@ -30,8 +30,6 @@ Still need to add:
 
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
     expander head
-
-    Wall jumping - jump script will need to be completely restructured like this tutorial series - https://www.youtube.com/watch?v=46WNb1Aucyg
 */
 
 
@@ -65,6 +63,7 @@ public class playerScript : MonoBehaviour
     public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios`
     public Vector2 wallJumpForce = new Vector2(20f , 9f); // force of wall jump sideways propulsion
     public bool coyoteTime; // if the player just fell of a platform, they can still use their first jump in mid air
+    bool coyoteJump; // is the player within the coyote time limit?
     public float coyoteTimeLimit = 0.3f;
     public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
@@ -309,6 +308,7 @@ public class playerScript : MonoBehaviour
         if(GroundCheck() == true)
         {
             isGrounded = true;
+            coyoteJump = true;
             if(forceSlavedTimer > 0.3f)
             {
                 forceSlaved = false;
@@ -339,16 +339,23 @@ public class playerScript : MonoBehaviour
         }
         else // if not grounded
         {
-            isGrounded = false; // not grounded
             leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+
+            if(leftGroundTimer > coyoteTimeLimit && coyoteJump)
+            {
+                if(remainingJumps == maximumJumps && coyoteTimeLimit > jumpGateDuration)
+                {
+                    remainingJumps --;
+                }
+                coyoteJump = false;
+            }
+
             if(transform.position.y > maxHeight) // set the maximum height of the current air time
             {
                 maxHeight = transform.position.y;
             }
-            if(remainingJumps == maximumJumps && !coyoteTime) // if coyoteTime is not enabled, then you lose a jump immediately if you fall from a ledge
-            {
-                remainingJumps --;
-            }
+
+            isGrounded = false;
         }
     
     // Controls
@@ -413,40 +420,37 @@ public class playerScript : MonoBehaviour
                     targetVelocity = new Vector2(inputX * movementSpeed , 0f);
                 }
             }
-
-            if(!isSwinging)
+            
+            if(forceSlaved) // in air after elevator slam or wall jump
             {
-                if(forceSlaved) // in air after elevator slam or wall jump
+                facingDirection = Mathf.FloorToInt(Mathf.Sign(targetVelocity.x));
+                forceSlavedTimer += Time.fixedDeltaTime;
+
+                if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
                 {
-                    forceSlavedTimer += Time.fixedDeltaTime;
-
-                    if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
-                    {
-                        rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
-                    }
-
-                    if(Mathf.Abs(targetVelocity.y) > Mathf.Abs(previousVelocity.y)) // don't allow speed to be added in the y direction of the force, unless the speed is greater than that provided by the force
-                    {
-                        rb.velocity = new Vector2(rb.velocity.x , targetVelocity.y);
-                    }
-                    else if(facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) && Mathf.Abs(targetVelocity.x) < Mathf.Abs(previousVelocity.x)) // air control after elevator slam or wall jump
-                    {
-                        //rb.velocity += new Vector2(targetVelocity.x * forceSlavedTimer * 10f , 0f);
-
-                        // smoothing
-                        float targetClamp = targetVelocity.x;
-                        targetVelocity.x = Mathf.Abs((Mathf.Abs(targetVelocity.x) / (forceSlavedTimer + 1f) + Mathf.Abs(targetVelocity.x)));
-                        Mathf.Clamp(targetVelocity.x , 0f , targetClamp);
-                        rb.velocity += new Vector2(facingDirection * targetVelocity.x , 0f);
-                    }
-                }
-                else
-                {
-                    rb.velocity = targetVelocity;
+                    rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
                 }
 
-                previousFacingDirection = facingDirection;
+                if(Mathf.Abs(targetVelocity.y) > Mathf.Abs(previousVelocity.y)) // don't allow speed to be added in the y direction of the force, unless the speed is greater than that provided by the force
+                {
+                    rb.velocity = new Vector2(rb.velocity.x , targetVelocity.y);
+                }
+                
+                if(facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) && Mathf.Abs(targetVelocity.x) < Mathf.Abs(previousVelocity.x)) // air control after elevator slam or wall jump
+                {
+                    Debug.Log("Hi");
+                    // smoothing
+                    float targetClamp = targetVelocity.x;
+                    targetVelocity.x = Mathf.Abs((Mathf.Abs(targetVelocity.x) / ((forceSlavedTimer / 20f) + 1f) ));// + Mathf.Abs(targetVelocity.x)));
+                    Mathf.Clamp(targetVelocity.x , 0f , targetClamp);
+                    rb.velocity += new Vector2(facingDirection * targetVelocity.x , 0f);
+                }
             }
+            else
+            {
+                rb.velocity = targetVelocity;
+            }
+            previousFacingDirection = facingDirection;
         }
     }
 
@@ -536,7 +540,7 @@ public class playerScript : MonoBehaviour
 
         if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !forceSlaved && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld) // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
-            if(isGrounded || leftGroundTimer < 0.3f)
+            if(isGrounded || (coyoteTime && coyoteJump))
             {
                 rb.velocity = Vector2.up * jumpPower;
                 //AkSoundEngine.PostEvent("Jump" , gameObject);
@@ -557,6 +561,10 @@ public class playerScript : MonoBehaviour
             jumpGateTimer += Time.deltaTime;
             if(jumpGateTimer > jumpGateDuration)
             {
+                if(remainingJumps == maximumJumps)
+                {
+                    remainingJumps --;
+                }
                 jumpGate = false;
             }
         }

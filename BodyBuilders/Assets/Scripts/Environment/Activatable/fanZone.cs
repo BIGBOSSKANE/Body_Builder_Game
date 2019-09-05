@@ -50,7 +50,7 @@ public class fanZone : activate
         {
             if(actingOnPlayer == false)
             {
-                AkSoundEngine.PostEvent("EnterFan" , gameObject);
+                //AkSoundEngine.PostEvent("EnterFan" , gameObject); // need to also disable the sound when the player leaves, otherwise it will stack as it is looping
                 actingOnPlayer = true;
             }
 
