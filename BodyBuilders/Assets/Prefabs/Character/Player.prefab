@@ -10257,11 +10257,12 @@ MonoBehaviour:
   rawInputX: 0
   facingDirection: 0
   reverseDirectionTimer: 0
+  speed: 0
   movementSpeed: 10
   jumpForce: 1
-  wallJumpForce: {x: 20, y: 9}
-  coyoteTime: 0
-  coyoteTimeLimit: 0.19
+  wallJumpForce: {x: 8, y: 8}
+  coyoteTime: 1
+  coyoteTimeLimit: 0.3
   lastGroundedHeight: 0
   isGrounded: 0
   maxHeight: 0
@@ -10269,7 +10270,7 @@ MonoBehaviour:
   remainingJumps: 0
   jumpLayer:
     serializedVersion: 2
-    m_Bits: 9389569
+    m_Bits: 9127425
   ladderLayer:
     serializedVersion: 2
     m_Bits: 524288

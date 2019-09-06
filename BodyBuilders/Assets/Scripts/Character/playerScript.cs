@@ -2,7 +2,7 @@
 Creator: Daniel
 Created 04/08/2019
 Last Edited by: Daniel
-Last Edit 29/08/2019
+Last Edit 06/09/2019
 */
 
 /*
@@ -16,6 +16,13 @@ To do:
  - Level Design
 
 
+The wall jump is failing because normal jump is being called first
+
+Altering wall jump movement in the air isn't feeling smooth, because deceleration is being applied, and then the target velocity > current velocity clause is completely shifting the movement speed.
+
+Wall jumping upwards disables groundchecker, meaning that if you hit a ceiling, you instantly bounce off if you jumped from a short enough distance - solved?
+
+
 
 Still need to fix:
 
@@ -24,6 +31,8 @@ Still need to fix:
     currently when w is held and you have the scaler augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
 
     wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
+
+    Fix up hit ray on scaler form so that ground check isn't disabled when colliding with the ceiling
 
 
 Still need to add:
@@ -53,7 +62,7 @@ public class playerScript : MonoBehaviour
     public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
-    float speed; // current movement speed
+    public float speed; // current movement speed
     public float movementSpeed = 10f; // the max horizontal movement speed
     float augmentedMovementSpeed = 1f; // scales the movement limit with parts
 
@@ -113,7 +122,7 @@ public class playerScript : MonoBehaviour
     float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
     bool wasClimbing = false; // did you just stop climbing?
     float climbingDismountTimer = 0f; // wall jump boost timer
-    bool climbingRight = false; // what side are you climbing on?
+    int climbDirection = 1; // what side are you climbing on?
     float climbSpeed = 10f; // climbing speed
 
     // Legs
@@ -185,6 +194,7 @@ public class playerScript : MonoBehaviour
     public Material laserMaterialFire;
     int previousPartConfiguration;
     float jumpDisableTimer = 10f;
+    Vector2 previousVelocity;
 
 
     void Start()
@@ -259,7 +269,7 @@ public class playerScript : MonoBehaviour
             return; // stop the player from doing anything, we could later replace this with a time slow effect
         }
 
-        Vector2 previousVelocity = rb.velocity;
+        previousVelocity = rb.velocity;
         Vector2 targetVelocity = Vector2.zero;
 
         if(Input.GetKeyDown(KeyCode.LeftShift))
@@ -279,7 +289,7 @@ public class playerScript : MonoBehaviour
         if(!shiftHeld)
         {
             inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
-            rawInputX = Mathf.FloorToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
+            rawInputX = Mathf.RoundToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
         }
 
         if((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0)
@@ -288,7 +298,7 @@ public class playerScript : MonoBehaviour
             Vector3 Scaler = transform.localScale;
             Scaler.x *= -1;
             transform.localScale = Scaler;
-            facingDirection = Mathf.RoundToInt(Mathf.Sign(rawInputX));
+            facingDirection = rawInputX;
         }
 
         if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
@@ -307,12 +317,9 @@ public class playerScript : MonoBehaviour
 
         if(GroundCheck() == true)
         {
+            rb.gravityScale = 2f; // restore gravity to normal value (after changed by swinging or rocket boost legs)
             isGrounded = true;
             coyoteJump = true;
-            if(forceSlavedTimer > 0.3f)
-            {
-                forceSlaved = false;
-            }
 
             if(isSwinging && !wasGrounded && scalerTrueGrounded) // if you are swinging, and hit the ground, detach the rope
             {
@@ -364,15 +371,35 @@ public class playerScript : MonoBehaviour
         {
             rb.gravityScale = 3f; // lower gravity for a floatier swing
 
-            if(Mathf.Abs(inputX) > 0.2f)
+            /*
+            if(rawInputX != 0)
             {
-                rb.AddForce(new Vector2(inputX * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
+                rb.AddForce(new Vector2(rawInputX * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
             }
+            */
+
+            // optimised swinging code sourced from raywenderlich.com
+            var playerToHookDirection = ((Vector2)hookshotAnchor.transform.position - (Vector2)transform.position).normalized;
+
+            Vector2 perpendicularDirection = Vector2.zero;
+            if (rawInputX < 0)
+            {
+                perpendicularDirection = new Vector2(-playerToHookDirection.y, playerToHookDirection.x);
+                var leftPerpPos = (Vector2)transform.position - perpendicularDirection * -2f;
+                Debug.DrawLine(transform.position, leftPerpPos, Color.green, 0f);
+            }
+            else if(rawInputX > 0)
+            {
+                perpendicularDirection = new Vector2(playerToHookDirection.y, -playerToHookDirection.x);
+                var rightPerpPos = (Vector2)transform.position + perpendicularDirection * 2f;
+                Debug.DrawLine(transform.position, rightPerpPos, Color.green, 0f);
+            }
+
+            var force = perpendicularDirection * swingForce / 3f;
+            rb.AddForce(force, ForceMode2D.Force);
         }
         else
         {
-            rb.gravityScale = 2f; // restore gravity to normal value
-
             if(reverseDirectionTimer < 1f && partConfiguration == 1 && climbingDismountTimer > 0.1f)
             {
                 reverseDirectionTimer += Time.fixedDeltaTime;
@@ -395,38 +422,79 @@ public class playerScript : MonoBehaviour
                 {
                     if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
-                        if(rawInputX != Mathf.Sign(previousFacingDirection)) // wall leap
+                        if(rawInputX == -climbDirection) // wall leap
                         {
                             forceSlaved = true;
                             forceSlavedTimer = 0f;
-                            targetVelocity = new Vector2(inputX * wallJumpForce.x, wallJumpForce.y);
+                            rb.velocity = new Vector2(rawInputX * wallJumpForce.x, wallJumpForce.y);
+                            previousVelocity = rb.velocity;
                             AkSoundEngine.PostEvent("Jump" , gameObject);
+                            if(remainingJumps == maximumJumps)
+                            {
+                                remainingJumps --;
+                            }
                             jumpDisableTimer = 0f;
                         }
-                        else
+                        else if(jumpDisableTimer > 0.2f)
                         {
                             inputX = facingDirection; // apply force towards wall to let player rotate
-                            targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+                            targetVelocity = new Vector2(inputX * movementSpeed, jumpPower);
                         }
                     }
-                    else
+                    else if(jumpDisableTimer > 0.2f)
                     {
                         inputX = facingDirection; // apply force towards wall to let player rotate
-                        targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+                        targetVelocity = new Vector2(inputX * movementSpeed, jumpPower);
                     }
                 }
-                else if(Input.GetAxisRaw("Vertical") == 0 && rawInputX == Mathf.Sign(previousFacingDirection) && wallHang)
+                else
                 {
-                    targetVelocity = new Vector2(inputX * movementSpeed , 0f);
+                    if(Input.GetAxisRaw("Vertical") < 1)
+                    {
+                        inputX = facingDirection;
+                        targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
+
+                        if(Input.GetAxisRaw("Vertical") == 0 && inputX == climbDirection && wallHang)
+                        {
+                            targetVelocity = new Vector2(inputX * movementSpeed , 0f);
+                        }
+                    }
                 }
             }
             
-            if(forceSlaved) // in air after elevator slam or wall jump
+            if(forceSlaved && !isSwinging) // in air after elevator slam or wall jump
             {
-                facingDirection = Mathf.FloorToInt(Mathf.Sign(targetVelocity.x));
                 forceSlavedTimer += Time.fixedDeltaTime;
+                if(forceSlavedTimer > 0.2f && isGrounded)
+                {
+                    forceSlaved = false;
+                }
 
-                if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
+
+                /*
+                Vector2 slavedTargetVelocity;
+
+                float clampVelocity = (Mathf.Abs(previousVelocity.x) > Mathf.Abs(targetVelocity.x))? previousVelocity.x : targetVelocity.x;       
+
+                slavedTargetVelocity = new Vector2(previousVelocity.x + (targetVelocity.x * (Mathf.Clamp(Time.fixedDeltaTime * 2f , 0 , 1))) , rb.velocity.y);
+                slavedTargetVelocity.x = Mathf.Clamp(slavedTargetVelocity.x , -clampVelocity , clampVelocity);
+                rb.velocity = slavedTargetVelocity;
+                Debug.Log(slavedTargetVelocity - previousVelocity);
+                
+
+
+                    if velocity is applied that is greater than the current direction, add it, then clamp to the target velocity, or the previous velocity (whichever is larger)
+
+                    if velocity is applied the other way, add it over fixedDeltaTime;
+
+                    make sure to separate options based on overall direction (so don't use ABS)
+                    
+                    
+                    
+                */
+                
+
+                if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // && (facingDirection == Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) || Mathf.RoundToInt(previousVelocity.x) == 0)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
                 {
                     rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
                 }
@@ -438,10 +506,9 @@ public class playerScript : MonoBehaviour
                 
                 if(facingDirection != Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) && Mathf.Abs(targetVelocity.x) < Mathf.Abs(previousVelocity.x)) // air control after elevator slam or wall jump
                 {
-                    Debug.Log("Hi");
                     // smoothing
                     float targetClamp = targetVelocity.x;
-                    targetVelocity.x = Mathf.Abs((Mathf.Abs(targetVelocity.x) / ((forceSlavedTimer / 20f) + 1f) ));// + Mathf.Abs(targetVelocity.x)));
+                    targetVelocity.x = Mathf.Abs(Mathf.Abs(targetVelocity.x) * ((Mathf.Clamp(forceSlavedTimer , 0 , 1)))); // + Mathf.Abs(targetVelocity.x)));
                     Mathf.Clamp(targetVelocity.x , 0f , targetClamp);
                     rb.velocity += new Vector2(facingDirection * targetVelocity.x , 0f);
                 }
@@ -450,8 +517,32 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = targetVelocity;
             }
+
+// Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
+
+        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld && !isSwinging)
+        // this last bit ensures the player can always jump, which is how the spiderclimb works
+        {
+            if(isGrounded || (coyoteTime && coyoteJump))
+            {
+                rb.velocity = new Vector2(rb.velocity.x , jumpPower);
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
+            }
+            else if(afterburner == true && !climbing && remainingJumps == 1f)
+            {
+                boostSprites.SetActive(true);
+                rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
+            }
+            remainingJumps --;
+            jumpGateTimer = 0f;
+            jumpGate = true;
+        }
+
             previousFacingDirection = facingDirection;
         }
+
+        speed = rb.velocity.x;
     }
 
     void Update()
@@ -517,7 +608,7 @@ public class playerScript : MonoBehaviour
                 }
             }
 
-            if((climbingRight && Input.GetAxis("Horizontal") < 0f) || (!climbingRight && Input.GetAxis("Horizontal") > 0f)) // if player leaves the ladder
+            if((climbDirection > 0 && Input.GetAxis("Horizontal") < 0f) || (climbDirection < 0 && Input.GetAxis("Horizontal") > 0f)) // if player leaves the ladder
             {
                 rb.constraints = RigidbodyConstraints2D.None;
                 transform.rotation = Quaternion.identity;
@@ -533,27 +624,6 @@ public class playerScript : MonoBehaviour
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
             wasClimbing = false;
-        }
-
-
-// JUMPING ------------------------------------------------------------------------------------------------------------------
-
-        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !forceSlaved && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld) // this last bit ensures the player can always jump, which is how the spiderclimb works
-        {
-            if(isGrounded || (coyoteTime && coyoteJump))
-            {
-                rb.velocity = Vector2.up * jumpPower;
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
-            }
-            else if(afterburner == true && !climbing && remainingJumps == 1f)
-            {
-                boostSprites.SetActive(true);
-                rb.velocity = Vector2.up * jumpPower * 1.1f;
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
-            }
-            remainingJumps --;
-            jumpGateTimer = 0f;
-            jumpGate = true;
         }
 
         if(jumpGate == true) // stops repeat jumping
@@ -622,7 +692,7 @@ public class playerScript : MonoBehaviour
     bool GroundCheck()
     {
         jumpDisableTimer += Time.fixedDeltaTime; // jumpDisableTimer is applied by walljumping, preventing the grounded state from triggering interfering jumps for 0.2 seconds
-        if(jumpBan || jumpDisableTimer < 0.2f) // jump ban is applied by the elevator script to lock the player to it when slamming upwards
+        if(jumpBan) // jump ban is applied by the elevator script to lock the player to it when slamming upwards
         {
             return false;
         }
@@ -630,6 +700,7 @@ public class playerScript : MonoBehaviour
         RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         wallSliding = false;
+        wallHang = false;
         scalingWall = false;
         scalerTrueGrounded = false;
 
@@ -649,36 +720,45 @@ public class playerScript : MonoBehaviour
                     return true;
                 }
             }
-            else if(scaler == true && Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
+            else if(scaler)
             {
-                if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
+                RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , jumpLayer);
+                Debug.DrawRay(transform.position, Vector2.up * 0.6f, Color.green);
+                if(upHit.collider != null )
                 {
-                    return false;
-                }
-                else
+                    forceSlaved = false;
+                    jumpDisableTimer = 1f;
+                }   
+
+                RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , jumpLayer);
+                Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
+                if(sideHit.collider != null )
                 {
-                    RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , jumpLayer);
-                    Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
-                    if(sideHit.collider != null )
+                    scalingWall = true;
+                    climbDirection = previousFacingDirection;
+                    float wallAngle = Vector2.Angle(sideHit.normal, Vector2.up);
+                    if(wallAngle > 80f)
                     {
-                        scalingWall = true;
-                        float wallAngle = Vector2.Angle(sideHit.normal, Vector2.up);
-                        if(wallAngle > 80f)
-                        {
-                            wallHang = true;
-                        }
+                        wallHang = true;
                     }
-                    
-                    RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , jumpLayer);
-                    Debug.DrawRay(transform.position, Vector2.up * 0.6f, Color.green);
-                    if(upHit.collider != null )
-                    {
-                        scalingWall = false;
-                        forceSlaved = false;
-                    }
-                    
                     return true;
                 }
+
+                if(!forceSlaved)
+                {
+                    if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
+                    {
+                        if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
@@ -691,7 +771,7 @@ public class playerScript : MonoBehaviour
                 if(sideHitR.collider != null && sideHitR.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
-                    climbingRight = true;
+                    climbDirection = 1;
                     return true;
                 }
                 climbing = false;
@@ -709,7 +789,7 @@ public class playerScript : MonoBehaviour
                 if(sideHitL.collider != null && sideHitL.collider.gameObject.tag == "Climbable")
                 {
                     climbing = true;
-                    climbingRight = false;
+                    climbDirection = -1;
                     return true;
                 }
                 climbing = false;
@@ -1039,6 +1119,8 @@ void BoxInteract()
         // assume that the robot has neither arms or legs, then check for them
         bool hasArms = false;
         bool hasLegs = false;
+
+        rb.gravityScale = 2f;
         for(int i = 0; i < transform.childCount; i++)
         {
             if(transform.GetChild(i).tag == "Arms")
