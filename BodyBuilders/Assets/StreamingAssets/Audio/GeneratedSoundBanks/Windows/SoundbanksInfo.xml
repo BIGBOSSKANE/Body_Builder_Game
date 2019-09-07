@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="134">
+	<RootPaths>
+		<ProjectRoot>C:\Users\djcre\Desktop\33170676 Daniel Creusot - SOU375 Interactive Project\SOU375 Wwise Final Project\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\djcre\Desktop\33170676 Daniel Creusot - SOU375 Interactive Project\SOU375 Wwise Final Project\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\djcre\Desktop\33170676 Daniel Creusot - SOU375 Interactive Project\SOU375 Wwise Final Project\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\djcre\Desktop\33170676 Daniel Creusot - SOU375 Interactive Project\SOU375 Wwise Final Project\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="2110248291" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\ProjectSoundbank</ObjectPath>
+			<ShortName>ProjectSoundbank</ShortName>
+			<Path>ProjectSoundbank.bnk</Path>
+			<IncludedEvents>
+				<Event Id="969059497" Name="AttachBasicArms" ObjectPath="\Events\Default Work Unit\Player\ChangePartConfiguration\AttachBasicArms" DurationType="OneShot" DurationMin="0.619745" DurationMax="1.177646"/>
+				<Event Id="2342183205" Name="AttachLegs" ObjectPath="\Events\Default Work Unit\Player\ChangePartConfiguration\AttachLegs" DurationType="OneShot" DurationMin="0.619745" DurationMax="1.177646"/>
+				<Event Id="317641954" Name="ButtonPress" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\ButtonPress" DurationType="OneShot" DurationMin="0.937521" DurationMax="1.064167"/>
+				<Event Id="2021986457" Name="DetachArms" ObjectPath="\Events\Default Work Unit\Player\ChangePartConfiguration\DetachArms" DurationType="OneShot" DurationMin="1.550129" DurationMax="2.477415"/>
+				<Event Id="495096351" Name="DetachLegs" ObjectPath="\Events\Default Work Unit\Player\ChangePartConfiguration\DetachLegs" DurationType="OneShot" DurationMin="1.550129" DurationMax="2.477415"/>
+				<Event Id="3612883293" Name="DoorMoves" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\DoorMoves" DurationType="OneShot" DurationMin="5.369750" DurationMax="5.369750"/>
+				<Event Id="230734316" Name="EnterFan" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\EnterFan" DurationType="Infinite"/>
+				<Event Id="2406234679" Name="EnterFanArea" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\EnterFanArea" MaxAttenuation="80.000000" DurationType="Infinite"/>
+				<Event Id="1587122176" Name="ExitFan" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\EndEnvironmentalEffect\ExitFan" MaxAttenuation="0.000000" DurationType="OneShot" DurationMin="0.000000" DurationMax="0.000000"/>
+				<Event Id="1866025847" Name="Footstep" ObjectPath="\Events\Default Work Unit\Player\Movement\Footstep" DurationType="Infinite"/>
+				<Event Id="1571093136" Name="GyreDeactivate" ObjectPath="\Events\Default Work Unit\Gyre - Sawbot\GyreDeactivate" MaxAttenuation="40.000000" DurationType="Infinite"/>
+				<Event Id="3261812143" Name="GyreDetection" ObjectPath="\Events\Default Work Unit\Gyre - Sawbot\GyreDetection" MaxAttenuation="40.000000" DurationType="Infinite"/>
+				<Event Id="4149978840" Name="GyreSlice" ObjectPath="\Events\Default Work Unit\Gyre - Sawbot\GyreSlice" MaxAttenuation="40.000000" DurationType="OneShot" DurationMin="0.625792" DurationMax="0.948209"/>
+				<Event Id="3833651337" Name="Jump" ObjectPath="\Events\Default Work Unit\Player\Movement\Jump" DurationType="Infinite"/>
+				<Event Id="674522502" Name="Land" ObjectPath="\Events\Default Work Unit\Player\Movement\Land" DurationType="Infinite"/>
+				<Event Id="107258764" Name="PassThroughPlatform" ObjectPath="\Events\Default Work Unit\Environmental Mechanics\PassThroughPlatform" DurationType="OneShot" DurationMin="1.420109" DurationMax="1.512056"/>
+				<Event Id="4186279120" Name="PickUpBox" ObjectPath="\Events\Default Work Unit\Player\Movement\PickUpBox" DurationType="OneShot" DurationMin="0.653706" DurationMax="0.693378"/>
+				<Event Id="1656947812" Name="PlayerDeath" ObjectPath="\Events\Default Work Unit\Player\PlayerDeath" DurationType="OneShot" DurationMin="1.201523" DurationMax="1.480290"/>
+				<Event Id="3562242595" Name="PutDownBox" ObjectPath="\Events\Default Work Unit\Player\Movement\PutDownBox" DurationType="OneShot" DurationMin="0.351734" DurationMax="0.373509"/>
+				<Event Id="4227290872" Name="Rolling" ObjectPath="\Events\Default Work Unit\Player\Movement\Rolling" DurationType="Infinite"/>
+				<Event Id="3827058668" Name="StartMusic" ObjectPath="\Events\Music\StartMusic" DurationType="Infinite"/>
+				<Event Id="1917263390" Name="StopMusic" ObjectPath="\Events\Music\StopMusic" MaxAttenuation="0.000000" DurationType="OneShot" DurationMin="0.000000" DurationMax="0.000000"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="4766991" Language="SFX">
+					<ShortName>Music\MP32PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP32PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="18198325" Language="SFX">
+					<ShortName>LandingGeneric1.wav</ShortName>
+					<Path>SFX\LandingGeneric1_49095017.wem</Path>
+				</File>
+				<File Id="18673677" Language="SFX">
+					<ShortName>RollingOnGrass5.wav</ShortName>
+					<Path>SFX\RollingOnGrass5_49095017.wem</Path>
+				</File>
+				<File Id="23638296" Language="SFX">
+					<ShortName>Music\MP23MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP23MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="23950303" Language="SFX">
+					<ShortName>MetalClangLandingAugment10.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment10_3B982760.wem</Path>
+				</File>
+				<File Id="35035854" Language="SFX">
+					<ShortName>LandingRock6.wav</ShortName>
+					<Path>SFX\LandingRock6_49095017.wem</Path>
+				</File>
+				<File Id="35515188" Language="SFX">
+					<ShortName>ButtonClick2.wav</ShortName>
+					<Path>SFX\ButtonClick2_49095017.wem</Path>
+				</File>
+				<File Id="42486011" Language="SFX">
+					<ShortName>DroppedBox1.wav</ShortName>
+					<Path>SFX\DroppedBox1_49095017.wem</Path>
+				</File>
+				<File Id="45318603" Language="SFX">
+					<ShortName>VocalisedLoop1.wav</ShortName>
+					<Path>SFX\VocalisedLoop1_289CA4A5.wem</Path>
+				</File>
+				<File Id="50832378" Language="SFX">
+					<ShortName>RollingOnGrass4.wav</ShortName>
+					<Path>SFX\RollingOnGrass4_49095017.wem</Path>
+				</File>
+				<File Id="55108135" Language="SFX">
+					<ShortName>MetalClangLandingAugment1.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment1_51A42AAC.wem</Path>
+				</File>
+				<File Id="59248119" Language="SFX">
+					<ShortName>MetalClangLandingAugment3.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment3_FEC86DBE.wem</Path>
+				</File>
+				<File Id="66128677" Language="SFX">
+					<ShortName>MetalFootstep3.wav</ShortName>
+					<Path>SFX\MetalFootstep3_49095017.wem</Path>
+				</File>
+				<File Id="69507932" Language="SFX">
+					<ShortName>Music\MP34PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP34PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="69512645" Language="SFX">
+					<ShortName>MetalClangLandingAugment8.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment8_835D0975.wem</Path>
+				</File>
+				<File Id="71317079" Language="SFX">
+					<ShortName>MetalClangLandingAugment7.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment7_153A7501.wem</Path>
+				</File>
+				<File Id="77419109" Language="SFX">
+					<ShortName>LandingGeneric11.wav</ShortName>
+					<Path>SFX\LandingGeneric11_49095017.wem</Path>
+				</File>
+				<File Id="77631882" Language="SFX">
+					<ShortName>Music\MP39Peak.wav</ShortName>
+					<Path>SFX\Music\MP39Peak_84492A85.wem</Path>
+				</File>
+				<File Id="80520182" Language="SFX">
+					<ShortName>Music\MP25MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP25MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="90266687" Language="SFX">
+					<ShortName>GrassFootstep3.wav</ShortName>
+					<Path>SFX\GrassFootstep3_DAA58069.wem</Path>
+				</File>
+				<File Id="95582147" Language="SFX">
+					<ShortName>Music\MP28MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP28MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="122162605" Language="SFX">
+					<ShortName>AttachP2.wav</ShortName>
+					<Path>SFX\AttachP2_49095017.wem</Path>
+				</File>
+				<File Id="126361233" Language="SFX">
+					<ShortName>PassThroughPlatform4.wav</ShortName>
+					<Path>SFX\PassThroughPlatform4_49095017.wem</Path>
+				</File>
+				<File Id="128545124" Language="SFX">
+					<ShortName>LandingGrass2.wav</ShortName>
+					<Path>SFX\LandingGrass2_49095017.wem</Path>
+				</File>
+				<File Id="132108858" Language="SFX">
+					<ShortName>MetalFootstep10.wav</ShortName>
+					<Path>SFX\MetalFootstep10_49095017.wem</Path>
+				</File>
+				<File Id="151141576" Language="SFX">
+					<ShortName>Music\MP46Peak.wav</ShortName>
+					<Path>SFX\Music\MP46Peak_84492A85.wem</Path>
+				</File>
+				<File Id="164339149" Language="SFX">
+					<ShortName>LandingRock11.wav</ShortName>
+					<Path>SFX\LandingRock11_49095017.wem</Path>
+				</File>
+				<File Id="168697078" Language="SFX">
+					<ShortName>Music\MP20BuildHigher.wav</ShortName>
+					<Path>SFX\Music\MP20BuildHigher_84492A85.wem</Path>
+				</File>
+				<File Id="177946156" Language="SFX">
+					<ShortName>Music\MP41Peak.wav</ShortName>
+					<Path>SFX\Music\MP41Peak_84492A85.wem</Path>
+				</File>
+				<File Id="188539457" Language="SFX">
+					<ShortName>Music\MP02Calm.wav</ShortName>
+					<Path>SFX\Music\MP02Calm_84492A85.wem</Path>
+				</File>
+				<File Id="194238987" Language="SFX">
+					<ShortName>Music\MP43Peak.wav</ShortName>
+					<Path>SFX\Music\MP43Peak_84492A85.wem</Path>
+				</File>
+				<File Id="199202497" Language="SFX">
+					<ShortName>Detach2.wav</ShortName>
+					<Path>SFX\Detach2_49095017.wem</Path>
+				</File>
+				<File Id="210600794" Language="SFX">
+					<ShortName>PassThroughPlatform3.wav</ShortName>
+					<Path>SFX\PassThroughPlatform3_49095017.wem</Path>
+				</File>
+				<File Id="213908579" Language="SFX">
+					<ShortName>CrumblingLedge4.wav</ShortName>
+					<Path>SFX\CrumblingLedge4_49095017.wem</Path>
+				</File>
+				<File Id="216438547" Language="SFX">
+					<ShortName>MetalFootstep4.wav</ShortName>
+					<Path>SFX\MetalFootstep4_49095017.wem</Path>
+				</File>
+				<File Id="220590814" Language="SFX">
+					<ShortName>Music\MP44Peak.wav</ShortName>
+					<Path>SFX\Music\MP44Peak_84492A85.wem</Path>
+				</File>
+				<File Id="232656429" Language="SFX">
+					<ShortName>CrumblingLedge1.wav</ShortName>
+					<Path>SFX\CrumblingLedge1_49095017.wem</Path>
+				</File>
+				<File Id="236424443" Language="SFX">
+					<ShortName>LandingGeneric6.wav</ShortName>
+					<Path>SFX\LandingGeneric6_49095017.wem</Path>
+				</File>
+				<File Id="237400302" Language="SFX">
+					<ShortName>CrumblingLedge3.wav</ShortName>
+					<Path>SFX\CrumblingLedge3_49095017.wem</Path>
+				</File>
+				<File Id="239357974" Language="SFX">
+					<ShortName>LandingRock9.wav</ShortName>
+					<Path>SFX\LandingRock9_49095017.wem</Path>
+				</File>
+				<File Id="249218696" Language="SFX">
+					<ShortName>RollingOnGrass3.wav</ShortName>
+					<Path>SFX\RollingOnGrass3_49095017.wem</Path>
+				</File>
+				<File Id="258544798" Language="SFX">
+					<ShortName>CircularSawLoop1.wav</ShortName>
+					<Path>SFX\CircularSawLoop1_68CFBBC2.wem</Path>
+				</File>
+				<File Id="264945839" Language="SFX">
+					<ShortName>Music\MP14Calm.wav</ShortName>
+					<Path>SFX\Music\MP14Calm_84492A85.wem</Path>
+				</File>
+				<File Id="265921283" Language="SFX">
+					<ShortName>RockFootstep5.wav</ShortName>
+					<Path>SFX\RockFootstep5_49095017.wem</Path>
+				</File>
+				<File Id="270579681" Language="SFX">
+					<ShortName>Music\MP33PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP33PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="282147517" Language="SFX">
+					<ShortName>Music\MP45Peak.wav</ShortName>
+					<Path>SFX\Music\MP45Peak_84492A85.wem</Path>
+				</File>
+				<File Id="287133803" Language="SFX">
+					<ShortName>AngleGrinderCutThrough2.wav</ShortName>
+					<Path>SFX\AngleGrinderCutThrough2_49095017.wem</Path>
+				</File>
+				<File Id="288697769" Language="SFX">
+					<ShortName>Music\MP12Calm.wav</ShortName>
+					<Path>SFX\Music\MP12Calm_84492A85.wem</Path>
+				</File>
+				<File Id="291169593" Language="SFX">
+					<ShortName>Music\MP30PostMidPlateau.wav</ShortName>
+					<Path>SFX\Music\MP30PostMidPlateau_84492A85.wem</Path>
+				</File>
+				<File Id="302100450" Language="SFX">
+					<ShortName>AttachP1.wav</ShortName>
+					<Path>SFX\AttachP1_49095017.wem</Path>
+				</File>
+				<File Id="315707928" Language="SFX">
+					<ShortName>Music\MP18Build.wav</ShortName>
+					<Path>SFX\Music\MP18Build_84492A85.wem</Path>
+				</File>
+				<File Id="322684400" Language="SFX">
+					<ShortName>LandingGrass3.wav</ShortName>
+					<Path>SFX\LandingGrass3_49095017.wem</Path>
+				</File>
+				<File Id="329265475" Language="SFX">
+					<ShortName>LandingRock2.wav</ShortName>
+					<Path>SFX\LandingRock2_49095017.wem</Path>
+				</File>
+				<File Id="334013339" Language="SFX">
+					<ShortName>MetalFootstep2.wav</ShortName>
+					<Path>SFX\MetalFootstep2_49095017.wem</Path>
+				</File>
+				<File Id="344611385" Language="SFX">
+					<ShortName>Music\MP11Calm.wav</ShortName>
+					<Path>SFX\Music\MP11Calm_84492A85.wem</Path>
+				</File>
+				<File Id="347297058" Language="SFX">
+					<ShortName>Music\MP37Peak.wav</ShortName>
+					<Path>SFX\Music\MP37Peak_84492A85.wem</Path>
+				</File>
+				<File Id="349954492" Language="SFX">
+					<ShortName>RollingOnRock3.wav</ShortName>
+					<Path>SFX\RollingOnRock3_49095017.wem</Path>
+				</File>
+				<File Id="352308823" Language="SFX">
+					<ShortName>MetalPanHit4.wav</ShortName>
+					<Path>SFX\MetalPanHit4_49095017.wem</Path>
+				</File>
+				<File Id="352913626" Language="SFX">
+					<ShortName>MetalFootstep5.wav</ShortName>
+					<Path>SFX\MetalFootstep5_49095017.wem</Path>
+				</File>
+				<File Id="362822782" Language="SFX">
+					<ShortName>LandingGrass8.wav</ShortName>
+					<Path>SFX\LandingGrass8_49095017.wem</Path>
+				</File>
+				<File Id="370981657" Language="SFX">
+					<ShortName>GrassFootstep2.wav</ShortName>
+					<Path>SFX\GrassFootstep2_97128E58.wem</Path>
+				</File>
+				<File Id="373892756" Language="SFX">
+					<ShortName>Music\MP42Peak.wav</ShortName>
+					<Path>SFX\Music\MP42Peak_84492A85.wem</Path>
+				</File>
+				<File Id="379031136" Language="SFX">
+					<ShortName>LandingGeneric2.wav</ShortName>
+					<Path>SFX\LandingGeneric2_49095017.wem</Path>
+				</File>
+				<File Id="380002153" Language="SFX">
+					<ShortName>RockFootstep6.wav</ShortName>
+					<Path>SFX\RockFootstep6_49095017.wem</Path>
+				</File>
+				<File Id="381879144" Language="SFX">
+					<ShortName>AttachP3.wav</ShortName>
+					<Path>SFX\AttachP3_49095017.wem</Path>
+				</File>
+				<File Id="385502614" Language="SFX">
+					<ShortName>Music\MP19BuildHigher.wav</ShortName>
+					<Path>SFX\Music\MP19BuildHigher_84492A85.wem</Path>
+				</File>
+				<File Id="390145132" Language="SFX">
+					<ShortName>ButtonPush2.wav</ShortName>
+					<Path>SFX\ButtonPush2_49095017.wem</Path>
+				</File>
+				<File Id="401933632" Language="SFX">
+					<ShortName>MetalFootstep6.wav</ShortName>
+					<Path>SFX\MetalFootstep6_49095017.wem</Path>
+				</File>
+				<File Id="402447412" Language="SFX">
+					<ShortName>Music\MP27MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP27MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="405533843" Language="SFX">
+					<ShortName>LandingGeneric7.wav</ShortName>
+					<Path>SFX\LandingGeneric7_49095017.wem</Path>
+				</File>
+				<File Id="410988968" Language="SFX">
+					<ShortName>Music\MP31PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP31PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="414563336" Language="SFX">
+					<ShortName>LandingGrass7.wav</ShortName>
+					<Path>SFX\LandingGrass7_49095017.wem</Path>
+				</File>
+				<File Id="415357568" Language="SFX">
+					<ShortName>Fan1.wav</ShortName>
+					<Path>SFX\Fan1_84492A85.wem</Path>
+				</File>
+				<File Id="422132818" Language="SFX">
+					<ShortName>AngleGrinderCutThrough1.wav</ShortName>
+					<Path>SFX\AngleGrinderCutThrough1_49095017.wem</Path>
+				</File>
+				<File Id="423937784" Language="SFX">
+					<ShortName>Music\MP38Peak.wav</ShortName>
+					<Path>SFX\Music\MP38Peak_84492A85.wem</Path>
+				</File>
+				<File Id="431540095" Language="SFX">
+					<ShortName>Detach1.wav</ShortName>
+					<Path>SFX\Detach1_49095017.wem</Path>
+				</File>
+				<File Id="437443586" Language="SFX">
+					<ShortName>LandingRock5.wav</ShortName>
+					<Path>SFX\LandingRock5_49095017.wem</Path>
+				</File>
+				<File Id="439784975" Language="SFX">
+					<ShortName>MetalClangLandingAugment9.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment9_5CA079B3.wem</Path>
+				</File>
+				<File Id="450428317" Language="SFX">
+					<ShortName>CircularSawLoop1.wav</ShortName>
+					<Path>SFX\CircularSawLoop1_D8FFC178.wem</Path>
+				</File>
+				<File Id="452048194" Language="SFX">
+					<ShortName>GrassFootstep4.wav</ShortName>
+					<Path>SFX\GrassFootstep4_B38BCC68.wem</Path>
+				</File>
+				<File Id="458203185" Language="SFX">
+					<ShortName>LandingRock3.wav</ShortName>
+					<Path>SFX\LandingRock3_49095017.wem</Path>
+				</File>
+				<File Id="462941216" Language="SFX">
+					<ShortName>LandingRock10.wav</ShortName>
+					<Path>SFX\LandingRock10_49095017.wem</Path>
+				</File>
+				<File Id="468372614" Language="SFX">
+					<ShortName>MetalClangLandingAugment11.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment11_F6370B2C.wem</Path>
+				</File>
+				<File Id="470666664" Language="SFX">
+					<ShortName>MetalFootstep8.wav</ShortName>
+					<Path>SFX\MetalFootstep8_49095017.wem</Path>
+				</File>
+				<File Id="474238205" Language="SFX">
+					<ShortName>MetalBowlClang4.wav</ShortName>
+					<Path>SFX\MetalBowlClang4_CD429297.wem</Path>
+				</File>
+				<File Id="476927520" Language="SFX">
+					<ShortName>MetalBowlClang8.wav</ShortName>
+					<Path>SFX\MetalBowlClang8_49095017.wem</Path>
+				</File>
+				<File Id="478241862" Language="SFX">
+					<ShortName>Music\MP10Calm.wav</ShortName>
+					<Path>SFX\Music\MP10Calm_84492A85.wem</Path>
+				</File>
+				<File Id="489087045" Language="SFX">
+					<ShortName>Music\MP36PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP36PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="493933649" Language="SFX">
+					<ShortName>LandingGeneric4.wav</ShortName>
+					<Path>SFX\LandingGeneric4_49095017.wem</Path>
+				</File>
+				<File Id="499241181" Language="SFX">
+					<ShortName>Music\MP05Calm.wav</ShortName>
+					<Path>SFX\Music\MP05Calm_84492A85.wem</Path>
+				</File>
+				<File Id="510370376" Language="SFX">
+					<ShortName>Detach3.wav</ShortName>
+					<Path>SFX\Detach3_49095017.wem</Path>
+				</File>
+				<File Id="521724593" Language="SFX">
+					<ShortName>Attach1.wav</ShortName>
+					<Path>SFX\Attach1_49095017.wem</Path>
+				</File>
+				<File Id="522690734" Language="SFX">
+					<ShortName>SawbotWindUpVocalisation1.wav</ShortName>
+					<Path>SFX\SawbotWindUpVocalisation1_49095017.wem</Path>
+				</File>
+				<File Id="542010837" Language="SFX">
+					<ShortName>ButtonVocalAugment1.wav</ShortName>
+					<Path>SFX\ButtonVocalAugment1_49095017.wem</Path>
+				</File>
+				<File Id="557936239" Language="SFX">
+					<ShortName>LandingGeneric10.wav</ShortName>
+					<Path>SFX\LandingGeneric10_49095017.wem</Path>
+				</File>
+				<File Id="569391483" Language="SFX">
+					<ShortName>Music\MP15Build.wav</ShortName>
+					<Path>SFX\Music\MP15Build_84492A85.wem</Path>
+				</File>
+				<File Id="573088322" Language="SFX">
+					<ShortName>SawBotDeactivateVocalisation1.wav</ShortName>
+					<Path>SFX\SawBotDeactivateVocalisation1_A7AC186F.wem</Path>
+				</File>
+				<File Id="580754945" Language="SFX">
+					<ShortName>Music\MP29PostMidPlateau.wav</ShortName>
+					<Path>SFX\Music\MP29PostMidPlateau_84492A85.wem</Path>
+				</File>
+				<File Id="584643758" Language="SFX">
+					<ShortName>LandingGrass5.wav</ShortName>
+					<Path>SFX\LandingGrass5_49095017.wem</Path>
+				</File>
+				<File Id="591265696" Language="SFX">
+					<ShortName>Music\MP07Calm.wav</ShortName>
+					<Path>SFX\Music\MP07Calm_84492A85.wem</Path>
+				</File>
+				<File Id="593542716" Language="SFX">
+					<ShortName>RollingOnRock2.wav</ShortName>
+					<Path>SFX\RollingOnRock2_49095017.wem</Path>
+				</File>
+				<File Id="596451860" Language="SFX">
+					<ShortName>Music\MP08Calm.wav</ShortName>
+					<Path>SFX\Music\MP08Calm_84492A85.wem</Path>
+				</File>
+				<File Id="617545299" Language="SFX">
+					<ShortName>LandingGrass4.wav</ShortName>
+					<Path>SFX\LandingGrass4_49095017.wem</Path>
+				</File>
+				<File Id="623302932" Language="SFX">
+					<ShortName>Music\MP04Calm.wav</ShortName>
+					<Path>SFX\Music\MP04Calm_84492A85.wem</Path>
+				</File>
+				<File Id="624022298" Language="SFX">
+					<ShortName>LandingRock4.wav</ShortName>
+					<Path>SFX\LandingRock4_49095017.wem</Path>
+				</File>
+				<File Id="628091697" Language="SFX">
+					<ShortName>MetalFootstep7.wav</ShortName>
+					<Path>SFX\MetalFootstep7_49095017.wem</Path>
+				</File>
+				<File Id="631851513" Language="SFX">
+					<ShortName>LandingGeneric3.wav</ShortName>
+					<Path>SFX\LandingGeneric3_49095017.wem</Path>
+				</File>
+				<File Id="633782735" Language="SFX">
+					<ShortName>Music\MP22MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP22MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="635471219" Language="SFX">
+					<ShortName>LandingRock7.wav</ShortName>
+					<Path>SFX\LandingRock7_49095017.wem</Path>
+				</File>
+				<File Id="642979608" Language="SFX">
+					<ShortName>WierdSound7.wav</ShortName>
+					<Path>SFX\WierdSound7_49095017.wem</Path>
+				</File>
+				<File Id="644824214" Language="SFX">
+					<ShortName>Music\MP06Calm.wav</ShortName>
+					<Path>SFX\Music\MP06Calm_84492A85.wem</Path>
+				</File>
+				<File Id="648839554" Language="SFX">
+					<ShortName>MetalClangLandingAugment6.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment6_187269E5.wem</Path>
+				</File>
+				<File Id="652566247" Language="SFX">
+					<ShortName>LandingGrass1.wav</ShortName>
+					<Path>SFX\LandingGrass1_49095017.wem</Path>
+				</File>
+				<File Id="656031017" Language="SFX">
+					<ShortName>DroppedBox2.wav</ShortName>
+					<Path>SFX\DroppedBox2_49095017.wem</Path>
+				</File>
+				<File Id="657584135" Language="SFX">
+					<ShortName>Music\HeavyDrums.wav</ShortName>
+					<Path>SFX\Music\HeavyDrums_84492A85.wem</Path>
+				</File>
+				<File Id="660281887" Language="SFX">
+					<ShortName>LandingGeneric5.wav</ShortName>
+					<Path>SFX\LandingGeneric5_49095017.wem</Path>
+				</File>
+				<File Id="670542724" Language="SFX">
+					<ShortName>WierdSound5.wav</ShortName>
+					<Path>SFX\WierdSound5_B9889E55.wem</Path>
+				</File>
+				<File Id="673931421" Language="SFX">
+					<ShortName>PassThroughPlatform2.wav</ShortName>
+					<Path>SFX\PassThroughPlatform2_49095017.wem</Path>
+				</File>
+				<File Id="693522138" Language="SFX">
+					<ShortName>CrumblingLedge2.wav</ShortName>
+					<Path>SFX\CrumblingLedge2_49095017.wem</Path>
+				</File>
+				<File Id="695123592" Language="SFX">
+					<ShortName>Music\MP24MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP24MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="696252345" Language="SFX">
+					<ShortName>Music\MP09Calm.wav</ShortName>
+					<Path>SFX\Music\MP09Calm_84492A85.wem</Path>
+				</File>
+				<File Id="713290800" Language="SFX">
+					<ShortName>Music\MP40Peak.wav</ShortName>
+					<Path>SFX\Music\MP40Peak_84492A85.wem</Path>
+				</File>
+				<File Id="715084063" Language="SFX">
+					<ShortName>Music\MP13Calm.wav</ShortName>
+					<Path>SFX\Music\MP13Calm_84492A85.wem</Path>
+				</File>
+				<File Id="722009717" Language="SFX">
+					<ShortName>MetalPanHit1.wav</ShortName>
+					<Path>SFX\MetalPanHit1_49095017.wem</Path>
+				</File>
+				<File Id="732453428" Language="SFX">
+					<ShortName>ButtonClick1.wav</ShortName>
+					<Path>SFX\ButtonClick1_49095017.wem</Path>
+				</File>
+				<File Id="732492031" Language="SFX">
+					<ShortName>ButtonPush1.wav</ShortName>
+					<Path>SFX\ButtonPush1_49095017.wem</Path>
+				</File>
+				<File Id="747943265" Language="SFX">
+					<ShortName>MetalPotClang1.wav</ShortName>
+					<Path>SFX\MetalPotClang1_49095017.wem</Path>
+				</File>
+				<File Id="765769496" Language="SFX">
+					<ShortName>CrumblingLedge5.wav</ShortName>
+					<Path>SFX\CrumblingLedge5_49095017.wem</Path>
+				</File>
+				<File Id="768486056" Language="SFX">
+					<ShortName>LandingRock1.wav</ShortName>
+					<Path>SFX\LandingRock1_49095017.wem</Path>
+				</File>
+				<File Id="776286527" Language="SFX">
+					<ShortName>Music\MP35PostMidBuild.wav</ShortName>
+					<Path>SFX\Music\MP35PostMidBuild_84492A85.wem</Path>
+				</File>
+				<File Id="784061691" Language="SFX">
+					<ShortName>Music\MP16Build.wav</ShortName>
+					<Path>SFX\Music\MP16Build_84492A85.wem</Path>
+				</File>
+				<File Id="785236840" Language="SFX">
+					<ShortName>Music\MP17Build.wav</ShortName>
+					<Path>SFX\Music\MP17Build_84492A85.wem</Path>
+				</File>
+				<File Id="790124625" Language="SFX">
+					<ShortName>GrassFootstep5.wav</ShortName>
+					<Path>SFX\GrassFootstep5_49095017.wem</Path>
+				</File>
+				<File Id="792781551" Language="SFX">
+					<ShortName>LandingGeneric8.wav</ShortName>
+					<Path>SFX\LandingGeneric8_49095017.wem</Path>
+				</File>
+				<File Id="800258821" Language="SFX">
+					<ShortName>AttachP4.wav</ShortName>
+					<Path>SFX\AttachP4_49095017.wem</Path>
+				</File>
+				<File Id="800430931" Language="SFX">
+					<ShortName>MetalClangLandingAugment12.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment12_60F51F55.wem</Path>
+				</File>
+				<File Id="804015169" Language="SFX">
+					<ShortName>CircularSawWindDown1.wav</ShortName>
+					<Path>SFX\CircularSawWindDown1_49095017.wem</Path>
+				</File>
+				<File Id="839711859" Language="SFX">
+					<ShortName>Detach4.wav</ShortName>
+					<Path>SFX\Detach4_49095017.wem</Path>
+				</File>
+				<File Id="844088578" Language="SFX">
+					<ShortName>MetalFootstep9.wav</ShortName>
+					<Path>SFX\MetalFootstep9_49095017.wem</Path>
+				</File>
+				<File Id="852452307" Language="SFX">
+					<ShortName>Music\MP03Calm.wav</ShortName>
+					<Path>SFX\Music\MP03Calm_84492A85.wem</Path>
+				</File>
+				<File Id="867222406" Language="SFX">
+					<ShortName>DoorMoving1.wav</ShortName>
+					<Path>SFX\DoorMoving1_49095017.wem</Path>
+				</File>
+				<File Id="875004461" Language="SFX">
+					<ShortName>MetalFootstep1.wav</ShortName>
+					<Path>SFX\MetalFootstep1_49095017.wem</Path>
+				</File>
+				<File Id="882509222" Language="SFX">
+					<ShortName>GrassFootstep1.wav</ShortName>
+					<Path>SFX\GrassFootstep1_0B740516.wem</Path>
+				</File>
+				<File Id="895278264" Language="SFX">
+					<ShortName>CrumblingLedge6.wav</ShortName>
+					<Path>SFX\CrumblingLedge6_49095017.wem</Path>
+				</File>
+				<File Id="895942066" Language="SFX">
+					<ShortName>Music\MP21MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP21MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="896841440" Language="SFX">
+					<ShortName>PassThroughPlatform1.wav</ShortName>
+					<Path>SFX\PassThroughPlatform1_49095017.wem</Path>
+				</File>
+				<File Id="907354255" Language="SFX">
+					<ShortName>LandingRock8.wav</ShortName>
+					<Path>SFX\LandingRock8_49095017.wem</Path>
+				</File>
+				<File Id="911955689" Language="SFX">
+					<ShortName>Detach5.wav</ShortName>
+					<Path>SFX\Detach5_49095017.wem</Path>
+				</File>
+				<File Id="935068573" Language="SFX">
+					<ShortName>MetalClangLandingAugment5.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment5_82FEDEA6.wem</Path>
+				</File>
+				<File Id="948838394" Language="SFX">
+					<ShortName>CircularSawBuildIn1.wav</ShortName>
+					<Path>SFX\CircularSawBuildIn1_49095017.wem</Path>
+				</File>
+				<File Id="958335683" Language="SFX">
+					<ShortName>GyreDetection.wav</ShortName>
+					<Path>SFX\GyreDetection_49095017.wem</Path>
+				</File>
+				<File Id="959790045" Language="SFX">
+					<ShortName>LandingGeneric9.wav</ShortName>
+					<Path>SFX\LandingGeneric9_49095017.wem</Path>
+				</File>
+				<File Id="962363072" Language="SFX">
+					<ShortName>JumpOnGyre1.wav</ShortName>
+					<Path>SFX\JumpOnGyre1_49095017.wem</Path>
+				</File>
+				<File Id="983496700" Language="SFX">
+					<ShortName>RockFootstep4.wav</ShortName>
+					<Path>SFX\RockFootstep4_49095017.wem</Path>
+				</File>
+				<File Id="1014345130" Language="SFX">
+					<ShortName>RockFootstep1.wav</ShortName>
+					<Path>SFX\RockFootstep1_49095017.wem</Path>
+				</File>
+				<File Id="1021365106" Language="SFX">
+					<ShortName>Attach2.wav</ShortName>
+					<Path>SFX\Attach2_5777B455.wem</Path>
+				</File>
+				<File Id="1031225426" Language="SFX">
+					<ShortName>ButtonVocalAugment3.wav</ShortName>
+					<Path>SFX\ButtonVocalAugment3_49095017.wem</Path>
+				</File>
+				<File Id="1045324364" Language="SFX">
+					<ShortName>Music\MP26MidPeak.wav</ShortName>
+					<Path>SFX\Music\MP26MidPeak_84492A85.wem</Path>
+				</File>
+				<File Id="1049597027" Language="SFX">
+					<ShortName>MetalBowlClang5.wav</ShortName>
+					<Path>SFX\MetalBowlClang5_49095017.wem</Path>
+				</File>
+				<File Id="1055952912" Language="SFX">
+					<ShortName>MetalClangLandingAugment2.wav</ShortName>
+					<Path>SFX\MetalClangLandingAugment2_AE3448E1.wem</Path>
+				</File>
+				<File Id="1058112697" Language="SFX">
+					<ShortName>DroppedBox3.wav</ShortName>
+					<Path>SFX\DroppedBox3_49095017.wem</Path>
+				</File>
+				<File Id="1067915869" Language="SFX">
+					<ShortName>Music\MP01Calm.wav</ShortName>
+					<Path>SFX\Music\MP01Calm_84492A85.wem</Path>
+				</File>
+				<File Id="1068599860" Language="SFX">
+					<ShortName>RockFootstep3.wav</ShortName>
+					<Path>SFX\RockFootstep3_49095017.wem</Path>
+				</File>
+				<File Id="1073598873" Language="SFX">
+					<ShortName>LandingGrass6.wav</ShortName>
+					<Path>SFX\LandingGrass6_49095017.wem</Path>
+				</File>
+				<File Id="1073616533" Language="SFX">
+					<ShortName>RollingOnRock1.wav</ShortName>
+					<Path>SFX\RollingOnRock1_49095017.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>
