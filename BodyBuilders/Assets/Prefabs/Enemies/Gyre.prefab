@@ -105,8 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Station: {fileID: 0}
-  normalJumpForce: 10
-  jumpForceMultiplier: 3
+  jumpForce: 15
 --- !u!61 &4429156299385154972
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -117,7 +116,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.016209602, y: 0.035866708}
