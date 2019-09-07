@@ -17,26 +17,30 @@ public class elevatorScript : activate
     [Range (0f , 10f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
     [Range (0f , 10f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
     [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
+    [Range (0f , 1f)] public float childDisableTime = 1f; // how much time does the elevator have from the bottom of the movement to disable the childing trigger collider (prevents jittering)
     public LayerMask liftableObjects; // what objects does the elevator interact with?
     float moveTimer = 0f; // the current time of the elevator's movement
     bool ascending = true; // is the elevator moving up?
     float triggerCheckTime = 0.3f; // intervals at which the trigger collider will automatically check for objects
     bool playerOnboard = false; // is the player on board?
     bool slam; // interval at which the player can jump to get the slam bonus
-    Vector2 lowPoint; // the position of the elevator's starting point
-    Vector2 highPoint; // the position of the elevator's endpoint (the elevator slams towards this)
+    public Vector2 highPoint; // the position of the elevator's endpoint (the elevator slams towards this)
+    public Vector2 lowPoint; // the position of the elevator's starting point
     Vector2 slamDirection; // the vector direction of the elevator slam
     GameObject player; // the player gameObject
+    Rigidbody2D playerRB; // player rigidbody
     GameObject holder; // the holder gameObject to which elevator childed objects are assigned
     playerScript playerScript; // the player's script, used to reference part configuration, and prevent jumping during slam up
     BoxCollider2D pickupPoint; // the collider used to check for objects
+    Vector2 topPosition;
+    Vector2 botttomPosition;
     
     void Start()
     {
-        lowPoint = gameObject.transform.Find("lowPoint").gameObject.transform.position;
-        highPoint = gameObject.transform.Find("highPoint").gameObject.transform.position;
         pickupPoint = gameObject.GetComponent<BoxCollider2D>();
-        transform.position = lowPoint;
+        topPosition = highPoint + (Vector2)transform.position;
+        botttomPosition = lowPoint + (Vector2)transform.position;
+        transform.position = botttomPosition;
         moveTimer = 0f;
         ascending = true;
         playerOnboard = false;
@@ -46,14 +50,35 @@ public class elevatorScript : activate
         holder.transform.localScale = new Vector3(1f , 1f, 1f);
         holder.transform.rotation = Quaternion.Euler(0f , 0f , 0f);
         playerScript = player.GetComponent<playerScript>();
-
-        slamDirection = highPoint - lowPoint; // get the direction of the slam movement and normalize it
+        slamDirection = topPosition - botttomPosition; // get the direction of the slam movement and normalize it
         slamDirection = slamDirection.normalized; // note that the player can only have a vertical force applied
     }
 
     void OnDrawGizmos()
     {
-        Gizmos.DrawLine(lowPoint, highPoint); // draw a line so we can see where the elevator moves
+        Gizmos.color = Color.red;
+        float locationIdentifier = 0.3f;
+        
+        // if in game, the waypoints don't move, so use the world positions
+
+        if(Application.isPlaying)
+        {
+            Gizmos.DrawLine(topPosition - Vector2.up * locationIdentifier , topPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(topPosition - Vector2.left * locationIdentifier , topPosition + Vector2.left * locationIdentifier);
+            Gizmos.DrawLine(botttomPosition - Vector2.up * locationIdentifier , botttomPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(botttomPosition - Vector2.left * locationIdentifier , botttomPosition + Vector2.left * locationIdentifier);
+            Gizmos.DrawLine(topPosition, botttomPosition); // draw a line so we can see where the elevator moves
+        }
+        else
+        {
+            topPosition = highPoint + (Vector2)transform.position;
+            botttomPosition = lowPoint + (Vector2)transform.position;
+            Gizmos.DrawLine(topPosition - Vector2.up * locationIdentifier , topPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(topPosition - Vector2.left * locationIdentifier , topPosition + Vector2.left * locationIdentifier);
+            Gizmos.DrawLine(botttomPosition - Vector2.up * locationIdentifier , botttomPosition + Vector2.up * locationIdentifier);
+            Gizmos.DrawLine(botttomPosition - Vector2.left * locationIdentifier , botttomPosition + Vector2.left * locationIdentifier);
+            Gizmos.DrawLine(topPosition, botttomPosition); // draw a line so we can see where the elevator moves
+        }
     }
 
     void FixedUpdate()
@@ -64,7 +89,6 @@ public class elevatorScript : activate
         }
 
         holder.transform.position = transform.position; // set the holder to the elevator's position to keep all childed game objects in sync
-
 
         if(moveTimer >= 1f) // reverse direction when movement is complete
         {
@@ -92,6 +116,7 @@ public class elevatorScript : activate
 
         if(ascending)
         {
+            pickupPoint.enabled = true;
             if(overcharge) // move timer speeds up
             {
                 moveTimer += Time.fixedDeltaTime / slamUpTime;
@@ -101,16 +126,25 @@ public class elevatorScript : activate
                 moveTimer += Time.fixedDeltaTime / moveTime;
             }
             // smoothly move upwards based on the move timer
-            transform.position = new Vector2(Mathf.SmoothStep(lowPoint.x , highPoint.x , moveTimer) , Mathf.SmoothStep(lowPoint.y , highPoint.y , moveTimer));
+            transform.position = new Vector2(Mathf.SmoothStep(botttomPosition.x , topPosition.x , moveTimer) , Mathf.SmoothStep(botttomPosition.y , topPosition.y , moveTimer));
         }
         else
         {
             moveTimer += Time.fixedDeltaTime / moveTime; // cannot slam down, only moves at normal speed
+
+            if(moveTimer > (1 - childDisableTime) && !playerOnboard)
+            {
+                pickupPoint.enabled = false;
+            }
+
             // smoothly move downwards based on the move timer
-            transform.position = new Vector2(Mathf.SmoothStep(highPoint.x , lowPoint.x , moveTimer) , Mathf.SmoothStep(highPoint.y , lowPoint.y , moveTimer));
+            transform.position = new Vector2(Mathf.SmoothStep(topPosition.x , botttomPosition.x , moveTimer) , Mathf.SmoothStep(topPosition.y , botttomPosition.y , moveTimer));
         }
-        
+
         holder.transform.position = transform.position; // set the holder's position again for late frame check
+
+        // prevent elevator crush
+
     }
 
     void Update()
@@ -173,6 +207,16 @@ public class elevatorScript : activate
         {
             Parent(col);
         }
+        /*
+        if(!slam && playerOnboard && Input.GetAxisRaw("Vertical") > 0)
+        {
+            pickupPoint.enabled = false;
+        }
+        else if(!(moveTimer > (1 - childDisableTime) && !ascending))
+        {
+            pickupPoint.enabled = true;
+        }
+        */
     }
 
     void OnTriggerExit2D(Collider2D col) // when exiting, execute the unparent function

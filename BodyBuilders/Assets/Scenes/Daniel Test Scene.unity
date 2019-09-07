@@ -1091,7 +1091,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 754d2638425adb34f8453a594fc2774d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5445,6 +5445,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 364216631986674856, guid: 9f21c6ca4d827314495cfe13247f991c,
+        type: 3}
+      propertyPath: m_SurfaceArc
+      value: 160
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f21c6ca4d827314495cfe13247f991c, type: 3}
 --- !u!4 &912357615 stripped
@@ -8885,12 +8890,12 @@ PrefabInstance:
     - target: {fileID: 7386829409325065421, guid: 4be9c8d8f46904d42b7aa8f0c7fbf924,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -37.07
+      value: -36.7
       objectReference: {fileID: 0}
     - target: {fileID: 7386829409325065421, guid: 4be9c8d8f46904d42b7aa8f0c7fbf924,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 13.91
+      value: 13.8
       objectReference: {fileID: 0}
     - target: {fileID: 7386829409325065421, guid: 4be9c8d8f46904d42b7aa8f0c7fbf924,
         type: 3}
@@ -10148,36 +10153,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c7fbde126dfe4f43b38df3fc9a62ffb, type: 3}
---- !u!1 &2023085991309334552
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2023085991309334555}
-  m_Layer: 23
-  m_Name: lowPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2023085991309334555
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2023085991309334552}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5.2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2023085991543190419}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2023085991543190416
 GameObject:
   m_ObjectHideFlags: 0
@@ -10190,11 +10165,11 @@ GameObject:
   - component: {fileID: 2023085991543190429}
   - component: {fileID: 2023085991543190418}
   - component: {fileID: 2023085991543190431}
+  - component: {fileID: 2023085991543190430}
   - component: {fileID: 2023085991543190425}
   - component: {fileID: 2023085991543190428}
-  - component: {fileID: 2023085991543190430}
   m_Layer: 23
-  m_Name: Elevator 1
+  m_Name: Elevator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10236,7 +10211,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 754d2638425adb34f8453a594fc2774d, type: 3}
   m_Color: {r: 0.7199688, g: 0, b: 1, a: 1}
   m_FlipX: 0
@@ -10256,11 +10231,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023085991543190416}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.75, y: 0, z: 0}
+  m_LocalPosition: {x: 2.21, y: -1.63, z: 0}
   m_LocalScale: {x: 3.3625, y: 0.38159695, z: 1}
-  m_Children:
-  - {fileID: 2023085992933206937}
-  - {fileID: 2023085991309334555}
+  m_Children: []
   m_Father: {fileID: 2023085993250398173}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10278,8 +10251,8 @@ PlatformEffector2D:
     m_Bits: 310528
   m_RotationalOffset: 0
   m_UseOneWay: 1
-  m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_UseOneWayGrouping: 1
+  m_SurfaceArc: 170
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 0
@@ -10322,17 +10295,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activated: 1
-  overcharge: 1
+  overcharge: 0
   overchargeable: 1
   antiSync: 1
-  moveTime: 5
-  slamUpTime: 1
+  moveTime: 2
+  slamUpTime: 2
   launchForce: 3
   jumpLaunchForce: 8
   jumpTimeOffset: 0.3
+  childDisableTime: 0.332
   liftableObjects:
     serializedVersion: 2
     m_Bits: 265472
+  highPoint: {x: 0, y: 7}
+  lowPoint: {x: 0, y: 0}
 --- !u!61 &2023085991543190430
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10346,7 +10322,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.5}
+  m_Offset: {x: 0, y: 1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -10357,7 +10333,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &2023085991543190431
 Rigidbody2D:
@@ -10380,36 +10356,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!4 &2023085992933206937
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2023085992933206942}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.24, y: 6.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2023085991543190419}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2023085992933206942
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2023085992933206937}
-  m_Layer: 23
-  m_Name: highPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &2023085993250398162
 GameObject:
   m_ObjectHideFlags: 0
@@ -10420,7 +10366,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2023085993250398173}
   m_Layer: 23
-  m_Name: Elevator 1
+  m_Name: Elevator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10450,7 +10396,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023085993304945505}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.15, y: -0.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2023085993250398173}
