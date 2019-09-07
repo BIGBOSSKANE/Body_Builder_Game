@@ -2,7 +2,7 @@
 Creator: Daniel
 Created: 09/04/2019
 Laste Edited by: Daniel
-Last Edit: 12/08/2019
+Last Edit: 07/09/2019
 */
 
 using System.Collections;
@@ -17,14 +17,14 @@ public class augmentPickup : MonoBehaviour
     private Vector2 targetPosition;
     private Rigidbody2D rigi;
     public enum headIdentifier{ Basic, Scaler, Hookshot , Headbanger}
-    public headIdentifier headType;
-    public string headString;
-    public GameObject player;
-    public GameObject head;
-    public playerScript playerScript;
-    public Vector2 headPos;
-    public GameObject secondSprite;
-    float playerDistance;
+    [Tooltip("What type of head augment is this?")] public headIdentifier headType;
+    string headString;
+    private GameObject player;
+    private GameObject head;
+    private playerScript playerScript;
+    private Vector2 headPos;
+    private GameObject secondSprite;
+    private float playerDistance;
 
     void Start()
     {
@@ -36,6 +36,11 @@ public class augmentPickup : MonoBehaviour
         this.name = headString;
         taken = false;
         timer = 0f;
+
+        if(gameObject.transform.Find("SecondSprite") != null)
+        {
+            secondSprite = gameObject.transform.Find("SecondSprite").gameObject;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)

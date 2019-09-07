@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class powerStation : activate
 {
-    public bool holdingPowerCell = false; // has a power cell been placed in the power station, activating it
-    public bool canStoreCharge = false;
+    [Tooltip("Is there a power cell in the station?")] public bool holdingPowerCell = false; // has a power cell been placed in the power station, activating it
+    [Tooltip("Can the power station store charge after the power cell is removed?")] public bool canStoreCharge = false;
     public string currentCore = "Empty";
     GameObject attachedPowerCell;
     Rigidbody2D attachedRb;
     powerCell powerCell;
-    public GameObject [] activates;
+    [Tooltip("What game objects does this activate, increase the size to add more")] public GameObject [] activates;
 
     void Start()
     {

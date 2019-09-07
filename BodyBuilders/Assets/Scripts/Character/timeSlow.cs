@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class timeSlow : MonoBehaviour
 {
-    public float slowedSpeed = 0.2f;
+    [Tooltip("What speed is time slowed to? (1 is normal)")] public float slowedSpeed = 0.2f;
     bool slowTime = false;
     bool pause = false;
     bool restoreTime = false;
-    public float slowDownDuration = 2f;
-    public float actualTimeScale;
+    [Tooltip("How long does the slow effect apply for?")] public float slowDownDuration = 2f;
+    [HideInInspector] public float actualTimeScale;
     float holdTimer = 0f;
 
     public void TimeSlow()

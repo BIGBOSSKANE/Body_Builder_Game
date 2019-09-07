@@ -4,16 +4,16 @@ using Random=UnityEngine.Random;
 
     public class Camera2DFollow : MonoBehaviour
     {
-        public Transform target;
+        Transform target;
         playerScript playerScript;
         bool speedUp;
         bool slowDown;
-        public float damping = 1;
+        [Tooltip("Damping of camera movement")] public float damping = 1;
         float initialDamping;
         float currentDamping;
-        public float lookAheadFactor = 3;
-        public float lookAheadReturnSpeed = 0.5f;
-        public float lookAheadMoveThreshold = 0.1f;
+        [Tooltip("Distance camera looks ahead")] public float lookAheadFactor = 3;
+        [Tooltip("Time taken for camera to move between look ahead locations")] public float lookAheadReturnSpeed = 0.5f;
+        [Tooltip("Movement speed required to initiate camera movement")] public float lookAheadMoveThreshold = 0.1f;
         float initialLookAheadMoveThreshold;
 
         private float m_OffsetZ;
@@ -24,24 +24,24 @@ using Random=UnityEngine.Random;
         int sizeConfiguration;
         bool resize;
         float resizeTimer;
-        public float resizeDuration = 0.8f;
+        [Tooltip("Time taken for the camera to resize when scouting, or the player changes their part configuration")] public float resizeDuration = 0.8f;
         [HideInInspector] public bool playerLocked = false;
         [HideInInspector] public float standardResizeDuration;
 
         new Camera camera;
         float initialCameraSize;
         float targetCameraSize;
-        public float headSize = 5f;
-        public float torsoSize = 5.5f;
-        public float legSize = 6f;
-        public float completeSize = 6.5f;
-        public float scoutSize = 10f;
+        [Tooltip("Camera size for player as just a head")] public float headSize = 5f;
+        [Tooltip("Camera size for player as just a head and arms")] public float torsoSize = 5.5f;
+        [Tooltip("Camera size for player as just a head with legs")] public float legSize = 6f;
+        [Tooltip("Camera size for player with full body")] public float completeSize = 6.5f;
+        [Tooltip("Size when scouting")] public float scoutSize = 10f;
         float t; // lerp time
 
         // Shake
-        public float shakeDurationLimit = 3f;
-        public float shakeMagnitudeLimit = 5f;
-        public float shakeDivider = 25f;
+        [Tooltip("Shake time limit")] public float shakeDurationLimit = 3f;
+        [Tooltip("Shake amount limit")] public float shakeMagnitudeLimit = 5f;
+        [Tooltip("Increase to reduce screen shake")] public float shakeDivider = 25f;
         float shakePartModifier = 0f; // the player part configuration effect on the screenshake
         Transform transformPos;
         private float shakeDuration = 0f;
@@ -49,8 +49,8 @@ using Random=UnityEngine.Random;
         float groundBreakShakeAmplifier;
         Vector3 initialPosition;
         Vector2 rawInput;
-        public float scoutSpeed = 5f;
-        public float scoutSpeedTime = 1f;
+        [Tooltip("Speed at which player can move the camera while scouting")] public float scoutSpeed = 5f;
+        [Tooltip("Time taken to accelerate while scouting with the camera")] public float scoutSpeedTime = 1f;
         bool shiftHeld = false;
         Vector3 wayPointPos;
         float wayPointDistance;
@@ -63,7 +63,7 @@ using Random=UnityEngine.Random;
         float waypointPauseTimer = 0f;
         float waypointPauseTime = 1f;
         cameraWaypoint camPoint;
-        int waypointCount;
+        int waypointCount = 0;
         int waypointCounter = 0;
 
 

@@ -10,7 +10,7 @@ public class lineAnimator : MonoBehaviour
      int index; // current frame
      Vector2 size; // size of each sprite
      
-     [Range (0 , 200)]public int framesPerSecond = 100; // speed through which frames cycle
+     [Tooltip("Framerate of animation")] [Range (0 , 200)]public int framesPerSecond = 100; // speed through which frames cycle
      LineRenderer lineRenderer; // the renderer we are changing the material for
      
     void Start()

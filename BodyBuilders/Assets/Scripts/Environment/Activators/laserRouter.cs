@@ -11,20 +11,20 @@ using UnityEngine;
 
 public class laserRouter : activate
 {
-    public bool laserSplitter; // does the laser router fire 2 lasers? (the second is projected from the laser aim splitter sprite)
-    public bool charged = false; // is the laser router charged?
+    [Tooltip("Use a secondary laser (indicated by the other aim sprite)")] public bool laserSplitter; // does the laser router fire 2 lasers? (the second is projected from the laser aim splitter sprite)
+    [Tooltip("Is it firing a laser?")] public bool charged = false; // is the laser router charged?
     bool wasCharged; // was the laser router charged in the last frame? - this is used to send an activate signal to doors/fanse/etc that use the laser router as a switch
-    public bool canStoreCharge = false; // can the laser router store a charge, or does it only route lasers while a laser is colliding with it?
-    public bool canRotate = true; // does the laser router rotate when sent a right or !right signal
+    [Tooltip("Can it store a charge after being hit by a laser?")] public bool canStoreCharge = false; // can the laser router store a charge, or does it only route lasers while a laser is colliding with it?
+    [Tooltip("Does it rotate when sent a signal to do so?")] public bool canRotate = true; // does the laser router rotate when sent a right or !right signal
     bool rotating; // is the laser router currently rotating?
-    public bool anticlockwise = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
-    public bool patrol = false; // does the laser router move between points when activated?
-    public bool rotationalPatrol; // does the laser router rotate instead of moving?
-    public bool patrolLoop = false; // does the laser router move back and forth between points?
+    [Tooltip("Does it rotate anticlockwise?")] public bool anticlockwise = false; // rotate anticlockwise when receiving a right signal, rather than clockwise
+    [Tooltip("Does the laser router rotate or move between points?")] public bool patrol = false; // does the laser router move between points when activated?
+    [Tooltip("Is the patrol rotational?")] public bool rotationalPatrol; // does the laser router rotate instead of moving?
+    [Tooltip("Does the patrol loop, or move to an endpoint?")] public bool patrolLoop = false; // does the laser router move back and forth between points?
     bool patrolForwards = true; // moving forwards in patrol route
-    public bool patrolSwitch = false; // if patrol loop is untrue, this means that deactivating the router will cause it to return to the original position
+    [Tooltip("Does retriggering a non-looping patrol system cause it to reverse or move to the next stage")] public bool patrolSwitch = false; // if patrol loop is untrue, this means that deactivating the router will cause it to return to the original position
     Vector2 originalPosition; // starting point if moving due to an activate call
-    public Vector2 moveTo; // end point when moving due to an activate call
+    [Tooltip("Where to move to when non-rotationally patrolling")] public Vector2 moveTo; // end point when moving due to an activate call
     Vector2 targetPosition; // the endpoint of the movement, put into world space
     protected bool deathRay = false; // will the ray kill?
     protected float colRadius; // radius of the circle collider
@@ -35,16 +35,16 @@ public class laserRouter : activate
     Quaternion targetRotation; // point to rotate towards
     float rotateTimer = 0f; // time tracker for rotation
     float moveTimer = 0f; // time tracker for movement
-    public float moveTimeTotal = 1f; // time taken to move between points
-    public float rotatePatrolSpeed = 1f; // speed of rotation;
+    [Tooltip("How long does it take to move between points?")] public float moveTimeTotal = 1f; // time taken to move between points
+    [Tooltip("How fast does the router rotate?")] public float rotatePatrolSpeed = 1f; // speed of rotation;
     protected LineRenderer laserLine; // the line renderer for the laser
     protected string laserTag; // name of the thing hit by the laser
     protected playerScript playerScript; // get a reference to the player script
-    public LayerMask laserLayer; // what can the laser collide with? 
+    [Tooltip("Layers the laser can hit")] public LayerMask laserLayer; // what can the laser collide with? 
     protected powerCell powerCell; // the powercell script of the powercell hit
     protected powerStation powerStation; // the script of the powerstation hit
     protected Vector2 laserEndpoint; // the endpoint of the laser
-    public GameObject [] activates; // does the laser router activate something while it stores a charge
+    [Tooltip("")] public GameObject [] activates; // does the laser router activate something while it stores a charge
     Quaternion initialRotation;
     
     GameObject aimSpriteSplit;

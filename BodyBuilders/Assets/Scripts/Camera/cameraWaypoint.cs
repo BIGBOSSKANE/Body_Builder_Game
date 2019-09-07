@@ -11,17 +11,16 @@ using UnityEngine;
 
 public class cameraWaypoint : MonoBehaviour
 {
-    public bool onlyOnce = true;
+    [Tooltip("Doesn't cycle through waypoints again")] public bool onlyOnce = true;
     bool alreadyDone = false;
-    public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
-    public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
-    public float waypointResizeDuration = 2f; // time for camera zoom out
+    [Tooltip("Locks the player while looping between waypoints")] public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
+    [Tooltip("Unlocks the player if they apply input after a short duration while moving between waypoints")] public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
+    [Tooltip("Duration taken to resize between waypoints")] public float waypointResizeDuration = 2f; // time for camera zoom out
     int waypointCount; // number of waypoints
     int currentWaypoint = 0; // current waypoint
     Camera2DFollow cameraScript;
     Vector2 previousPosition; // used for drawing lines between locations
     Vector2 playerPos;
-
 
     [SerializeField] private SubClass[] waypointCycle;
 

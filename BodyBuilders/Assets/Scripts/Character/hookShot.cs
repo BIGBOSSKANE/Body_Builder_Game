@@ -6,7 +6,7 @@ public class hookshot : MonoBehaviour
 {
     // Mouse Move Tracker
     bool mouseMoved;
-    public float mouseMovedTime = 2f;
+    float mouseMovedTime = 2f;
     float mouseMovedTimer;
     float hookShotDistance = 6f;
     Vector2 worldMousePos;
@@ -14,9 +14,9 @@ public class hookshot : MonoBehaviour
     Vector2 previousMousePos;
 
     // Hookshot
-    public bool ropeAttached = false;
-    public float ropeClimbSpeed = 2f;
-    public float maxropeLength = 8f;
+    [HideInInspector] public bool ropeAttached = false;
+    [Tooltip("Rappel descent and climb speed of the rope")] public float ropeClimbSpeed = 2f;
+    [Tooltip("Maximum distance of the rope")] public float maxropeLength = 8f;
     Vector3 augmentAimDirection;
     playerScript playerScript;
     GameObject hookShotAnchorPoint;
@@ -28,9 +28,8 @@ public class hookshot : MonoBehaviour
     private Rigidbody2D hookShotAnchorPointRb;
     private SpriteRenderer hookshotAnchorSprite;
     LineRenderer lineRenderer;
-    public LayerMask tetherLayer;
+    [Tooltip("What layers can the player tether to?")] public LayerMask tetherLayer;
     private Vector2 playerPosition;
-    public float ropeMaxCastDistance = 20f;
 
     void Start()
     {

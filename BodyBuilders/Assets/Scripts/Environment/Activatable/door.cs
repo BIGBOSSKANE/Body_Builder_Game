@@ -11,12 +11,14 @@ using UnityEngine;
 
 public class door : activate
 {
-    public float moveTimeTotal = 1f;
+    [Tooltip("How long does the door take to move?")] public float moveTimeTotal = 1f;
     Vector2 originalPosition;
-    public Vector2 moveTo;
+    [Tooltip("Move to be centred at this position")] public Vector2 moveTo;
     Vector2 targetPosition;
     float moveTime;
     bool previousState;
+    float xBounds;
+    float yBounds;
 
     void Start()
     {

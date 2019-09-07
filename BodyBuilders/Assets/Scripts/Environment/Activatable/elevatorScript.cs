@@ -11,21 +11,21 @@ using UnityEngine;
 
 public class elevatorScript : activate
 {
-    [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
-    [Range (0.1f , 10f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
+    [Tooltip("How long does the elevator take to move normally?")] [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
+    [Tooltip("How long does the elevator take to slam upwards?")] [Range (0.1f , 10f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
     // public bool overcharge = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
-    [Range (0f , 10f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
-    [Range (0f , 10f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
-    [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
-    [Range (0f , 1f)] public float childDisableTime = 1f; // how much time does the elevator have from the bottom of the movement to disable the childing trigger collider (prevents jittering)
-    public LayerMask liftableObjects; // what objects does the elevator interact with?
+    [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 10f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
+    [Tooltip("How much futher is the player launched if they jump at the apex of the slam?")] [Range (0f , 10f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
+    [Tooltip("What is the window in which the player can jump to get the boosted launch force?")] [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
+    [Tooltip("Disables the childing collider for this long before hitting the bottom (avoids jostling the player)")] [Range (0f , 1f)] public float childDisableTime = 1f; // how much time does the elevator have from the bottom of the movement to disable the childing trigger collider (prevents jittering)
+    [Tooltip("What layers can the elevator lift?")] public LayerMask liftableObjects; // what objects does the elevator interact with?
     float moveTimer = 0f; // the current time of the elevator's movement
     bool ascending = true; // is the elevator moving up?
     float triggerCheckTime = 0.3f; // intervals at which the trigger collider will automatically check for objects
     bool playerOnboard = false; // is the player on board?
     bool slam; // interval at which the player can jump to get the slam bonus
-    public Vector2 highPoint; // the position of the elevator's endpoint (the elevator slams towards this)
-    public Vector2 lowPoint; // the position of the elevator's starting point
+    [Tooltip("The high/end point of the elevator (if it slams, it will be towards this)")] public Vector2 highPoint; // the position of the elevator's endpoint (the elevator slams towards this)
+    [Tooltip("The low/starting point of the elevator (It will start here)")] public Vector2 lowPoint; // the position of the elevator's starting point
     Vector2 slamDirection; // the vector direction of the elevator slam
     GameObject player; // the player gameObject
     Rigidbody2D playerRB; // player rigidbody

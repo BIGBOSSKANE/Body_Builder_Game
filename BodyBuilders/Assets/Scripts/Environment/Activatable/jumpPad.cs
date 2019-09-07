@@ -11,19 +11,19 @@ using UnityEngine;
 
 public class jumpPad : activate
 {
-    public bool jumpBooster = true;
-    public float normalJumpForce; // standard bounce force applied
-    public float overchargeJumpForce; // boosted bounce force applied
-    public float jumpForceMultiplier = 1.2f; // increase the amount of bounce force applied if the player is pressing up
+    [Tooltip("Does the jump pad give extra boost if the player is jumping")] public bool jumpBooster = true;
+    [Tooltip("Normal bounce force")] public float normalBounceForce; // standard bounce force applied
+    [Tooltip("Bounce force while overcharged")] public float overchargeBounceForce; // boosted bounce force applied
+    [Tooltip("If jump boost is on, how much higher does the player go?")] public float jumpForceMultiplier = 1.2f; // increase the amount of bounce force applied if the player is pressing up
     float jumpForce; // the actual force applied (one of the ones above)
-    public bool forceReflection; // does the player bounce higher when they fall from higher?
-    PhysicsMaterial2D bouncyMat; // the physics material allowing objects to add their own velocity to bounces
+    [Tooltip("Does the bounce pad reflect the player's vertical velocity?")] public bool forceReflection; // does the player bounce higher when they fall from higher?
     Rigidbody2D colRb; // the collider of this object
     GameObject player; // the player gameObject
 
     void Start()
     {
         player = GameObject.Find("Player").gameObject;
+
         if(!forceReflection) // disable the bouncy physics material to prevent velocity reflection if force refelction is off
         {
             gameObject.GetComponent<BoxCollider2D>().sharedMaterial = null;
@@ -38,11 +38,11 @@ public class jumpPad : activate
     {
         if(overcharge) // when overcharge is on, use the overcharge jump force, otherwise, use the normal one
         {
-            jumpForce = overchargeJumpForce;
+            jumpForce = overchargeBounceForce;
         }
         else
         {
-            jumpForce = normalJumpForce;
+            jumpForce = normalBounceForce;
         }
     }
 

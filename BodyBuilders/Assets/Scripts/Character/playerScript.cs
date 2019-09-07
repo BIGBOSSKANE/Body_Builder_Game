@@ -54,37 +54,37 @@ public class playerScript : MonoBehaviour
     private Vector2 currentSpawnPoint;
 
 // BASIC MOVEMENT
-    public bool forceSlaved = false;
-    public bool scalingWall = false;
+    [HideInInspector] public bool forceSlaved = false;
+    [HideInInspector] public bool scalingWall = false;
     private float inputX; // get player Input value
     [HideInInspector] public int rawInputX;
     [HideInInspector] public int facingDirection; // used to flip the character when turning
-    public float reverseDirectionTimer = 0f;
+    [HideInInspector] public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
 
-    public float speed; // current movement speed
-    public float movementSpeed = 10f; // the max horizontal movement speed
+    [HideInInspector] public float speed; // current movement speed
+    [Tooltip("Maximum player inputted horizontal movement")] public float movementSpeed = 10f; // the max horizontal movement speed
     float augmentedMovementSpeed = 1f; // scales the movement limit with parts
 
 
 // JUMPING
     float jumpPower; // the current jump force based on augments
-    public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios`
-    public Vector2 wallJumpForce = new Vector2(20f , 9f); // force of wall jump sideways propulsion
-    public bool coyoteTime; // if the player just fell of a platform, they can still use their first jump in mid air
+    [Tooltip("Jump force multiplier")] public float jumpForce = 1f; // modify this to change the jump force between loadouts with equal ratios`
+    [Tooltip("Velocity applied to the player when they leap from a wall")] public Vector2 wallJumpForce = new Vector2(8f , 8f); // force of wall jump sideways propulsion
+    [Tooltip("How long does the player have to jump after falling from a ledge?")] public bool coyoteTime; // if the player just fell of a platform, they can still use their first jump in mid air
     bool coyoteJump; // is the player within the coyote time limit?
-    public float coyoteTimeLimit = 0.3f;
-    public float lastGroundedHeight; // the height you were at when you were last grounded
+    [Tooltip("How long does the player have to jump after falling from a ledge?")] public float coyoteTimeLimit = 0.3f;
+    [HideInInspector] public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
-    public bool isGrounded; // is the player on the ground?
-    public float maxHeight; // the maximum height of the jump
+    [HideInInspector] public bool isGrounded; // is the player on the ground?
+    [HideInInspector] public float maxHeight; // the maximum height of the jump
     bool jumpGate; // prevent jumping while this is true
-    public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
+    [HideInInspector] public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
     float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
-    public int remainingJumps; // how many jumps does the player have left?
+    [HideInInspector] public int remainingJumps; // how many jumps does the player have left?
     int maximumJumps = 1; // how many jumps does the player have?
 
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
@@ -94,31 +94,31 @@ public class playerScript : MonoBehaviour
     float raycastYOffset; // alters raycast length based on character part configuration, this should be combined with "raycastPos"
     Vector2 raycastPos; // controls where groundcheckers come from
     float groundedDistance = 0.15f; // raycast distance;
-    public LayerMask jumpLayer; // what layers can the player jump on?
-    public LayerMask ladderLayer; // what cn the player climb?
-    public LayerMask pickupLayer; // what things can the player pick up?
-    public LayerMask laserLayer; // what can the deflected laser hit?
+    [Tooltip("What layers can the player jump on?")] public LayerMask jumpLayer; // what layers can the player jump on?
+    [Tooltip("What layer are ladders on?")] public LayerMask ladderLayer; // what cn the player climb?
+    [Tooltip("What layers can the player pick up?")] public LayerMask pickupLayer; // what things can the player pick up?
+    [Tooltip("What layers does the laser hit?")] public LayerMask laserLayer; // what can the deflected laser hit?
 
-    public Vector2 tetherPoint;
-    public float swingForce = 4f;
-    public bool isSwinging;
+    [HideInInspector] public Vector2 tetherPoint;
+    [Tooltip("Force of swinging while tethered and using the hookshot")] public float swingForce = 4f;
+    [HideInInspector] public bool isSwinging;
 
 
 // AUGMENTS AND PARTS
 
     [Range (1 , 4)] public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
-    public string headString; // this is referenced from the name of the head augment
-    public bool scaler = false;
-    public bool hookShot = false;
+    [HideInInspector] public string headString; // this is referenced from the name of the head augment
+    [HideInInspector] public bool scaler = false;
+    [HideInInspector] public bool hookShot = false;
 
     // Arms
     GameObject arms; // the arms component
-    public string armString; // this is referenced from the name of the arm prefab
+    [HideInInspector] public string armString; // this is referenced from the name of the arm prefab
     bool holding = false; // is the player holding a box?
     bool lifter = false; // do you have the lifter augment?
-    public bool shield = false; // do you have the shield augment?
+    [HideInInspector] public bool shield = false; // do you have the shield augment?
     bool climbing = false; // are you climbing?
-    public bool wallSliding = false; // are you on a wall-jumpable surface
+    [HideInInspector] public bool wallSliding = false; // are you on a wall-jumpable surface
     float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
     bool wasClimbing = false; // did you just stop climbing?
     float climbingDismountTimer = 0f; // wall jump boost timer
@@ -127,11 +127,11 @@ public class playerScript : MonoBehaviour
 
     // Legs
     GameObject legs; // the legs component
-    public string legString; // this is referenced from the name of the leg prefab
+    [HideInInspector] public string legString; // this is referenced from the name of the leg prefab
     bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
-    public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
+    [Tooltip("Distance that the player must descend to activate groundbreakers")] public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
     bool groundBreakerReset; // used to make sure time slow is only used once
 
 // ATTACHABLES AND PARTS
@@ -162,7 +162,7 @@ public class playerScript : MonoBehaviour
     bool cameraAdjuster;
 
     GameObject shieldBubble; // the shield bubble object
-    public bool shieldActive = false;
+    [HideInInspector] public bool shieldActive = false;
     bool isDeflecting = false; // is the player currently deflecting
     bool firingLaser = false;
     GameObject collisionEffect;
@@ -172,16 +172,14 @@ public class playerScript : MonoBehaviour
     float shieldModifiedRadius;
     float shieldRadius;
     LineRenderer laserLine;
-    public Vector2 ropeDirection;
-    public PhysicsMaterial2D frictionMaterial;
-    public PhysicsMaterial2D slipperyMaterial;
+    [HideInInspector] public Vector2 ropeDirection;
+    [Tooltip("The fritction physics material")] public PhysicsMaterial2D frictionMaterial;
+    [Tooltip("The slippery physics material")] public PhysicsMaterial2D slipperyMaterial;
     string laserTag;
     laserRouter laserRouter;
     powerCell powerCell;
     powerStation powerStation;
     Vector2 laserEndpoint;
-    public float slam = 0f;
-    public Vector2 slamVector;
     [HideInInspector] public float forceSlavedTimer = 0f;
     int previousFacingDirection;
     bool scalerTrueGrounded = false;
@@ -190,8 +188,8 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public bool shiftHeld = false;
 
     bool wallHang = false;
-    public Material laserMaterialAim;
-    public Material laserMaterialFire;
+    [Tooltip("Laser material while not firing")] public Material laserMaterialAim;
+    [Tooltip("Laser material while firing")] public Material laserMaterialFire;
     int previousPartConfiguration;
     float jumpDisableTimer = 10f;
     Vector2 previousVelocity;

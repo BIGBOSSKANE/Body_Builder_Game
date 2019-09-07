@@ -2,7 +2,7 @@
 Creator: Daniel
 Created: 09/04/2019
 Laste Edited by: Daniel
-Last Edit: 26/05/2019
+Last Edit: 07/09/2019
 */
 
 using System.Collections;
@@ -12,40 +12,41 @@ using UnityEngine;
 public class Legs : MonoBehaviour
 {
     bool attached;
-    public bool groundBreaker = false; // when ground breakers are dropped, they will continue to do their thing
+    [HideInInspector] public bool groundBreaker = false; // when ground breakers are dropped, they will continue to do their thing
     float unavailableTimer = 1f;
-    public BoxCollider2D boxCol;
-    public Rigidbody2D rb;
+    BoxCollider2D boxCol;
+    Rigidbody2D rb;
 
     public enum legIdentifier{ Basic, Afterburner, Groundbreaker} // sets up for the dropdown menu of options
-    public legIdentifier legType;
+    [Tooltip("What type of legs are these?")] public legIdentifier legType;
 
-    public GameObject player;
-    public GameObject head;
-    public playerScript playerScript;
+    GameObject player;
+    GameObject head;
+    playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
     PlatformEffector2D platEffect;
     timeSlow timeSlowScript;
-    public float yCastOffset = -0.86f;
-    public float raycastDistance = 0.17f;
+    float yCastOffset = -0.86f;
+    float raycastDistance = 0.17f;
     float maxHeight;
     float groundbreakerDistance;
-    public LayerMask jumpLayer;
+    LayerMask jumpLayer;
     bool groundBreakerReset;
 
 
     void Start()
     {
-        boxCol = this.GetComponent<BoxCollider2D>();
-        rb = this.GetComponent<Rigidbody2D>();
+        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        rb = gameObject.GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
         timeSlowScript = player.GetComponent<timeSlow>();
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<playerScript>();
+        jumpLayer = playerScript.jumpLayer;
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        platEffect = this.GetComponent<PlatformEffector2D>();
+        platEffect = gameObject.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
         this.name = legType + "Legs";
         CheckForParent();

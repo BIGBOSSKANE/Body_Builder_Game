@@ -11,10 +11,10 @@ using UnityEngine;
 
 public class activate : MonoBehaviour
 {
-    public bool activated = false; // is the object powered and operating?
-    public bool overcharge = false; // is the object overcharged?
-    public bool overchargeable = true; // can overcharge be switched on and off by activators?
-    public bool antiSync = true; // ignore the signal sent from the button, instead just get whenever it changes and use that to change this
+    [Tooltip("Is it powered?")] public bool activated = false; // is the object powered and operating?
+    [Tooltip("Is it in its advanced state?")] public bool overcharge = false; // is the object overcharged?
+    [Tooltip("Does this have an overcharge state, or is it disabled?")] public bool overchargeable = true; // can overcharge be switched on and off by activators?
+    [Tooltip("Does the object only track when the button value changes, instead of the on/off signal?")] public bool antiSync = true; // ignore the signal sent from the button, instead just get whenever it changes and use that to change this
 
     public void Activate(bool activateSignal)
     {

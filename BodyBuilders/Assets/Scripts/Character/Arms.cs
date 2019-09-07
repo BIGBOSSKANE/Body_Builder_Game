@@ -2,7 +2,7 @@
 Creator: Daniel
 Created: 09/04/2019
 Last Edited by: Daniel
-Last Edit: 26/05/2019
+Last Edit: 07/09/2019
 */
 
 
@@ -14,16 +14,16 @@ public class Arms : MonoBehaviour
 {
     bool attached = false;
     float unavailableTimer = 1f;
-    public BoxCollider2D boxCol;
+    BoxCollider2D boxCol;
     PlatformEffector2D platEffect;
     float boxColTimer;
-    public Rigidbody2D rb;
+    Rigidbody2D rb;
     public enum armIdentifier{ Basic, Lifter, Shield} // sets up for the dropdown menu of options
-    public armIdentifier armType;
+    [Tooltip("What type of arms are these?")] public armIdentifier armType;
 
-    public GameObject player;
-    public GameObject head;
-    public playerScript playerScript;
+    GameObject player;
+    GameObject head;
+    playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
 

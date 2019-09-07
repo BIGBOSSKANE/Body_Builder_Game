@@ -14,17 +14,17 @@ public class bansheeScript : MonoBehaviour
     GameObject target;
     GameObject collisionEffect;
     GameObject burstEffect;
-    public float laserChargeTime = 1.5f;
+    [Tooltip("How long must the laser focus to activate the death ray?")] public float laserChargeTime = 1.5f;
     float  laserChargeTimer = 0f;    
     bool isCharging = false;
-    public float laserPauseTime = 0.5f;
+    [Tooltip("How long does the laser stop before firing the death ray?")] public float laserPauseTime = 0.5f;
     float laserPauseTimer = 0f;
     bool isPaused = false;
-    public float laserFireTime = 3f;
+    [Tooltip("How long does the laser fire for?")] public float laserFireTime = 3f;
     float laserFireTimer = 0f;
     bool isFiring = false;
-    public LayerMask laserLayer;
-    public LayerMask playerLayer;
+    [Tooltip("What does the laser collide with?")] public LayerMask laserLayer;
+    [Tooltip("Detect the player")] public LayerMask playerLayer;
     LineRenderer laserLine;
     GameObject laserOriginPoint;
     Vector2 laserOrigin;
@@ -40,9 +40,9 @@ public class bansheeScript : MonoBehaviour
     powerCell powerCell;
     powerStation powerStation;
 
-    public Material materialCharge;
-    public Material materialPause;
-    public Material materialFire;
+    [Tooltip("Laser material while charging")] public Material materialCharge;
+    [Tooltip("Laser material while pausing")] public Material materialPause;
+    [Tooltip("Laser material while firing")] public Material materialFire;
     bool killedPlayer;
 
     // Start is called before the first frame update
