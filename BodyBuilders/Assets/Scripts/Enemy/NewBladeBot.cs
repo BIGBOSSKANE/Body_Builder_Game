@@ -5,16 +5,20 @@ using UnityEngine;
 
 public class NewBladeBot : MonoBehaviour
 {
-    public float speed = 5.0f; 
+    public float speed = 5.0f;
     public GameObject BBArea;
     public bool chasePlayer = false;
-    Transform startpos;
+    playerScript playerScript;
+    Vector2 startPos;
+    Transform target;
 
 
     // Start is called before the first frame update
     void Start()
     {
-      // set initial starting point  
+        target = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        startPos = gameObject.transform.position;
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
     }
 
     // Update is called once per frame
@@ -22,18 +26,20 @@ public class NewBladeBot : MonoBehaviour
     {
         if (chasePlayer)
         {
-            // follow player
+            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
         }
         else
         {
-            // return to start position
+            transform.position = Vector2.MoveTowards(transform.position, startPos, speed * Time.deltaTime);
         }
     }
 
 
-    void OnCollisionEnter2D(Collider2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
-      // when collided with player
-      // respawn player
+        if (col.gameObject.tag == "Player")
+        {
+            playerScript.Respawn(0.2f);
+        }
     }
 }

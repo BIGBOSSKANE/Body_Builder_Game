@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BladeBot
+  m_Name: Bladebot
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -19,18 +19,18 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: 0, y: 0, z: 0}
-        inSlope: {x: 0, y: 0, z: 206.89229}
-        outSlope: {x: 0, y: 0, z: 206.89229}
+        value: {x: 0, y: 0, z: -360}
+        inSlope: {x: 0, y: 0, z: 363.0782}
+        outSlope: {x: 0, y: 0, z: 363.0782}
         tangentMode: 0
-        weightedMode: 3
+        weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
-        outWeight: {x: 0.33333334, y: 0.33333334, z: 1}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.9995176}
       - serializedVersion: 3
-        time: 1.75
-        value: {x: 0, y: 0, z: 360}
-        inSlope: {x: 0, y: 0, z: 204.12817}
-        outSlope: {x: 0, y: 0, z: 204.12817}
+        time: 1
+        value: {x: 0, y: 0, z: 0}
+        inSlope: {x: 0, y: 0, z: 351.62778}
+        outSlope: {x: 0, y: 0, z: 351.62778}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 1}
@@ -38,7 +38,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Bladebot_1
+    path: Spikes
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
@@ -51,7 +51,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 1201789236
+      path: 287315993
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -63,7 +63,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.75
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -91,11 +91,20 @@ AnimationClip:
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -110,11 +119,20 @@ AnimationClip:
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -122,18 +140,18 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: 206.89229
-        outSlope: 206.89229
+        value: -360
+        inSlope: 363.0782
+        outSlope: 363.0782
         tangentMode: 0
-        weightedMode: 3
+        weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 1
+        outWeight: 0.9995176
       - serializedVersion: 3
-        time: 1.75
-        value: 360
-        inSlope: 204.12817
-        outSlope: 204.12817
+        time: 1
+        value: 0
+        inSlope: 351.62778
+        outSlope: 351.62778
         tangentMode: 0
         weightedMode: 0
         inWeight: 1
@@ -142,7 +160,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -153,7 +171,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -163,7 +181,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -173,7 +191,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Bladebot_1
+    path: Spikes
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0
