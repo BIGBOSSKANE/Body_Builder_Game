@@ -245,7 +245,6 @@ using Random=UnityEngine.Random;
                         }
                         else
                         {
-                            Debug.Log("next");
                             camPoint.NextCoordinate();
                         }
                     }

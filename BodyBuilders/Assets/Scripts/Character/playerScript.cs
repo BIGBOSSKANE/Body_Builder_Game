@@ -193,6 +193,11 @@ public class playerScript : MonoBehaviour
     int previousPartConfiguration;
     float jumpDisableTimer = 10f;
     Vector2 previousVelocity;
+    bool ceilingAbove = false;
+    float afterburnerApex;
+    bool afterburnerGlide = false;
+    bool switchToFrictionMaterial = false;
+    float switchToFrictionMaterialTimer = 0f;
 
 
     void Start()
@@ -376,24 +381,24 @@ public class playerScript : MonoBehaviour
             }
             */
 
-            // optimised swinging code sourced from raywenderlich.com
-            var playerToHookDirection = ((Vector2)hookshotAnchor.transform.position - (Vector2)transform.position).normalized;
+            // optimised swinging code sourced from raywenderlich.com - Sean Duffy
+            Vector2 playerToHookDirection = ((Vector2)hookshotAnchor.transform.position - (Vector2)transform.position).normalized;
 
             Vector2 perpendicularDirection = Vector2.zero;
             if (rawInputX < 0)
             {
                 perpendicularDirection = new Vector2(-playerToHookDirection.y, playerToHookDirection.x);
-                var leftPerpPos = (Vector2)transform.position - perpendicularDirection * -2f;
+                Vector2 leftPerpPos = (Vector2)transform.position - perpendicularDirection * -2f;
                 Debug.DrawLine(transform.position, leftPerpPos, Color.green, 0f);
             }
             else if(rawInputX > 0)
             {
                 perpendicularDirection = new Vector2(playerToHookDirection.y, -playerToHookDirection.x);
-                var rightPerpPos = (Vector2)transform.position + perpendicularDirection * 2f;
+                Vector2 rightPerpPos = (Vector2)transform.position + perpendicularDirection * 2f;
                 Debug.DrawLine(transform.position, rightPerpPos, Color.green, 0f);
             }
 
-            var force = perpendicularDirection * swingForce / 3f;
+            Vector2 force = perpendicularDirection * swingForce / 3f;
             rb.AddForce(force, ForceMode2D.Force);
         }
         else
@@ -420,7 +425,7 @@ public class playerScript : MonoBehaviour
                 {
                     if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
-                        if(rawInputX == -climbDirection) // wall leap
+                        if(rawInputX == -climbDirection && !ceilingAbove) // wall leap
                         {
                             forceSlaved = true;
                             forceSlavedTimer = 0f;
@@ -468,30 +473,6 @@ public class playerScript : MonoBehaviour
                     forceSlaved = false;
                 }
 
-
-                /*
-                Vector2 slavedTargetVelocity;
-
-                float clampVelocity = (Mathf.Abs(previousVelocity.x) > Mathf.Abs(targetVelocity.x))? previousVelocity.x : targetVelocity.x;       
-
-                slavedTargetVelocity = new Vector2(previousVelocity.x + (targetVelocity.x * (Mathf.Clamp(Time.fixedDeltaTime * 2f , 0 , 1))) , rb.velocity.y);
-                slavedTargetVelocity.x = Mathf.Clamp(slavedTargetVelocity.x , -clampVelocity , clampVelocity);
-                rb.velocity = slavedTargetVelocity;
-                Debug.Log(slavedTargetVelocity - previousVelocity);
-                
-
-
-                    if velocity is applied that is greater than the current direction, add it, then clamp to the target velocity, or the previous velocity (whichever is larger)
-
-                    if velocity is applied the other way, add it over fixedDeltaTime;
-
-                    make sure to separate options based on overall direction (so don't use ABS)
-                    
-                    
-                    
-                */
-                
-
                 if(Mathf.Abs(targetVelocity.x) > Mathf.Abs(previousVelocity.x)) // && (facingDirection == Mathf.RoundToInt(Mathf.Sign(previousVelocity.x)) || Mathf.RoundToInt(previousVelocity.x) == 0)) // don't allow speed to be added in the x direction of the force, unless the speed is greater than that provided by the force
                 {
                     rb.velocity = new Vector2(targetVelocity.x , rb.velocity.y);
@@ -518,26 +499,37 @@ public class playerScript : MonoBehaviour
 
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
 
-        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld && !isSwinging)
-        // this last bit ensures the player can always jump, which is how the spiderclimb works
-        {
-            if(isGrounded || (coyoteTime && coyoteJump))
+            if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld && !isSwinging)
+            // this last bit ensures the player can always jump, which is how the spiderclimb works
             {
-                rb.velocity = new Vector2(rb.velocity.x , jumpPower);
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
+                if(isGrounded || (coyoteTime && coyoteJump))
+                {
+                    rb.velocity = new Vector2(rb.velocity.x , jumpPower);
+                    //AkSoundEngine.PostEvent("Jump" , gameObject);
+                }
+                else if(afterburner == true && !climbing && remainingJumps == 1f)
+                {
+                    boostSprites.SetActive(true);
+                    rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
+                    afterburnerApex = transform.position.y;
+                    //AkSoundEngine.PostEvent("Jump" , gameObject);
+                }
+                remainingJumps --;
+                jumpGateTimer = 0f;
+                jumpGate = true;
             }
-            else if(afterburner == true && !climbing && remainingJumps == 1f)
-            {
-                boostSprites.SetActive(true);
-                rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
-            }
-            remainingJumps --;
-            jumpGateTimer = 0f;
-            jumpGate = true;
-        }
 
             previousFacingDirection = facingDirection;
+        }
+
+        if(switchToFrictionMaterial && switchToFrictionMaterialTimer > 0f && partConfiguration == 1) // switches to friction material after a time delay when switching to head (avoids x velocity drop)
+        {
+            switchToFrictionMaterialTimer -= Time.fixedDeltaTime;
+        }
+        else if(partConfiguration == 1)
+        {
+            rb.sharedMaterial = frictionMaterial;
+            switchToFrictionMaterial = false;
         }
 
         speed = rb.velocity.x;
@@ -648,7 +640,14 @@ public class playerScript : MonoBehaviour
             }
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !shiftHeld) // afterburner glide
+        afterburnerGlide = false;
+        if(afterburner && remainingJumps == 0)
+        {
+            if(transform.position.y > afterburnerApex) afterburnerApex = transform.position.y; // set the afterburner apex to be peak of the second jump (equal to height until the player starts descending)
+            if(transform.position.y < afterburnerApex) afterburnerGlide = true; // if desecending, turn glide on
+        }
+
+        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !shiftHeld && !isSwinging && afterburnerGlide) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -658,7 +657,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(true);
             }
         }
-        else if(rb.velocity.y < 0f && !wallSliding) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
+        else if(rb.velocity.y < 0f && !wallSliding && !isSwinging) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
             if(boostSprites != null)
@@ -666,7 +665,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !shiftHeld) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !shiftHeld && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
@@ -724,9 +723,14 @@ public class playerScript : MonoBehaviour
                 Debug.DrawRay(transform.position, Vector2.up * 0.6f, Color.green);
                 if(upHit.collider != null )
                 {
+                    ceilingAbove = true;
                     forceSlaved = false;
                     jumpDisableTimer = 1f;
-                }   
+                }
+                else
+                {
+                    ceilingAbove = false;
+                }
 
                 RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , jumpLayer);
                 Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
@@ -951,22 +955,34 @@ void BoxInteract()
     {
         if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
         {
+            jumpDisableTimer = 0f;
+            float velX = rb.velocity.x;
+            /*
+            if(rawInputX >= 1)
+            {
+                velX = movementSpeed;
+            }
+            else if(rawInputX <= -1)
+            {
+                velX = -movementSpeed;
+            }
+            */
+
             if(partConfiguration > 2)
             {
                 legs.GetComponent<Legs>().Detached(maxHeight , groundbreakerDistance);
-                legs.transform.parent = null;
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = Vector2.up * jumpForce * 8f;
+                rb.velocity = new Vector2(velX , jumpForce * 8f);
             }
             else if(partConfiguration == 2)
             {
                 arms.GetComponent<Arms>().Detached();
-                arms.transform.parent = null;
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = Vector2.up * jumpForce * 9f;
+                rb.velocity = new Vector2(velX , jumpForce * 8f);
             }
+            Debug.Log(rb.velocity.x);
         }
     }
 
@@ -1140,13 +1156,15 @@ void BoxInteract()
             if(previousPartConfiguration == 2)
             {
                 AkSoundEngine.PostEvent("DetachArms" , gameObject);
+                transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             }
             else if(previousPartConfiguration > 2)
             {
                 AkSoundEngine.PostEvent("DetachLegs" , gameObject);
             }
 
-            rb.sharedMaterial = frictionMaterial;
+            switchToFrictionMaterialTimer = (rb.velocity.y > 0)? 0.4f : 0.7f;
+            switchToFrictionMaterial = true;
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
             jumpPower = jumpForce * 6f;

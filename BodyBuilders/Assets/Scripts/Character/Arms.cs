@@ -14,7 +14,7 @@ public class Arms : MonoBehaviour
 {
     bool attached = false;
     float unavailableTimer = 1f;
-    BoxCollider2D boxCol;
+    BoxCollider2D boxCol; // player pickup collider
     PlatformEffector2D platEffect;
     float boxColTimer;
     Rigidbody2D rb;
@@ -25,22 +25,22 @@ public class Arms : MonoBehaviour
     GameObject head;
     playerScript playerScript;
     GameObject solidCollider;
-    BoxCollider2D solidBoxCollider;
+    BoxCollider2D solidBoxCollider; // solid collider on the non-player layer
 
     void Start()
     {
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<playerScript>();
-        boxCol = this.GetComponent<BoxCollider2D>();
-        rb = this.GetComponent<Rigidbody2D>();
+        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        rb = gameObject.GetComponent<Rigidbody2D>();
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        platEffect = this.GetComponent<PlatformEffector2D>();
+        platEffect = gameObject.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
         this.name = armType + "Arms";
         CheckForParent();
-        unavailableTimer = 1f;
+        unavailableTimer = 0f;
     }
 
     void Update()
@@ -50,13 +50,15 @@ public class Arms : MonoBehaviour
             unavailableTimer += Time.deltaTime;
         }
 
-        if(boxColTimer < 0.2f)
+        if(boxColTimer > 0f)
         {
-            boxColTimer += Time.deltaTime;
+            boxColTimer -= Time.deltaTime;
         }
         else if(!attached)
         {
             boxCol.enabled = true;
+            boxColTimer = 0f;
+            gameObject.layer = 18;
         }
     }
 
@@ -80,21 +82,22 @@ public class Arms : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
-        boxColTimer = 0f;
-        gameObject.layer = 18;
+        boxColTimer = (playerScript.isGrounded)? 0.2f : 0.4f;
+        boxCol.enabled = false;
+        gameObject.layer = 13;
     }
 
     public void Attached()
     {
         attached = true;
         boxCol.enabled = false;
-        rb.isKinematic = true;
         solidBoxCollider.enabled = false;
         platEffect.enabled = false;
+        rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
     }
 
-    void OnCollisionEnter2D(Collision2D col) // try to change it to OnTriggerEnter2D
+    void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
         if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 3) && playerScript.partConfiguration != 2 && playerScript.partConfiguration != 4) // if the player has just legs, snap anyway
@@ -119,6 +122,7 @@ public class Arms : MonoBehaviour
         // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
         {
             boxCol.enabled = false;
+            Debug.Log("Why");
             boxCol.enabled = true;
         }
         else if(col.gameObject.tag == "Legs")

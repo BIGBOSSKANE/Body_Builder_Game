@@ -6,9 +6,11 @@ public class hookshot : MonoBehaviour
 {
     // Mouse Move Tracker
     bool mouseMoved;
+    bool ropeMiss;
     float mouseMovedTime = 2f;
     float mouseMovedTimer;
     float hookShotDistance = 6f;
+    float ropeAttachedTime = 0f;
     Vector2 worldMousePos;
     Vector2 aimDirection;
     Vector2 previousMousePos;
@@ -28,11 +30,13 @@ public class hookshot : MonoBehaviour
     private Rigidbody2D hookShotAnchorPointRb;
     private SpriteRenderer hookshotAnchorSprite;
     LineRenderer lineRenderer;
+    Rigidbody2D rb;
     [Tooltip("What layers can the player tether to?")] public LayerMask tetherLayer;
     private Vector2 playerPosition;
 
     void Start()
     {
+        rb = gameObject.GetComponent<Rigidbody2D>();
         playerPosition = gameObject.transform.position;
         hookShotAnchorPoint = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookShotAnchorPointRb = hookShotAnchorPoint.GetComponent<Rigidbody2D>();
@@ -98,20 +102,32 @@ public class hookshot : MonoBehaviour
         }
 
         HookShotFire();
-        if(ropeAttached == true)
+        if(ropeAttached)
         {
             DrawRope();
         }
 
+        if(ropeMiss)
+        {
+            DrawRope();
+            if(ropeAttachedTime >= 1f)
+            {
+                lineRenderer.enabled = false;
+                hookShotAnchorPoint.SetActive(true);
+                ropeMiss = false;
+                hookShotAnchorPoint.transform.position = transform.position;
+            }
+        }
+
         if(ropeAttached && Input.GetAxis("Vertical") != 0f)
         {
-            if(Input.GetAxis("Vertical") > 0f)
+            if(Input.GetAxisRaw("Vertical") > 0f)
             {
                 distanceJoint.distance -= ropeClimbSpeed * Time.deltaTime;
             }
-            else if(Input.GetAxis("Vertical") < 0f)
+            else if(Input.GetAxisRaw("Vertical") < 0f)
             {
-                distanceJoint.distance += 5f * Time.deltaTime;
+                distanceJoint.distance += 2.5f * ropeClimbSpeed * Time.deltaTime;
             }
         }
 
@@ -139,10 +155,23 @@ public class hookshot : MonoBehaviour
                 playerScript.forceSlaved = false;
                 hookShotAnchorPoint.SetActive(true);
                 ropeAttached = true;
+                ropeMiss = false;
+                ropeAttachedTime = 0f;
                 distanceJoint.enabled = true;
+                distanceJoint.distance = Vector2.Distance(ropeAnchorPoint , transform.position);
                 lineRenderer.enabled = true;
                 playerScript.isSwinging = true;
                 gameObject.GetComponent<Rigidbody2D>().AddForce(aimDirection * 5f, ForceMode2D.Impulse);
+            }
+            else
+            {
+                ropeMiss = true;
+                DetachRope();
+                ropeAnchorPoint = (Vector2)transform.position + (aimDirection * hookShotDistance);
+                ropeAttached = false;
+                lineRenderer.enabled = true;
+                hookShotAnchorPoint.SetActive(true);
+                ropeAttachedTime = 0f;
             }
         }
         else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)
@@ -154,22 +183,29 @@ public class hookshot : MonoBehaviour
     private void DrawRope()
     {
         hookShotAnchorPoint.transform.position = ropeAnchorPoint;
-        distanceJoint.distance = Vector2.Distance(ropeAnchorPoint , transform.position);
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0 , transform.position);
-        lineRenderer.SetPosition(1 , ropeAnchorPoint);
+        if(ropeAttachedTime < 1f)
+        {
+            Vector2 castPos = (Vector2)transform.position + (((Vector2)ropeAnchorPoint - (Vector2)transform.position) * ropeAttachedTime);
+            lineRenderer.SetPosition(1 , castPos);
+            ropeAttachedTime += Time.deltaTime * 6f;
+        }
+        else
+        {
+            lineRenderer.SetPosition(1 , ropeAnchorPoint);
+        }
     }
 
     public void DetachRope()
     {
-        //playerScript.forceSlaved = true;
-        //playerScript.forceSlavedTimer = 0f;
         playerScript.forceSlaved = true;
         hookShotAnchorPoint.SetActive(false);
         ropeAttached = false;
         distanceJoint.enabled = false;
         lineRenderer.enabled = false;
         playerScript.isSwinging = false;
-        gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
+        hookShotAnchorPoint.transform.position = transform.position;
+        if(!ropeMiss) gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
     }
 }

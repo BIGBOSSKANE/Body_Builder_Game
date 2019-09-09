@@ -33,16 +33,17 @@ public class Legs : MonoBehaviour
     float groundbreakerDistance;
     LayerMask jumpLayer;
     bool groundBreakerReset;
+    float boxColTimer;
 
 
     void Start()
     {
+        player = GameObject.Find("Player");
+        playerScript = player.GetComponent<playerScript>();
         boxCol = gameObject.GetComponent<BoxCollider2D>();
         rb = gameObject.GetComponent<Rigidbody2D>();
-        player = GameObject.Find("Player");
         timeSlowScript = player.GetComponent<timeSlow>();
         head = player.transform.Find("Head").gameObject;
-        playerScript = player.GetComponent<playerScript>();
         jumpLayer = playerScript.jumpLayer;
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
@@ -58,6 +59,17 @@ public class Legs : MonoBehaviour
         if(unavailableTimer < 1f)
         {
             unavailableTimer += Time.deltaTime;
+        }
+
+        if(boxColTimer > 0f)
+        {
+            boxColTimer -= Time.deltaTime;
+        }
+        else if(!attached)
+        {
+            boxCol.enabled = true;
+            boxColTimer = 0f;
+            gameObject.layer = 18;
         }
 
         if(transform.position.y <= (maxHeight - groundbreakerDistance))
@@ -117,7 +129,7 @@ public class Legs : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
-        gameObject.layer = 18;
+        gameObject.layer = 13;
         if(gameObject.name == "GroundbreakerLegs")
         {
             groundBreaker = true;
@@ -127,10 +139,9 @@ public class Legs : MonoBehaviour
     public void Attached()
     {
         attached = true;
+        boxCol.enabled = false;
         solidBoxCollider.enabled = false;
         platEffect.enabled = false;
-
-        boxCol.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground
     }
