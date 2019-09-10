@@ -10,6 +10,7 @@ public class KillBot_AreaDetect : MonoBehaviour
     void Start()
     {
         nKB = kB.GetComponent<KillBot>();
+        kB = gameObject.transform.parent.Find("Killbot").gameObject;
     }
 
         void OnTriggerEnter2D(Collider2D col)

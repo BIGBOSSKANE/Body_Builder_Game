@@ -38,6 +38,7 @@ public class KillBot : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
+            Debug.Log("Hit");
             playerScript.Respawn(0.2f);
         }
     }
