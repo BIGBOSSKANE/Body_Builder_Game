@@ -190,7 +190,7 @@ public class hookShot : MonoBehaviour
                 ropeMiss = true;
                 DetachRope();
                 ropeAnchorPoint = (Vector2)transform.position + (aimDirection * hookShotDistance);
-                if(hit.collider.gameObject.layer == 11)
+                if(hit.collider != null && hit.collider.gameObject.layer == 11) // if hitting an enemy, draw the rope towards them
                 {
                     ropeAnchorPoint = hit.point;
                 }

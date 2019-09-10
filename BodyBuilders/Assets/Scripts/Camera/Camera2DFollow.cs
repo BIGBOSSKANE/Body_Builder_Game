@@ -6,6 +6,7 @@ using Random=UnityEngine.Random;
     {
         Transform target;
         playerScript playerScript;
+        Rigidbody2D rb;
         bool speedUp;
         bool slowDown;
         [Tooltip("Damping of camera movement")] public float damping = 1;
@@ -48,9 +49,11 @@ using Random=UnityEngine.Random;
         private float shakeMagnitude = 0.7f;
         float groundBreakShakeAmplifier;
         Vector3 initialPosition;
-        Vector2 rawInput;
-        [Tooltip("Speed at which player can move the camera while scouting")] public float scoutSpeed = 5f;
-        [Tooltip("Time taken to accelerate while scouting with the camera")] public float scoutSpeedTime = 1f;
+        [Tooltip("Acceleration factor of scout mode camera movement")] public float scoutAcceleration = 5f;
+        [Tooltip("The maximum camera scout speed")] public float scoutSpeedMax = 2f;
+        [Tooltip("Reduce camera movement to zero after this many seconds of no scout input")] public float scoutInputTime = 2f;
+        float scoutInputTimer;
+
         bool shiftHeld = false;
         Vector3 wayPointPos;
         float wayPointDistance;
@@ -70,6 +73,8 @@ using Random=UnityEngine.Random;
         private void Awake()
         {
             camera = gameObject.GetComponent<Camera>(); // locates the camera immediately before player calls for a resize
+            rb = gameObject.GetComponent<Rigidbody2D>();
+            rb.isKinematic = true;
             if (transformPos == null)
             {
                 transformPos = gameObject.transform;
@@ -77,8 +82,24 @@ using Random=UnityEngine.Random;
             standardResizeDuration = resizeDuration;
         }
 
+        private void Start()
+        {
+            target = GameObject.Find("Player").GetComponent<Transform>();
+            playerScript = target.gameObject.GetComponent<playerScript>();
+            transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
+            m_LastTargetPosition = target.position;
+            m_OffsetZ = (transform.position - target.position).z;
+            scoutInputTimer = 1f;
+            transform.parent = null;
+            initialDamping = damping;
+            waypointCounter = 0;
+            t = 0f;
+        }
+
+
         public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
         {
+            Debug.Log("Shaking");
             if(partConfig == 1)
             {
                 shakePartModifier = 8f;
@@ -103,19 +124,6 @@ using Random=UnityEngine.Random;
             
             shakeDuration = Mathf.Clamp(fallDistance * groundBreakShakeAmplifier /(shakeDivider * shakePartModifier) , 0f , shakeDurationLimit);
             shakeMagnitude = Mathf.Clamp(fallDistance / shakeDivider, 0f , shakeMagnitudeLimit);
-        }
-
-        private void Start()
-        {
-            target = GameObject.Find("Player").GetComponent<Transform>();
-            playerScript = target.gameObject.GetComponent<playerScript>();
-            transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
-            m_LastTargetPosition = target.position;
-            m_OffsetZ = (transform.position - target.position).z;
-            transform.parent = null;
-            initialDamping = damping;
-            waypointCounter = 0;
-            t = 0f;
         }
 
         public void SpeedUp()
@@ -143,27 +151,41 @@ using Random=UnityEngine.Random;
                 {
                     shiftHeld = true;
                     AkSoundEngine.PostEvent("EnterFan" , gameObject);
+                    rb.isKinematic = false;
+                    rb.simulated = true;
                 }
 
                 if(Input.GetKeyUp(KeyCode.LeftShift))
                 {
                     shiftHeld = false;
                     AkSoundEngine.PostEvent("ExitFan" , gameObject);
+                    rb.isKinematic = true;
+                    rb.simulated = false;
                 }
 
                 if(shiftHeld)
                 {
-                    Vector2 previousRawInput = rawInput;
-                    rawInput = new Vector2(Input.GetAxisRaw("Horizontal") , Input.GetAxisRaw("Vertical"));
-                    scoutSpeedTime += Time.deltaTime;
-                    if(rawInput != previousRawInput)
+                    Debug.Log("Shift held");
+                    if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
                     {
-                        scoutSpeedTime = 0f;
+                        if(scoutInputTimer < 0f)
+                        {
+                            scoutInputTimer = 0f;
+                        }
+                        rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutInputTimer);
+                        scoutInputTimer -= Time.deltaTime / scoutInputTime;
                     }
-                    scoutSpeedTime = Mathf.Clamp(scoutSpeedTime , 0f , 1f);
-                    transform.position = new Vector3(Mathf.Clamp(transform.position.x + (scoutSpeed * rawInput.x * scoutSpeedTime) , -(Mathf.Abs(target.position.x) + 20f) , Mathf.Abs(target.position.x) + 20f),
-                                                     Mathf.Clamp(transform.position.y + (scoutSpeed * rawInput.y * scoutSpeedTime) , -(Mathf.Abs(target.position.y) + 20f) , Mathf.Abs(target.position.y) + 20f),
-                                                     transform.position.z);
+                    else
+                    {
+                        scoutInputTimer = 1f;
+                        Vector2 input = new Vector2(Input.GetAxis("Horizontal") , Input.GetAxis("Vertical"));
+                        rb.AddForce(scoutAcceleration * input , ForceMode2D.Force);
+                        rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutSpeedMax);
+                        float maxScoutDistance = 30f;
+                        transform.position = new Vector3(Mathf.Clamp(transform.position.x , target.position.x - maxScoutDistance , target.position.x + maxScoutDistance) ,
+                                                         Mathf.Clamp(transform.position.y , target.position.y - maxScoutDistance , target.position.y + maxScoutDistance) ,
+                                                         transform.position.z);
+                    }
                 }
                 else
                 {
