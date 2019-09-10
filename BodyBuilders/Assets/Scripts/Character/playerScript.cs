@@ -149,7 +149,7 @@ public class playerScript : MonoBehaviour
     GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
     GameObject hookshotAugment;
-    hookshot hookshotScript;
+    hookShot hookshotScript;
     bool wasGrounded; // was the player grounded on the last frame?
 
     // Arms
@@ -226,7 +226,7 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookshotScript = gameObject.GetComponent<hookshot>();
+        hookshotScript = gameObject.GetComponent<hookShot>();
         hookshotScript.enabled = false;
         hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
         hookshotAugment.SetActive(false);
@@ -249,6 +249,7 @@ public class playerScript : MonoBehaviour
         facingDirection = 1;
         previousPartConfiguration = 0;
         UpdateParts();
+        rb.sharedMaterial = frictionMaterial;
     }
 
     void FixedUpdate()
@@ -957,32 +958,24 @@ void BoxInteract()
         {
             jumpDisableTimer = 0f;
             float velX = rb.velocity.x;
-            /*
-            if(rawInputX >= 1)
-            {
-                velX = movementSpeed;
-            }
-            else if(rawInputX <= -1)
-            {
-                velX = -movementSpeed;
-            }
-            */
 
             if(partConfiguration > 2)
             {
                 legs.GetComponent<Legs>().Detached(maxHeight , groundbreakerDistance);
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = new Vector2(velX , jumpForce * 8f);
+                rb.velocity = new Vector2(Mathf.Clamp(velX / 0.5f , - movementSpeed , movementSpeed), jumpForce * 8f);
             }
             else if(partConfiguration == 2)
             {
                 arms.GetComponent<Arms>().Detached();
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = new Vector2(velX , jumpForce * 8f);
+                rb.velocity = new Vector2(Mathf.Clamp(velX / 0.5f , - movementSpeed , movementSpeed), jumpForce * 8f);
             }
-            Debug.Log(rb.velocity.x);
+
+            forceSlaved = true;
+            //Debug.Log(rb.velocity.x);
         }
     }
 

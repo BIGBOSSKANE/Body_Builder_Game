@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class hookshot : MonoBehaviour
+public class hookShot : MonoBehaviour
 {
     // Mouse Move Tracker
     bool mouseMoved;

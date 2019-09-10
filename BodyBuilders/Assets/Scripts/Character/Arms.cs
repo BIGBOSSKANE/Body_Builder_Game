@@ -5,7 +5,6 @@ Last Edited by: Daniel
 Last Edit: 07/09/2019
 */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,7 +17,7 @@ public class Arms : MonoBehaviour
     PlatformEffector2D platEffect;
     float boxColTimer;
     Rigidbody2D rb;
-    public enum armIdentifier{ Basic, Lifter, Shield} // sets up for the dropdown menu of options
+    public enum armIdentifier{Basic, Lifter, Shield} // sets up for the dropdown menu of options
     [Tooltip("What type of arms are these?")] public armIdentifier armType;
 
     GameObject player;
@@ -82,9 +81,9 @@ public class Arms : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
-        boxColTimer = (playerScript.isGrounded)? 0.2f : 0.4f;
-        boxCol.enabled = false;
         gameObject.layer = 13;
+        boxColTimer = (playerScript.isGrounded)? 0.4f : 0.6f;
+        boxCol.enabled = false;
     }
 
     public void Attached()
@@ -122,7 +121,6 @@ public class Arms : MonoBehaviour
         // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
         {
             boxCol.enabled = false;
-            Debug.Log("Why");
             boxCol.enabled = true;
         }
         else if(col.gameObject.tag == "Legs")
