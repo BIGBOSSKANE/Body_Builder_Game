@@ -142,7 +142,7 @@ public class hookShot : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
-            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y))
+            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11)
             {
                 if(hit.collider.gameObject.tag == "TetherPoint")
                 {
@@ -168,6 +168,10 @@ public class hookShot : MonoBehaviour
                 ropeMiss = true;
                 DetachRope();
                 ropeAnchorPoint = (Vector2)transform.position + (aimDirection * hookShotDistance);
+                if(hit.collider.gameObject.layer == 11)
+                {
+                    ropeAnchorPoint = hit.point;
+                }
                 ropeAttached = false;
                 lineRenderer.enabled = true;
                 hookShotAnchorPoint.SetActive(true);
