@@ -6,16 +6,18 @@ public class hookShot : MonoBehaviour
 {
     // Mouse Move Tracker
     bool mouseMoved;
-    bool ropeMiss;
     float mouseMovedTime = 2f;
     float mouseMovedTimer;
-    float hookShotDistance = 6f;
-    float ropeAttachedTime = 0f;
     Vector2 worldMousePos;
     Vector2 aimDirection;
     Vector2 previousMousePos;
 
     // Hookshot
+    bool ropeMiss;
+    float hookShotDistance = 6f;
+    float ropeAttachedTime = 0f;
+    float rappelTime = 0f;
+    int rappelDirection = 0;
     [HideInInspector] public bool ropeAttached = false;
     [Tooltip("Rappel descent and climb speed of the rope")] public float ropeClimbSpeed = 2f;
     [Tooltip("Maximum distance of the rope")] public float maxropeLength = 8f;
@@ -119,17 +121,37 @@ public class hookShot : MonoBehaviour
             }
         }
 
-        if(ropeAttached && Input.GetAxis("Vertical") != 0f)
+        if(ropeAttached)
         {
-            if(Input.GetAxisRaw("Vertical") > 0f)
+            if(Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f)
             {
-                distanceJoint.distance -= ropeClimbSpeed * Time.deltaTime;
+                rappelDirection = 0;
+                rappelTime = 0f;
+            }
+            else if(Input.GetAxisRaw("Vertical") > 0f)
+            {
+                if(rappelDirection == -1 || rappelDirection == 0)
+                {
+                    rappelTime = 0f;
+                }
+                rappelDirection = 1;
+                distanceJoint.distance -= ropeClimbSpeed * Time.deltaTime * rappelTime;
             }
             else if(Input.GetAxisRaw("Vertical") < 0f)
             {
-                distanceJoint.distance += 2.5f * ropeClimbSpeed * Time.deltaTime;
+                if(rappelDirection == 1)
+                {
+                    rappelTime = 0f;
+                }
+                rappelDirection = -1;
+                distanceJoint.distance += 2.5f * ropeClimbSpeed * Time.deltaTime * rappelTime;
             }
-        }
+            rappelTime += Time.deltaTime;
+            if(rappelTime >= 1f)
+            {
+                rappelTime = 1f;
+            }
+        }  
 
         if(distanceJoint.distance >= maxropeLength)
         {
