@@ -152,7 +152,7 @@ using Random=UnityEngine.Random;
                 playerScript.UpdateParts();
             }
 
-            if(!waypointCycling) // when not cycling through waypoints
+            if(!waypointCycling && !lockView) // when not cycling through waypoints
             {
                 if(Input.GetKeyDown(KeyCode.LeftShift))
                 {
@@ -257,14 +257,29 @@ using Random=UnityEngine.Random;
             }
             else if(waypointCycling)// waypoint cycling
             {
-                waypointCyclingTimer += Time.deltaTime;
+                waypointCyclingTimer += Time.deltaTime; // track overall time
 
-                waypointMoveTimer += Time.deltaTime;
+                waypointMoveTimer += Time.deltaTime; // track time of each position
                 if(waypointMoveTimer >= waypointMoveTime) // move to position
                 {
                     waypointMoveTimer = waypointMoveTime;
 
-                    waypointPauseTimer += Time.deltaTime;
+                    if(lockView)
+                    {
+                        Vector2 screenPoint = camera.WorldToViewportPoint(target.position);
+                        bool onScreen = screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+                        if(!onScreen)
+                        {
+                            Debug.Log("Nope");
+                            EndCycle();
+                            playerScript.UpdateParts();
+                        }
+                    }
+                    else
+                    {
+                        waypointPauseTimer += Time.deltaTime; // track stay time at each position - if lockView is on, it will stay here, so the timer stops
+                    }
+
                     if(waypointPauseTimer > waypointMoveTime)
                     {
                         waypointPauseTimer = waypointPauseTime;
@@ -342,6 +357,7 @@ using Random=UnityEngine.Random;
 
         public void EndCycle()
         {
+            lockView = false;
             waypointCycling = false;
             waypointCyclingTimer = 0f;
             waypointCounter = 0;
@@ -360,19 +376,19 @@ using Random=UnityEngine.Random;
             initialCameraSize = camera.orthographicSize;
             sizeConfiguration = configuration;
 
-            if(sizeConfiguration == 1) // just a head
+            if(sizeConfiguration == 1 && !lockView) // just a head
             {
                 targetCameraSize = headSize;
             }
-            else if(sizeConfiguration == 2) // head and arms
+            else if(sizeConfiguration == 2 && !lockView) // head and arms
             {
                 targetCameraSize = torsoSize;
             }
-            else if (sizeConfiguration == 3) // head and legs
+            else if (sizeConfiguration == 3 && !lockView) // head and legs
             {
                 targetCameraSize = legSize;
             }
-            else if(sizeConfiguration == 4) // full body
+            else if(sizeConfiguration == 4 && !lockView) // full body
             {
                 targetCameraSize = completeSize;
             }

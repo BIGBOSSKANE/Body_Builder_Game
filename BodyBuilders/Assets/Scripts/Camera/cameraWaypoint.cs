@@ -65,6 +65,11 @@ public class cameraWaypoint : MonoBehaviour
         currentWaypoint = 0;
         waypointCount = waypointCycle.Length;
         cameraScript = Camera.main.GetComponent<Camera2DFollow>();
+        if(lockView)
+        {
+            unlockOnInput = false;
+            playerLock = false;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)
