@@ -375,6 +375,9 @@ public class playerScript : MonoBehaviour
         {
             rb.gravityScale = 3f; // lower gravity for a floatier swing
 
+            forceSlaved = true;
+            forceSlavedTimer = 0f;
+
             /*
             if(rawInputX != 0)
             {
