@@ -195,6 +195,15 @@ public class hookShot : MonoBehaviour
         {
             lineRenderer.SetPosition(1 , ropeAnchorPoint);
         }
+
+        if(ropeAttached)
+        {
+            RaycastHit2D ropeRay = Physics2D.Raycast(transform.position , ropeAnchorPoint - transform.position , distanceJoint.distance - 0.5f, tetherLayer);
+            if(ropeRay.collider != null)
+            {
+                DetachRope();
+            }
+        }
     }
 
     public void DetachRope()
