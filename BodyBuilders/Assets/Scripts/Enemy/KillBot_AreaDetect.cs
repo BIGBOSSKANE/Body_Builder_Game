@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BladeBot_AreaDetect : MonoBehaviour
+public class KillBot_AreaDetect : MonoBehaviour
 {
-    public GameObject bB;
-    NewBladeBot nBB;
+    public GameObject kB;
+    KillBot nKB;
 
     void Start()
     {
-        nBB = bB.GetComponent<NewBladeBot>();
+        nKB = kB.GetComponent<KillBot>();
     }
 
         void OnTriggerEnter2D(Collider2D col)
@@ -17,7 +17,7 @@ public class BladeBot_AreaDetect : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             Debug.Log("Player entered area");
-            nBB.chasePlayer = true;
+            nKB.chasePlayer = true;
         }
     }
 
@@ -26,7 +26,7 @@ public class BladeBot_AreaDetect : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             Debug.Log("Player entered area");
-            nBB.chasePlayer = false;
+            nKB.chasePlayer = false;
         }
     }
 }
