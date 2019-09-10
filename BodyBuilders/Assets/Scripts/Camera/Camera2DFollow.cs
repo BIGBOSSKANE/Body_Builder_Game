@@ -99,7 +99,6 @@ using Random=UnityEngine.Random;
 
         public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
         {
-            Debug.Log("Shaking");
             if(partConfig == 1)
             {
                 shakePartModifier = 8f;
@@ -145,6 +144,16 @@ using Random=UnityEngine.Random;
         // Update is called once per frame
         private void Update()
         {
+            if(Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                shiftHeld = true;
+            }
+
+            if(Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                shiftHeld = false;
+            }
+            
             if(!waypointCycling) // when not cycling through waypoints
             {
                 if(Input.GetKeyDown(KeyCode.LeftShift))
@@ -165,7 +174,6 @@ using Random=UnityEngine.Random;
 
                 if(shiftHeld)
                 {
-                    Debug.Log("Shift held");
                     if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
                     {
                         if(scoutInputTimer < 0f)

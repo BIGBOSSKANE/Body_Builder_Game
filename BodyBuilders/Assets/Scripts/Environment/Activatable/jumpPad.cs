@@ -53,23 +53,39 @@ public class jumpPad : activate
             return;
         }
 
+        Vector3 collisionNormal = col.contacts[0].normal;
+
+        Vector2 bounceDirection;
+
+        if(collisionNormal.y > 0.5f || collisionNormal.y < -0.5f)
+        {
+            bounceDirection = new Vector2( 0f , -Mathf.Sign(collisionNormal.y));
+        }
+        else
+        {
+            return;
+        }
+
         if(col.gameObject.tag == "Player")
         {
             player.GetComponent<playerScript>().forceSlaved = true;
             colRb = player.GetComponent<Rigidbody2D>();
             if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
             {
-                colRb.AddForce(Vector2.up * jumpForce * jumpForceMultiplier, ForceMode2D.Impulse);
+                colRb.AddForce(bounceDirection * jumpForce * jumpForceMultiplier, ForceMode2D.Impulse);
             }
             else // apply a generic force upwards
             {
-                colRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                colRb.AddForce(bounceDirection * jumpForce, ForceMode2D.Impulse);
             }
         }
         else // provide a generic force upwards
         {
-            colRb = col.gameObject.GetComponent<Rigidbody2D>();
-            colRb.AddForce(Vector2.up * jumpForce / 2f, ForceMode2D.Impulse);
+            if(col.gameObject.GetComponent<Rigidbody2D>() != null)
+            { 
+                colRb = col.gameObject.GetComponent<Rigidbody2D>();
+                colRb.AddForce(bounceDirection * jumpForce / 2f, ForceMode2D.Impulse);
+            }
         }
     }
 }

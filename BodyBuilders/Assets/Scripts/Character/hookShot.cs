@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class hookShot : MonoBehaviour
 {
+    bool shiftHeld = false;
     // Mouse Move Tracker
     bool mouseMoved;
     float mouseMovedTime = 2f;
@@ -73,6 +74,16 @@ public class hookShot : MonoBehaviour
             }
         }
 
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            shiftHeld = true;
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            shiftHeld = false;
+        }
+
         Vector2 facingDirection = new Vector2(worldMousePos.x - transform.position.x , worldMousePos.y - transform.position.y);
         float aimAngle = Mathf.Atan2(facingDirection.y , facingDirection.x);
 
@@ -123,7 +134,7 @@ public class hookShot : MonoBehaviour
 
         if(ropeAttached)
         {
-            if(Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f)
+            if((Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f) || shiftHeld)
             {
                 rappelDirection = 0;
                 rappelTime = 0f;
@@ -161,7 +172,7 @@ public class hookShot : MonoBehaviour
 
     private void HookShotFire()
     {
-        if(Input.GetMouseButtonDown(1))
+        if(Input.GetMouseButtonDown(1) && !shiftHeld)
         {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
             if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11)
