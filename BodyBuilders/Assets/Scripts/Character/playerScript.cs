@@ -185,7 +185,7 @@ public class playerScript : MonoBehaviour
     bool scalerTrueGrounded = false;
     float deathTimer = 0;
     [HideInInspector] public bool dying;
-    [HideInInspector] public bool shiftHeld = false;
+    [HideInInspector] public bool lockController = false;
 
     bool wallHang = false;
     [Tooltip("Laser material while not firing")] public Material laserMaterialAim;
@@ -279,7 +279,7 @@ public class playerScript : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             cameraScript.Resize(5 , cameraScript.standardResizeDuration , 1f); // resize the camera for scout mode
-            shiftHeld = true;
+            lockController = true;
             inputX = 0f;
             rawInputX = 0;
         }
@@ -287,10 +287,10 @@ public class playerScript : MonoBehaviour
         if(Input.GetKeyUp(KeyCode.LeftShift))
         {
             cameraScript.Resize(partConfiguration , 0.4f , 1f);
-            shiftHeld = false;
+            lockController = false;
         }
 
-        if(!shiftHeld)
+        if(!lockController)
         {
             inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
             rawInputX = Mathf.RoundToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
@@ -503,7 +503,7 @@ public class playerScript : MonoBehaviour
 
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
 
-            if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !shiftHeld && !isSwinging)
+            if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
             // this last bit ensures the player can always jump, which is how the spiderclimb works
             {
                 if(isGrounded || (coyoteTime && coyoteJump))
@@ -557,7 +557,7 @@ public class playerScript : MonoBehaviour
             cameraAdjuster = false;
         }
 
-        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true) && !shiftHeld)
+        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true) && !lockController)
         {
             cameraAdjuster = true;
         }
@@ -586,7 +586,7 @@ public class playerScript : MonoBehaviour
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 transform.rotation = Quaternion.identity;
             }
-            else if(!shiftHeld)
+            else if(!lockController)
             {
                 //rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -651,7 +651,7 @@ public class playerScript : MonoBehaviour
             if(transform.position.y < afterburnerApex) afterburnerGlide = true; // if desecending, turn glide on
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !shiftHeld && !isSwinging && afterburnerGlide) // afterburner glide
+        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !lockController && !isSwinging && afterburnerGlide) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -669,7 +669,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !shiftHeld && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)

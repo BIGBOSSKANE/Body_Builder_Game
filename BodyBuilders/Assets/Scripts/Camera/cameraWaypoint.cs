@@ -11,7 +11,8 @@ using UnityEngine;
 
 public class cameraWaypoint : MonoBehaviour
 {
-    [Tooltip("Doesn't cycle through waypoints again")] public bool onlyOnce = true;
+    [Tooltip("Destroys itself after first cycle. Otherwise it retriggers whenever the player re-enters")] public bool onlyOnce = true;
+    [Tooltip("Locks player view to first location and size, until player leaves the area")] public bool lockView = true;
     bool alreadyDone = false;
     [Tooltip("Locks the player while looping between waypoints")] public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
     [Tooltip("Unlocks the player if they apply input after a short duration while moving between waypoints")] public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
@@ -90,7 +91,7 @@ public class cameraWaypoint : MonoBehaviour
                 previousPosition = waypointCycle[currentWaypoint - 1].waypointPos;
             }
             cameraScript.waypointCycling = true;
-            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
+            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , lockView ,unlockOnInput, waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
             currentWaypoint ++;
         }
         else

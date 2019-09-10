@@ -68,6 +68,8 @@ using Random=UnityEngine.Random;
         cameraWaypoint camPoint;
         int waypointCount = 0;
         int waypointCounter = 0;
+        float waypointCyclingTimer = 0f;
+        bool lockView = false;
 
 
         private void Awake()
@@ -121,7 +123,7 @@ using Random=UnityEngine.Random;
                 groundBreakShakeAmplifier = 1f;
             }
             
-            shakeDuration = Mathf.Clamp(fallDistance * groundBreakShakeAmplifier /(shakeDivider * shakePartModifier) , 0f , shakeDurationLimit);
+            shakeDuration = Mathf.Clamp(fallDistance * groundBreakShakeAmplifier / (shakeDivider * shakePartModifier) , 0f , shakeDurationLimit);
             shakeMagnitude = Mathf.Clamp(fallDistance / shakeDivider, 0f , shakeMagnitudeLimit);
         }
 
@@ -144,16 +146,12 @@ using Random=UnityEngine.Random;
         // Update is called once per frame
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.LeftShift))
+            if(unlockOnInput && waypointCycling && waypointCyclingTimer > 1f && (Input.GetAxisRaw("Vertical") != 0|| Input.GetAxisRaw("Horizontal") != 0))
             {
-                shiftHeld = true;
+                EndCycle();
+                playerScript.UpdateParts();
             }
 
-            if(Input.GetKeyUp(KeyCode.LeftShift))
-            {
-                shiftHeld = false;
-            }
-            
             if(!waypointCycling) // when not cycling through waypoints
             {
                 if(Input.GetKeyDown(KeyCode.LeftShift))
@@ -257,8 +255,10 @@ using Random=UnityEngine.Random;
                     }
                 }
             }
-            else // waypoint cycling
+            else if(waypointCycling)// waypoint cycling
             {
+                waypointCyclingTimer += Time.deltaTime;
+
                 waypointMoveTimer += Time.deltaTime;
                 if(waypointMoveTimer >= waypointMoveTime) // move to position
                 {
@@ -299,14 +299,28 @@ using Random=UnityEngine.Random;
             }
         }
 
-        public void WayPointCycle(Vector2 waypoint , Vector2 prevPos , float pauseTime , float size , bool locked , float moveTime , cameraWaypoint camWay , int waypointNumber) // lock and unlock the screen
+        public void WayPointCycle(Vector2 waypoint , Vector2 prevPos , float pauseTime , float size , bool locked , bool viewLock , bool unlockOnInput , float moveTime , cameraWaypoint camWay , int waypointNumber) // lock and unlock the screen
         {
+            
             camPoint = camWay;
-            waypointNumber = waypointCount;
-            previousWaypointPos = new Vector3(prevPos.x , prevPos.y , transform.position.z); // the previous waypoint position
             waypointMoveTimer = 0f;
             waypointMoveTime = moveTime;
             resizeDuration = moveTime;
+            waypointPauseTimer = 0f;
+
+            if(viewLock)
+            {
+                lockView = viewLock;
+                waypointNumber = 1;
+                previousWaypointPos = transform.position;
+                waypointMoveTimer = 0f;
+                waypointMoveTime = moveTime;
+            }
+            else
+            {
+                waypointNumber = waypointCount;
+                previousWaypointPos = new Vector3(prevPos.x , prevPos.y , transform.position.z); // the previous waypoint position
+            }
             waypointPauseTimer = 0f;
             wayPointPos = new Vector3(waypoint.x , waypoint.y , transform.position.z); // location of the next waypoint
             wayPointDistance = Vector2.Distance(previousWaypointPos , wayPointPos); // distance between waypoints
@@ -314,7 +328,10 @@ using Random=UnityEngine.Random;
 
             if(playerLocked)
             {
-                playerScript.shiftHeld = true; // disable the player controller input
+                playerScript.lockController = true; // disable the player controller input
+                Rigidbody2D playerRB = playerScript.gameObject.GetComponent<Rigidbody2D>();
+                playerRB.velocity = Vector2.zero;
+                playerRB.constraints = RigidbodyConstraints2D.FreezePositionX;
             }
 
             if(waypointCycling)
@@ -326,15 +343,16 @@ using Random=UnityEngine.Random;
         public void EndCycle()
         {
             waypointCycling = false;
+            waypointCyclingTimer = 0f;
             waypointCounter = 0;
-            if(camPoint.onlyOnce)
+            shiftHeld = false;
+            resizeDuration = standardResizeDuration;
+            playerScript.lockController = false;
+            playerScript.UpdateParts();
+            if(camPoint != null && camPoint.onlyOnce && camPoint.gameObject != null)
             {
                 Destroy(camPoint.gameObject);
             }
-            shiftHeld = false;
-            resizeDuration = standardResizeDuration;
-            playerScript.shiftHeld = false;
-            playerScript.UpdateParts();
         }
 
         public void Resize(int configuration , float resizeTime , float size) // resize the camera for scout mode, and different part configurations
