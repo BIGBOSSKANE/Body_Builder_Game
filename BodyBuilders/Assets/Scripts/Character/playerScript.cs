@@ -296,7 +296,7 @@ public class playerScript : MonoBehaviour
             rawInputX = Mathf.RoundToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
         }
 
-        if((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0)
+        if(((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0) && !isSwinging)
         {
             reverseDirectionTimer = 0f;
             Vector3 Scaler = transform.localScale;
