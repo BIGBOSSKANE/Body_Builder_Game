@@ -978,7 +978,6 @@ void BoxInteract()
             }
 
             forceSlaved = true;
-            //Debug.Log(rb.velocity.x);
         }
     }
 

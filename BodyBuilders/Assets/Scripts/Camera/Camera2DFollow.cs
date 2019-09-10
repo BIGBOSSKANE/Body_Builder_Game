@@ -270,7 +270,6 @@ using Random=UnityEngine.Random;
                         bool onScreen = screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
                         if(!onScreen)
                         {
-                            Debug.Log("Nope");
                             EndCycle();
                             playerScript.UpdateParts();
                         }

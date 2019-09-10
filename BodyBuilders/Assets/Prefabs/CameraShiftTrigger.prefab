@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8542471598044946527}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.07, y: -2.55, z: 0}
   m_LocalScale: {x: 2.3672, y: 0.82949054, z: 2.3672}
   m_Children:
@@ -95,26 +95,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onlyOnce: 1
-  playerLock: 0
-  unlockOnInput: 0
+  lockView: 0
+  playerLock: 1
+  unlockOnInput: 1
   waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 4.87, y: -2.5}
-    waypointPauseTime: 1
-    waypointSize: 12
-    waypointMoveTime: 1
+    waypointPauseTime: 0.6
+    waypointSize: 11
+    waypointMoveTime: 0.6
   - waypointPos: {x: 24.18, y: 0.97}
-    waypointPauseTime: 1
+    waypointPauseTime: 0.6
     waypointSize: 10
-    waypointMoveTime: 1
+    waypointMoveTime: 0.6
   - waypointPos: {x: 63.19, y: 0}
-    waypointPauseTime: 1
+    waypointPauseTime: 0.6
     waypointSize: 15
-    waypointMoveTime: 1
+    waypointMoveTime: 0.6
   - waypointPos: {x: 119.12, y: -9.4}
-    waypointPauseTime: 1
+    waypointPauseTime: 0.6
     waypointSize: 15
-    waypointMoveTime: 1
+    waypointMoveTime: 0.6
 --- !u!61 &8542471598044946524
 BoxCollider2D:
   m_ObjectHideFlags: 0
