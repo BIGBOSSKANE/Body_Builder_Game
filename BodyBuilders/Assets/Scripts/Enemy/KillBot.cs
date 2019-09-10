@@ -1,9 +1,8 @@
-﻿//https://www.youtube.com/watch?v=BePP-jtrs9U
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBladeBot : MonoBehaviour
+public class KillBot : MonoBehaviour
 {
     public float speed = 5.0f;
     public GameObject BBArea;
