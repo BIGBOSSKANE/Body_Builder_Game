@@ -1520,10 +1520,10 @@ void BoxInteract()
     public void Respawn(float time) // this should eventually be moved to the scene manager
     {
         AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
-        hookshotScript.DetachRope();
         deathTimer = time;
         isGrounded = false;
         cameraScript.TriggerShake(15f , true , 4);
         dying = true;
+        hookshotScript.DetachRope();
     }
 }

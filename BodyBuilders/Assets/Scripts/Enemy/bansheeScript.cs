@@ -123,7 +123,6 @@ public class bansheeScript : MonoBehaviour
                             if(!killedPlayer)
                             {
                                 playerScript.Respawn(0.4f);
-                                Debug.Log("Killed");
                                 killedPlayer = true;
                             }
                         }

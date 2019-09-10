@@ -34,7 +34,7 @@ public class hookShot : MonoBehaviour
     [Tooltip("What layers can the player tether to?")] public LayerMask tetherLayer;
     private Vector2 playerPosition;
 
-    void Start()
+    void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         playerPosition = gameObject.transform.position;
