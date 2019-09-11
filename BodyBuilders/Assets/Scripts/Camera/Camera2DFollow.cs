@@ -4,6 +4,11 @@ using Random=UnityEngine.Random;
 
     public class Camera2DFollow : MonoBehaviour
     {
+        // Lock Axis
+        bool lockX = false, lockY = false, lockAxis = false;
+        float yLockPos , xLockPos;
+
+        // Normal Movement
         Transform target;
         playerScript playerScript;
         Rigidbody2D rb;
@@ -98,6 +103,65 @@ using Random=UnityEngine.Random;
             t = 0f;
         }
 
+        public void LockAxis(bool locked , bool x , bool y , Vector2 lockPoint , float size , float resizeDuration) // Lock or unlock a specific axis
+        // need to prevent normal resizing to occur while in lock axis
+        {
+            if(locked)
+            {
+                lockAxis = true;
+                if(x)
+                {
+                    lockX = true;
+                    xLockPos = lockPoint.x;
+                    rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+                }
+                else
+                {
+                    rb.constraints = RigidbodyConstraints2D.None;
+                    lockX = false;
+                }
+
+                if(y)
+                {
+                    lockY = true;
+                    yLockPos = lockPoint.y;
+                    rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                    
+                    if(x)
+                    {
+                        xLockPos = lockPoint.x;
+                        rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+                    }
+                    else
+                    {
+                        lockX = false;
+                    }
+                }
+                else
+                {
+                    lockY = false;
+                    rb.constraints = RigidbodyConstraints2D.None;
+
+                    if(x)
+                    {
+                        xLockPos = lockPoint.x;
+                        rb.constraints = RigidbodyConstraints2D.FreezePositionX;
+                    }
+                    else
+                    {
+                        lockX = false;
+                    }
+                }
+            }
+            else
+            {
+                lockAxis = false;
+                rb.constraints = RigidbodyConstraints2D.None;
+            }
+
+            Resize(6 , resizeDuration , size);
+        }
+
 
         public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
         {
@@ -152,107 +216,114 @@ using Random=UnityEngine.Random;
                 playerScript.UpdateParts();
             }
 
-            if(!waypointCycling && !lockView) // when not cycling through waypoints
+            if(!waypointCycling) // when not cycling through waypoints
             {
-                if(Input.GetKeyDown(KeyCode.LeftShift))
+                if(!lockView)
                 {
-                    shiftHeld = true;
-                    AkSoundEngine.PostEvent("EnterFan" , gameObject);
-                    rb.isKinematic = false;
-                    rb.simulated = true;
-                }
-
-                if(Input.GetKeyUp(KeyCode.LeftShift))
-                {
-                    shiftHeld = false;
-                    AkSoundEngine.PostEvent("ExitFan" , gameObject);
-                    rb.isKinematic = true;
-                    rb.simulated = false;
-                }
-
-                if(shiftHeld)
-                {
-                    if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
+                    if(Input.GetKeyDown(KeyCode.LeftShift))
                     {
-                        if(scoutInputTimer < 0f)
+                        shiftHeld = true;
+                        AkSoundEngine.PostEvent("EnterFan" , gameObject);
+                        rb.isKinematic = false;
+                        rb.simulated = true;
+                    }
+
+                    if(Input.GetKeyUp(KeyCode.LeftShift))
+                    {
+                        shiftHeld = false;
+                        AkSoundEngine.PostEvent("ExitFan" , gameObject);
+                        rb.isKinematic = true;
+                        rb.simulated = false;
+                    }
+
+                    if(shiftHeld)
+                    {
+                        if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
                         {
-                            scoutInputTimer = 0f;
+                            if(scoutInputTimer < 0f)
+                            {
+                                scoutInputTimer = 0f;
+                            }
+                            rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutInputTimer);
+                            scoutInputTimer -= Time.deltaTime / scoutInputTime;
                         }
-                        rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutInputTimer);
-                        scoutInputTimer -= Time.deltaTime / scoutInputTime;
+                        else
+                        {
+                            scoutInputTimer = 1f;
+                            Vector2 input = new Vector2(Input.GetAxis("Horizontal") , Input.GetAxis("Vertical"));
+                            rb.AddForce(scoutAcceleration * input , ForceMode2D.Force);
+                            rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutSpeedMax);
+                            float maxScoutDistance = 30f;
+                            transform.position = new Vector3(Mathf.Clamp(transform.position.x , target.position.x - maxScoutDistance , target.position.x + maxScoutDistance) ,
+                                                             Mathf.Clamp(transform.position.y , target.position.y - maxScoutDistance , target.position.y + maxScoutDistance) ,
+                                                             transform.position.z);
+                        }
                     }
-                    else
-                    {
-                        scoutInputTimer = 1f;
-                        Vector2 input = new Vector2(Input.GetAxis("Horizontal") , Input.GetAxis("Vertical"));
-                        rb.AddForce(scoutAcceleration * input , ForceMode2D.Force);
-                        rb.velocity = Vector2.ClampMagnitude(rb.velocity , scoutSpeedMax);
-                        float maxScoutDistance = 30f;
-                        transform.position = new Vector3(Mathf.Clamp(transform.position.x , target.position.x - maxScoutDistance , target.position.x + maxScoutDistance) ,
-                                                         Mathf.Clamp(transform.position.y , target.position.y - maxScoutDistance , target.position.y + maxScoutDistance) ,
-                                                         transform.position.z);
-                    }
+                }
+
+
+                if(damping <= 0f)
+                {
+                    speedUp = false;
+                    damping = 0f;
+                }
+                else if(speedUp == true)
+                {
+                    t += Time.unscaledDeltaTime / 1f;
+                    damping = Mathf.SmoothStep(currentDamping , 0f , t);
+                }
+                    
+                if(slowDown == true && damping >= initialDamping)
+                {
+                    damping = initialDamping;
+                    slowDown = false;
+                }
+                else if (slowDown == true && damping < initialDamping)
+                {
+                    t += Time.unscaledDeltaTime / 1f;
+                    damping = Mathf.SmoothStep(currentDamping , initialDamping , t);
+                }
+
+                // only update lookahead pos if accelerating or changed direction
+                float xMoveDelta = (target.position - m_LastTargetPosition).x;
+
+                bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > lookAheadMoveThreshold;
+
+                if (updateLookAheadTarget)
+                {
+                    m_LookAheadPos = lookAheadFactor*Vector3.right*Mathf.Sign(xMoveDelta);
                 }
                 else
                 {
-                    if(damping <= 0f)
-                    {
-                        speedUp = false;
-                        damping = 0f;
-                    }
-                    else if(speedUp == true)
-                    {
-                        t += Time.unscaledDeltaTime / 1f;
-                        damping = Mathf.SmoothStep(currentDamping , 0f , t);
-                    }
-                    
-                    if(slowDown == true && damping >= initialDamping)
-                    {
-                        damping = initialDamping;
-                        slowDown = false;
-                    }
-                    else if (slowDown == true && damping < initialDamping)
-                    {
-                        t += Time.unscaledDeltaTime / 1f;
-                        damping = Mathf.SmoothStep(currentDamping , initialDamping , t);
-                    }
+                m_LookAheadPos = Vector3.MoveTowards(m_LookAheadPos, Vector3.zero, Time.deltaTime*lookAheadReturnSpeed);
+                }
 
-                    // only update lookahead pos if accelerating or changed direction
-                    float xMoveDelta = (target.position - m_LastTargetPosition).x;
+                Vector3 aheadTargetPos = target.position + m_LookAheadPos + Vector3.forward*m_OffsetZ;
 
-                    bool updateLookAheadTarget = Mathf.Abs(xMoveDelta) > lookAheadMoveThreshold;
+                if(lockAxis)
+                {
+                    if(lockY) aheadTargetPos.y = yLockPos;
+                    if(lockX) aheadTargetPos.x = xLockPos;
+                }
 
-                    if (updateLookAheadTarget)
-                    {
-                        m_LookAheadPos = lookAheadFactor*Vector3.right*Mathf.Sign(xMoveDelta);
-                    }
-                    else
-                    {
-                        m_LookAheadPos = Vector3.MoveTowards(m_LookAheadPos, Vector3.zero, Time.deltaTime*lookAheadReturnSpeed);
-                    }
+                Vector3 newPos = new Vector3(Mathf.SmoothDamp(transform.position.x , aheadTargetPos.x , ref m_CurrentVelocity.x , initialDamping),
+                                             Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
+                                             Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
 
-                    Vector3 aheadTargetPos = target.position + m_LookAheadPos + Vector3.forward*m_OffsetZ;
-                    //Vector3 newPos = Vector3.SmoothDamp(transform.position, aheadTargetPos, ref m_CurrentVelocity, damping);
+                transform.position = newPos;
 
-                    Vector3 newPos = new Vector3(Mathf.SmoothDamp(transform.position.x , aheadTargetPos.x , ref m_CurrentVelocity.x , initialDamping),
-                                                 Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
-                                                 Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
+                m_LastTargetPosition = target.position;
 
-                    transform.position = newPos;
-
-                    m_LastTargetPosition = target.position;
-
-                    if(shakeDuration > 0)
-                    {
-                        transformPos.localPosition = transformPos.position + Random.insideUnitSphere * shakeMagnitude;
-                        shakeDuration -= Time.unscaledDeltaTime;
-                        shakeMagnitude -= Time.unscaledDeltaTime;
-                    }
-                    else
-                    {
-                        shakeDuration = 0f;
-                        transformPos.localPosition = transformPos.position;
-                    }
+                if(shakeDuration > 0)
+                {
+                    transformPos.localPosition = transformPos.position + Random.insideUnitSphere * shakeMagnitude;
+                    shakeDuration -= Time.unscaledDeltaTime;
+                    shakeMagnitude -= Time.unscaledDeltaTime;
+                }
+                else
+                {
+                    shakeDuration = 0f;
+                    transformPos.localPosition = transformPos.position;
                 }
             }
             else if(waypointCycling)// waypoint cycling
@@ -375,19 +446,19 @@ using Random=UnityEngine.Random;
             initialCameraSize = camera.orthographicSize;
             sizeConfiguration = configuration;
 
-            if(sizeConfiguration == 1 && !lockView) // just a head
+            if(sizeConfiguration == 1 && !lockView && !lockAxis) // just a head
             {
                 targetCameraSize = headSize;
             }
-            else if(sizeConfiguration == 2 && !lockView) // head and arms
+            else if(sizeConfiguration == 2 && !lockView && !lockAxis) // head and arms
             {
                 targetCameraSize = torsoSize;
             }
-            else if (sizeConfiguration == 3 && !lockView) // head and legs
+            else if (sizeConfiguration == 3 && !lockView && !lockAxis) // head and legs
             {
                 targetCameraSize = legSize;
             }
-            else if(sizeConfiguration == 4 && !lockView) // full body
+            else if(sizeConfiguration == 4 && !lockView && !lockAxis) // full body
             {
                 targetCameraSize = completeSize;
             }

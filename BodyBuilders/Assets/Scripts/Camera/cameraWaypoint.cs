@@ -12,7 +12,17 @@ using UnityEngine;
 public class cameraWaypoint : MonoBehaviour
 {
     [Tooltip("Destroys itself after first cycle. Otherwise it retriggers whenever the player re-enters")] public bool onlyOnce = true;
-    [Tooltip("Locks player view to first location and size, until player leaves the area")] public bool lockView = true;
+
+    [Header("Axis Lock:")]
+    [Tooltip("Does this interact wtih the axis lock camera function?")] public bool axisInteract; // Does this interact with the axis lock camera function?
+    bool lockAxis; // Lock or unlock
+    [Tooltip("Lock X?")] public bool lockX;
+    [Tooltip("Lock Y?")] public bool lockY;
+    [Tooltip("What is the lock position?")] public Vector2 lockAxisPos;
+
+
+    [Header("Waypoint System:")]
+    [Tooltip("Locks player view to first location and size, until player leaves the area")] public bool lockViewToFirst = true;
     bool alreadyDone = false;
     [Tooltip("Locks the player while looping between waypoints")] public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
     [Tooltip("Unlocks the player if they apply input after a short duration while moving between waypoints")] public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
@@ -22,19 +32,51 @@ public class cameraWaypoint : MonoBehaviour
     Camera2DFollow cameraScript;
     Vector2 previousPosition; // used for drawing lines between locations
     Vector2 playerPos;
-
     [SerializeField] private SubClass[] waypointCycle;
 
     public SubClass GetValue (int index)
     {
-
         return waypointCycle[index];
+    }
+
+    void Start()
+    {
+        currentWaypoint = 0;
+        lockAxis = (lockY || lockX)? true : false;
+        if(lockY)
+        {
+            lockX = false;
+        }
+        waypointCount = waypointCycle.Length;
+        cameraScript = Camera.main.GetComponent<Camera2DFollow>();
+        if(lockViewToFirst)
+        {
+            unlockOnInput = false;
+            playerLock = false;
+        }
+        lockAxisPos += (Vector2)transform.position;
     }
 
     void OnDrawGizmos() // show all of the camera waypoints
     {
-        Gizmos.color = Color.yellow;
         float locationIdentifier = 0.3f;
+
+        if(lockY || lockX)
+        {
+            Gizmos.color = Color.red;
+            if(Application.isPlaying)
+            {
+                if(lockY) Gizmos.DrawLine(lockAxisPos - Vector2.up * locationIdentifier , lockAxisPos + Vector2.up * locationIdentifier);
+                if(lockX) Gizmos.DrawLine(lockAxisPos - Vector2.left * locationIdentifier , lockAxisPos + Vector2.left * locationIdentifier);
+            }
+            else
+            {
+                if(lockY) Gizmos.DrawLine(((Vector2)transform.position + lockAxisPos) - Vector2.up * locationIdentifier , ((Vector2)transform.position + lockAxisPos) + Vector2.up * locationIdentifier);
+                if(lockX) Gizmos.DrawLine(((Vector2)transform.position + lockAxisPos) - Vector2.left * locationIdentifier , ((Vector2)transform.position + lockAxisPos) + Vector2.left * locationIdentifier);
+            }
+        }
+
+        Gizmos.color = Color.yellow;
 
         for(int i = 0 ; i < waypointCycle.Length ; i++)
         {
@@ -60,26 +102,22 @@ public class cameraWaypoint : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        currentWaypoint = 0;
-        waypointCount = waypointCycle.Length;
-        cameraScript = Camera.main.GetComponent<Camera2DFollow>();
-        if(lockView)
-        {
-            unlockOnInput = false;
-            playerLock = false;
-        }
-    }
-
     void OnTriggerEnter2D(Collider2D col)
     {
         if(col.tag == "Player" && ((onlyOnce && !alreadyDone) || !onlyOnce))
         {
-            cameraScript.unlockOnInput = unlockOnInput;
-            cameraScript.wayPointResizeDuration = waypointResizeDuration;
-            playerPos = col.gameObject.transform.position;
-            NextCoordinate();
+            if(axisInteract)
+            {
+                cameraScript.LockAxis(lockAxis , lockX , lockY , lockAxisPos , 5 , 0.2f);
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                cameraScript.unlockOnInput = unlockOnInput;
+                cameraScript.wayPointResizeDuration = waypointResizeDuration;
+                playerPos = col.gameObject.transform.position;
+                NextCoordinate();
+            }
         }
     }
 
@@ -96,7 +134,7 @@ public class cameraWaypoint : MonoBehaviour
                 previousPosition = waypointCycle[currentWaypoint - 1].waypointPos;
             }
             cameraScript.waypointCycling = true;
-            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , lockView ,unlockOnInput, waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
+            cameraScript.WayPointCycle(waypointCycle[currentWaypoint].waypointPos , previousPosition , waypointCycle[currentWaypoint].waypointPauseTime , waypointCycle[currentWaypoint].waypointSize , playerLock , lockViewToFirst ,unlockOnInput, waypointCycle[currentWaypoint].waypointMoveTime , this , waypointCount);
             currentWaypoint ++;
         }
         else
