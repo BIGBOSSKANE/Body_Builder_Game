@@ -206,7 +206,7 @@ public class laserRouter : activate
                 {
                     if(charged)
                     {
-                        playerScript.Respawn(0.5f);
+                        playerScript.Die(0.5f);
                     }
                 }               
             }
@@ -329,7 +329,7 @@ public class laserRouter : activate
                 {
                     if(charged)
                     {
-                        playerScript.Respawn(0.5f);
+                        playerScript.Die(0.5f);
                         Debug.Log("Killed");
                     }
                 }               

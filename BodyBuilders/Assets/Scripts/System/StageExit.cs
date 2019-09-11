@@ -2,6 +2,7 @@
  * 15/05/19
  * Loads the next level on trigger
  */
+
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement; // import SceneMangement namespaces

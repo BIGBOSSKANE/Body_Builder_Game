@@ -41,7 +41,7 @@ public class NewGyre : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            playerScript.Respawn(0.2f);
+            playerScript.Die(0.2f);
         }
     }
 }

@@ -107,6 +107,7 @@ public class playerScript : MonoBehaviour
 // AUGMENTS AND PARTS
 
     [Range (1 , 4)] public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
+    [Range (1 , 4)] public int headConfiguration = 1; // 1 is standard head, 2 is scaler , 3 is hookshot , 4 is all augments
     [HideInInspector] public string headString; // this is referenced from the name of the head augment
     [HideInInspector] public bool scaler = false;
     [HideInInspector] public bool hookShot = false;
@@ -198,6 +199,7 @@ public class playerScript : MonoBehaviour
     bool afterburnerGlide = false;
     bool switchToFrictionMaterial = false;
     float switchToFrictionMaterialTimer = 0f;
+    checkpointData checkpointData;
 
 
     void Start()
@@ -248,8 +250,18 @@ public class playerScript : MonoBehaviour
         isSwinging = false;
         facingDirection = 1;
         previousPartConfiguration = 0;
+        checkpointData = gameObject.GetComponent<checkpointData>();
         UpdateParts();
         rb.sharedMaterial = frictionMaterial;
+        checkpointData.CheckpointStartCheck();
+    }
+
+    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig) // called from checkpointData
+    {
+        transform.position = respawnPoint;
+        partConfiguration = partConfig;
+        headConfiguration = headConfig;
+        camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
     }
 
     void FixedUpdate()
@@ -260,15 +272,7 @@ public class playerScript : MonoBehaviour
             rb.velocity = Vector2.zero;
             if(deathTimer <= 0 )
             {
-                if(currentSpawnPoint != null)
-                {
-                    transform.position = currentSpawnPoint;
-                    dying = false;
-                }
-                else
-                {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                }
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
             return; // stop the player from doing anything, we could later replace this with a time slow effect
         }
@@ -1448,14 +1452,14 @@ void BoxInteract()
         if(headString == "ScalerHead" || scaler) // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
             scalerAugment.SetActive(true);
-            // start things here
+            headConfiguration = 2;
         }
 
         if(headString == "HookshotHead" || hookShot)
         {
             hookShot = true;
             hookshotAugment.SetActive(true);
-            // start things here
+            headConfiguration = 3;
         }
         
         if(headString == "BasicHead" && !scaler && !hookShot)
@@ -1466,7 +1470,12 @@ void BoxInteract()
             hookshotAugment.SetActive(false);
             hookshotScript.enabled = false;
             hookshotAnchor.SetActive(false);
-            // cancel things here
+            headConfiguration = 1;
+        }
+
+        if(scaler && hookShot)
+        {
+            headConfiguration = 4;
         }
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
@@ -1514,12 +1523,7 @@ void BoxInteract()
         }
     }
 
-    public void SetSpawnPoint(Vector2 spawnPoint)
-    {
-        currentSpawnPoint = spawnPoint;
-    }
-
-    public void Respawn(float time) // this should eventually be moved to the scene manager
+    public void Die(float time) // this should eventually be moved to the scene manager
     {
         AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
         deathTimer = time;

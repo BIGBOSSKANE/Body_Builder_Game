@@ -10115,7 +10115,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2594237473810705161
 Transform:
   m_ObjectHideFlags: 0
@@ -10204,6 +10204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7386829409325065421}
+  - component: {fileID: 8033497711057274954}
   - component: {fileID: 5744412106282342318}
   - component: {fileID: 5744412106282342316}
   - component: {fileID: 4946934706992893225}
@@ -10240,6 +10241,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8033497711057274954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5744412106282342317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preventSave: 1
 --- !u!114 &5744412106282342318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10284,6 +10298,7 @@ MonoBehaviour:
   swingForce: 4
   isSwinging: 0
   partConfiguration: 1
+  headConfiguration: 1
   headString: 
   scaler: 0
   hookShot: 0
@@ -10298,7 +10313,7 @@ MonoBehaviour:
   slipperyMaterial: {fileID: 6200000, guid: b2792fdbe3d804146aff0f4ccc054a39, type: 2}
   forceSlavedTimer: 0
   dying: 0
-  shiftHeld: 0
+  lockController: 0
   laserMaterialAim: {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
   laserMaterialFire: {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
 --- !u!114 &5744412106282342316
