@@ -386,7 +386,6 @@ using Random=UnityEngine.Random;
 
         public void WayPointCycle(Vector2 waypoint , Vector2 prevPos , float pauseTime , float size , bool locked , bool viewLock , bool unlockOnInput , float moveTime , cameraWaypoint camWay , int waypointNumber) // lock and unlock the screen
         {
-            
             camPoint = camWay;
             waypointMoveTimer = 0f;
             waypointMoveTime = moveTime;
@@ -430,7 +429,6 @@ using Random=UnityEngine.Random;
             lockView = false;
             waypointCycling = false;
             waypointCyclingTimer = 0f;
-            waypointCounter = 0;
             shiftHeld = false;
             resizeDuration = standardResizeDuration;
             playerScript.lockController = false;
