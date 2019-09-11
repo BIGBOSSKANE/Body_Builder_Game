@@ -575,8 +575,8 @@ public class laserRouter : activate
                 targetPosition = moveTo + (Vector2)transform.position;
                 Gizmos.DrawLine(targetPosition - Vector2.up * locationIdentifier , targetPosition + Vector2.up * locationIdentifier);
                 Gizmos.DrawLine(targetPosition - Vector2.left * locationIdentifier , targetPosition + Vector2.left * locationIdentifier);
-                Gizmos.DrawLine(originalPosition - Vector2.up * locationIdentifier , originalPosition + Vector2.up * locationIdentifier);
-                Gizmos.DrawLine(originalPosition - Vector2.left * locationIdentifier , originalPosition + Vector2.left * locationIdentifier);
+                Gizmos.DrawLine((Vector2)transform.position - Vector2.up * locationIdentifier , (Vector2)transform.position + Vector2.up * locationIdentifier);
+                Gizmos.DrawLine((Vector2)transform.position - Vector2.left * locationIdentifier , (Vector2)transform.position + Vector2.left * locationIdentifier);
 
                 Gizmos.DrawLine(transform.position , targetPosition); // draw a line so we can see where the laser router moves
             }

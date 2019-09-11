@@ -10,6 +10,8 @@ public class checkpointData : MonoBehaviour
     float yPosition;
     int partConfiguration;
     int headConfiguration;
+    string armString = "BasicArms";
+    string legString = "BasicLegs";
     playerScript playerScript;
 
     void Awake()
@@ -30,7 +32,10 @@ public class checkpointData : MonoBehaviour
             PlayerPrefs.SetInt("partConfig" , partConfiguration);
             headConfiguration = playerScript.headConfiguration;
             PlayerPrefs.SetInt("headConfig" , headConfiguration);
-            PlayerPrefs.SetInt("savePrevented" , 1);
+            armString = playerScript.armString;
+            PlayerPrefs.SetString("armString" , armString);
+            legString = playerScript.legString;
+            PlayerPrefs.SetString("legString" , legString);
             PlayerPrefs.SetInt("preventSave" , 1);
         }
         else // use existing respawn conditions
@@ -43,15 +48,17 @@ public class checkpointData : MonoBehaviour
 
         PlayerPrefs.SetInt("currentLevel" , SceneManager.GetActiveScene().buildIndex);
 
-        playerScript.Respawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration);
+        playerScript.Respawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armString , legString);
     }
 
-    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts) // set checkpoint when entering a checkpoint
+    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , string armsString , string legsString) // set checkpoint when entering a checkpoint
     {
         PlayerPrefs.SetFloat("xPosition" , checkpointPos.x);
         PlayerPrefs.SetFloat("yPosition" , checkpointPos.y);
         PlayerPrefs.SetInt("partConfig" , bodyParts);
         PlayerPrefs.SetInt("headConfig" , headParts);
+        PlayerPrefs.SetString("armString" , armsString);
+        PlayerPrefs.SetString("legString" , legsString);
         PlayerPrefs.SetInt("currentLevel" , SceneManager.GetActiveScene().buildIndex);
     }
 

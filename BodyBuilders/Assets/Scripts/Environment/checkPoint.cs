@@ -17,6 +17,9 @@ public class checkPoint : MonoBehaviour
     [Tooltip("Respawn with specific parts")] public bool configurationOverride = false;
     [Tooltip("Player respawn body configuration")] [Range (1 , 4)] public int partConfiguration = 1;
     [Tooltip("Player respawn head configuration")] [Range (1 , 4)] public int headConfiguration = 1;
+    [Tooltip("Type of Arms (if any)")] public string armString = "BasicArms";
+    [Tooltip("Type of Legs (if any)")] public string legString = "BasicLegs";
+
 
     void Start()
     {
@@ -34,8 +37,10 @@ public class checkPoint : MonoBehaviour
                 {
                     partConfiguration = playerScript.partConfiguration;
                     headConfiguration = playerScript.headConfiguration;
+                    armString = playerScript.armString;
+                    legString = playerScript.legString;
                 }
-                checkpointData.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration);
+                checkpointData.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armString , legString);
                 Debug.Log("Checkpoint Reached");
             }
         }

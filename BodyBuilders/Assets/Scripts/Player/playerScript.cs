@@ -256,11 +256,13 @@ public class playerScript : MonoBehaviour
         checkpointData.CheckpointStartCheck();
     }
 
-    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig) // called from checkpointData
+    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig , string armsString , string legsString) // called from checkpointData
     {
         transform.position = respawnPoint;
         partConfiguration = partConfig;
         headConfiguration = headConfig;
+        armString = armsString;
+        legString = legsString;
         camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
     }
 
