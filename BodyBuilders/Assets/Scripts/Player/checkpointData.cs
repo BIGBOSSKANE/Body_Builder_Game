@@ -23,7 +23,6 @@ public class checkpointData : MonoBehaviour
     {
         if(PlayerPrefs.GetInt("currentLevel") != SceneManager.GetActiveScene().buildIndex || PlayerPrefs.GetInt("preventSave") == 0)//PlayerPrefs.GetInt("savePrevented") == 1) // set new respawn values at the start point
         {
-            Debug.Log("Reset start point");
             xPosition = transform.position.x;
             PlayerPrefs.SetFloat("xPosition" , xPosition);
             yPosition = transform.position.y;
