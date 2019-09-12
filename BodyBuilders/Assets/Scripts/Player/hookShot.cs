@@ -37,7 +37,7 @@ public class hookShot : MonoBehaviour
     [Tooltip("What layers can the player tether to?")] public LayerMask tetherLayer;
     private Vector2 playerPosition;
 
-    void Awake()
+    void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         playerPosition = gameObject.transform.position;
@@ -245,7 +245,7 @@ public class hookShot : MonoBehaviour
 
     public void DetachRope()
     {
-        playerScript.forceSlaved = true;
+        if(playerScript != null) playerScript.forceSlaved = true;
         hookShotAnchorPoint.SetActive(false);
         ropeAttached = false;
         distanceJoint.enabled = false;

@@ -17,15 +17,15 @@ public class Legs : MonoBehaviour
     BoxCollider2D boxCol;
     Rigidbody2D rb;
 
-    public enum legIdentifier{ Basic, Afterburner, Groundbreaker} // sets up for the dropdown menu of options
+    public enum legIdentifier{ Basic, Groundbreaker, Afterburner} // sets up for the dropdown menu of options
     [Tooltip("What type of legs are these?")] public legIdentifier legType;
+    legIdentifier previousLegIdentifier;
 
     GameObject player;
     GameObject head;
     playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider;
-    PlatformEffector2D platEffect;
     timeSlow timeSlowScript;
     float yCastOffset = -0.86f;
     float raycastDistance = 0.17f;
@@ -35,6 +35,12 @@ public class Legs : MonoBehaviour
     bool groundBreakerReset;
     float boxColTimer;
 
+    [Header("Sprites:")]
+    [Tooltip("Basic Legs Sprite")] public Sprite BasicSprite;
+    [Tooltip("Groundbreaker Legs Sprite")] public Sprite GroundbreakerSprite;
+    [Tooltip("Afterburner Legs Sprite")] public Sprite AfterburnerSprite;
+
+    SpriteRenderer spriteRenderer;
 
     void Start()
     {
@@ -47,11 +53,31 @@ public class Legs : MonoBehaviour
         jumpLayer = playerScript.jumpLayer;
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        platEffect = gameObject.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
-        this.name = legType + "Legs";
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        SetType();
         CheckForParent();
         unavailableTimer = 1f;
+    }
+
+    public void SetType()
+    {
+        if(legType == legIdentifier.Basic)
+        {
+            spriteRenderer.sprite = BasicSprite;
+            if(gameObject.transform.Find("BoostSprites") != null) Destroy(gameObject.transform.Find("BoostSprites").gameObject);
+        }
+        else if(legType == legIdentifier.Groundbreaker)
+        {
+            spriteRenderer.sprite = GroundbreakerSprite;
+            if(gameObject.transform.Find("BoostSprites") != null) Destroy(gameObject.transform.Find("BoostSprites").gameObject);
+        }
+        else if(legType == legIdentifier.Afterburner)
+        {
+            spriteRenderer.sprite = AfterburnerSprite;
+        }
+
+        this.name = legType + "Legs";
     }
 
     void Update()
@@ -124,7 +150,6 @@ public class Legs : MonoBehaviour
         groundbreakerDistance = groundbreakerDistanceCalled;
         transform.parent = null;
         solidBoxCollider.enabled = true;
-        platEffect.enabled = true;
         boxCol.enabled = true;
         attached = false;
         unavailableTimer = 0f;
@@ -141,7 +166,6 @@ public class Legs : MonoBehaviour
         attached = true;
         boxCol.enabled = false;
         solidBoxCollider.enabled = false;
-        platEffect.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground
     }
@@ -176,5 +200,27 @@ public class Legs : MonoBehaviour
                 playerScript.UpdateParts();
             }
         }
+    }
+
+    void OnDrawGizmos()
+    {
+        if(previousLegIdentifier != legType)
+        {
+            spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+            if(legType == legIdentifier.Basic)
+            {
+                spriteRenderer.sprite = BasicSprite;
+            }
+            else if(legType == legIdentifier.Groundbreaker)
+            {
+                spriteRenderer.sprite = GroundbreakerSprite;
+            }
+            else if(legType == legIdentifier.Afterburner)
+            {
+                spriteRenderer.sprite = AfterburnerSprite;
+            }
+        }
+
+        previousLegIdentifier = legType;
     }
 }

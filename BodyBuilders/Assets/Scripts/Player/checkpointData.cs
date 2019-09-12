@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class checkpointData : MonoBehaviour
@@ -47,7 +45,7 @@ public class checkpointData : MonoBehaviour
 
         PlayerPrefs.SetInt("currentLevel" , SceneManager.GetActiveScene().buildIndex);
 
-        playerScript.Respawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armString , legString);
+        //playerScript.Respawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfig , legConfig);
     }
 
     public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , string armsString , string legsString) // set checkpoint when entering a checkpoint

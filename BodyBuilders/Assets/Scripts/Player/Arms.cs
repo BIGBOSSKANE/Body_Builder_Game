@@ -14,17 +14,24 @@ public class Arms : MonoBehaviour
     bool attached = false;
     float unavailableTimer = 1f;
     BoxCollider2D boxCol; // player pickup collider
-    PlatformEffector2D platEffect;
     float boxColTimer;
     Rigidbody2D rb;
     public enum armIdentifier{Basic, Lifter, Shield} // sets up for the dropdown menu of options
     [Tooltip("What type of arms are these?")] public armIdentifier armType;
+    armIdentifier previousArmIdentifier;
 
     GameObject player;
     GameObject head;
     playerScript playerScript;
     GameObject solidCollider;
     BoxCollider2D solidBoxCollider; // solid collider on the non-player layer
+
+    [Header("Sprites:")]
+    [Tooltip("Basic Arms Sprite")] public Sprite BasicSprite;
+    [Tooltip("Lifter Arms Sprite")] public Sprite LifterSprite;
+    [Tooltip("Shield Arms Sprite")] public Sprite ShieldSprite;
+
+    SpriteRenderer spriteRenderer;
 
     void Start()
     {
@@ -35,11 +42,35 @@ public class Arms : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         solidCollider = transform.Find("solidCollider").gameObject;
         solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        platEffect = gameObject.GetComponent<PlatformEffector2D>();
         solidBoxCollider.enabled = true;
-        this.name = armType + "Arms";
-        CheckForParent();
         unavailableTimer = 0f;
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        SetType();
+        CheckForParent();
+    }
+
+    public void SetType()
+    {
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+
+        if(armType == armIdentifier.Basic)
+        {
+            spriteRenderer.sprite = BasicSprite;
+            if(gameObject.transform.Find("shieldBubble") != null) Destroy(gameObject.transform.Find("shieldBubble").gameObject);
+            if(gameObject.transform.Find("collisionEffectPosition") != null) Destroy(gameObject.transform.Find("collisionEffectPosition").gameObject);
+        }
+        else if(armType == armIdentifier.Lifter)
+        {
+            spriteRenderer.sprite = LifterSprite;
+            if(gameObject.transform.Find("shieldBubble") != null) Destroy(gameObject.transform.Find("shieldBubble").gameObject);
+            if(gameObject.transform.Find("collisionEffectPosition") != null) Destroy(gameObject.transform.Find("collisionEffectPosition").gameObject);
+        }
+        else if(armType == armIdentifier.Shield)
+        {
+            spriteRenderer.sprite = ShieldSprite;
+        }
+
+        this.name = armType + "Arms";
     }
 
     void Update()
@@ -77,7 +108,6 @@ public class Arms : MonoBehaviour
     {
         transform.parent = null;
         solidBoxCollider.enabled = true;
-        platEffect.enabled = true;
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
@@ -91,7 +121,6 @@ public class Arms : MonoBehaviour
         attached = true;
         boxCol.enabled = false;
         solidBoxCollider.enabled = false;
-        platEffect.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
     }
@@ -127,5 +156,27 @@ public class Arms : MonoBehaviour
         {
             // add options for legs to attach here
         }
+    }
+
+    void OnDrawGizmos()
+    {
+        if(previousArmIdentifier != armType)
+        {
+            spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+            if(armType == armIdentifier.Basic)
+            {
+                spriteRenderer.sprite = BasicSprite;
+            }
+            else if(armType == armIdentifier.Lifter)
+            {
+                spriteRenderer.sprite = LifterSprite;
+            }
+            else if(armType == armIdentifier.Shield)
+            {
+                spriteRenderer.sprite = ShieldSprite;
+            }
+        }
+
+        previousArmIdentifier = armType;
     }
 }

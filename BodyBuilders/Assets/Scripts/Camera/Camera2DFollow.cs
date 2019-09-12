@@ -77,7 +77,7 @@ using Random=UnityEngine.Random;
         bool lockView = false;
 
 
-        private void Awake()
+        private void Awake() // OnEnable is called after awake if that needs to be used instead
         {
             camera = gameObject.GetComponent<Camera>(); // locates the camera immediately before player calls for a resize
             rb = gameObject.GetComponent<Rigidbody2D>();
@@ -91,9 +91,7 @@ using Random=UnityEngine.Random;
 
         private void Start()
         {
-            target = GameObject.Find("Player").GetComponent<Transform>();
-            playerScript = target.gameObject.GetComponent<playerScript>();
-            transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
+            SeekTarget();
             m_LastTargetPosition = target.position;
             m_OffsetZ = (transform.position - target.position).z;
             scoutInputTimer = 1f;
@@ -101,6 +99,13 @@ using Random=UnityEngine.Random;
             initialDamping = damping;
             waypointCounter = 0;
             t = 0f;
+        }
+
+        public void SeekTarget() // call this when instantiating a new player, so that the camera correctly locks to them
+        {
+            target = GameObject.Find("Player").GetComponent<Transform>();
+            playerScript = target.gameObject.GetComponent<playerScript>();
+            transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
         }
 
         public void LockAxis(bool locked , bool x , bool y , Vector2 lockPoint , float size , float resizeDuration) // Lock or unlock a specific axis
@@ -441,6 +446,10 @@ using Random=UnityEngine.Random;
 
         public void Resize(int configuration , float resizeTime , float size) // resize the camera for scout mode, and different part configurations
         {
+            if(camera == null)
+            {
+                camera = gameObject.GetComponent<Camera>();
+            }
             initialCameraSize = camera.orthographicSize;
             sizeConfiguration = configuration;
 

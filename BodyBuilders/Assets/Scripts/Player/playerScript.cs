@@ -106,8 +106,10 @@ public class playerScript : MonoBehaviour
 
 // AUGMENTS AND PARTS
 
-    [Range (1 , 4)] public int partConfiguration = 1; // 1 is head, 2 is head and arms, 3 is head and legs, 4 is full body
-    [Range (1 , 4)] public int headConfiguration = 1; // 1 is standard head, 2 is scaler , 3 is hookshot , 4 is all augments
+    [Tooltip("1 is head, 2 is head and arms, 3 is head and legs, 4 is full body")] [Range (1 , 4)] public int partConfiguration = 1;
+    [Tooltip("1 is basic head, 2 is scaler, 3 is hookshot, 4 is all augments")] [Range (1 , 4)] public int headConfiguration = 1;
+    [Tooltip("1 is basic, 2 is LifterArms, 3 is DeflectorArms")] [Range (1 , 3)] public int armConfiguration = 1;
+    [Tooltip("1 is basic, 2 is groundbreakers, 3 is afterburners")] [Range (1 , 3)] public int legConfiguration = 1;
     [HideInInspector] public string headString; // this is referenced from the name of the head augment
     [HideInInspector] public bool scaler = false;
     [HideInInspector] public bool hookShot = false;
@@ -200,19 +202,23 @@ public class playerScript : MonoBehaviour
     bool switchToFrictionMaterial = false;
     float switchToFrictionMaterialTimer = 0f;
     checkpointData checkpointData;
+    gameManager gameManager;
 
-
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        startingAngularDrag = rb.angularDrag;
         boxCol = gameObject.GetComponent<BoxCollider2D>();
-        timeSlowScript = gameObject.GetComponent<timeSlow>();
-        boxCol.enabled = false;
         head = gameObject.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
         scalerAugment = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerHead").gameObject;
         scalerAugment.SetActive(false);
+        hookshotScript = gameObject.GetComponent<hookShot>();
+        hookshotScript.enabled = false;
+        hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
+        hookshotAugment.SetActive(false);
+        hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
+        hookshotAnchor.SetActive(false);
+        hookShot = false;
         gameObject.transform.Find("BoxHoldLocation").gameObject.SetActive(true);
         heldBoxCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CircleCollider2D>();
         heldPowerCellCol = gameObject.transform.Find("BoxHoldLocation").gameObject.GetComponent<CapsuleCollider2D>();
@@ -221,6 +227,44 @@ public class playerScript : MonoBehaviour
         heldBoxCol.enabled = false;
         camera = Camera.main;
         cameraScript = camera.GetComponent<Camera2DFollow>();
+        cameraAdjuster = true;
+
+
+        /*
+        gameManager = GameObject.Find("GameManager").GetComponent<gameManager>();
+        gameManager.CheckpointStartCheck();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        - Have another game object that calls the function in the Game Manager on Awake, then destroys itself (will do it on every scene load)
+        - Game manager will call the spawn player function in the playerSpawner script, rather than anything in this script
+
+        - To track and destroy objects in the scene, create an array in another script (that is destroyed upon scene reset)
+            - Every object no longer in that array upon the point of reaching a checkpoint gets sent to a list in the game manager
+                which will systematically delete them on a scene reload
+
+
+        */
+    }
+
+    void Start()
+    {
+        startingAngularDrag = rb.angularDrag;
+        timeSlowScript = gameObject.GetComponent<timeSlow>();
         leftGroundTimer = 0f;
         raycastXOffset = 0.1f;
         reverseDirectionTimer = 0f;
@@ -228,19 +272,11 @@ public class playerScript : MonoBehaviour
         raycastPos = transform.position;
         lastGroundedHeight = -1000f;
         climbingDismountTimer = 1f;
-        hookshotScript = gameObject.GetComponent<hookShot>();
-        hookshotScript.enabled = false;
-        hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
-        hookshotAugment.SetActive(false);
-        hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
-        hookshotAnchor.SetActive(false);
-        hookShot = false;
         shieldBubble = gameObject.transform.Find("shieldBubble").gameObject;
         shieldUnmodifiedRadius = shieldBubble.GetComponent<CircleCollider2D>().radius;
         shieldModifiedRadius = shieldBubble.transform.localScale.x;
         shieldRadius = shieldUnmodifiedRadius * shieldModifiedRadius + 0.01f;
         shieldBubble.SetActive(false);
-        cameraAdjuster = true;
         laserLine = gameObject.GetComponent<LineRenderer>();
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
@@ -251,19 +287,83 @@ public class playerScript : MonoBehaviour
         facingDirection = 1;
         previousPartConfiguration = 0;
         checkpointData = gameObject.GetComponent<checkpointData>();
-        UpdateParts();
+        //checkpointData.CheckpointStartCheck();
+        camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
         rb.sharedMaterial = frictionMaterial;
-        checkpointData.CheckpointStartCheck();
     }
 
-    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig , string armsString , string legsString) // called from checkpointData
+    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig , int armConfig , int legConfig) // called from checkpointData
     {
         transform.position = respawnPoint;
-        partConfiguration = partConfig;
         headConfiguration = headConfig;
-        armString = armsString;
-        legString = legsString;
-        camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
+        partConfiguration = partConfig;
+        legConfiguration = legConfig;
+
+        ConfigureHead();
+
+        partHandler partHandler = gameObject.GetComponent<partHandler>();
+        partHandler.HandleParts(partConfiguration , armConfiguration , legConfiguration);
+    }
+
+    public void ConfigureHead()
+    {
+        if(headConfiguration == 1) // basic
+        {
+            headString = "BasicHead";
+            scaler = false;
+            hookShot = false;
+        }
+        else if(headConfiguration == 2) // scaler
+        {
+            headString = "ScalerHead";
+            scaler = true;
+            hookShot = false;
+        }
+        else if(headConfiguration == 3) // hookshot
+        {
+            headString = "HookshotHead";
+            scaler = false;
+            hookShot = true;
+        }
+        else if(headConfiguration == 4) // full
+        {
+            headString = "FullHead";
+            scaler = true;
+            hookShot = true;
+        }
+
+        if(partConfiguration == 2 || partConfiguration == 4)
+        {
+            if(armConfiguration == 1)
+            {
+                armString = "BasicArms";
+            }
+            else if(armConfiguration == 2)
+            {
+                armString = "LifterArms";
+            }
+            else if(armConfiguration == 3)
+            {
+            armString = "ShieldArms";
+            }
+        }
+
+
+        if(partConfiguration == 3 || partConfiguration == 4)
+        {
+            if(legConfiguration == 1)
+            {
+                legString = "BasicLegs";
+            }
+            else if(legConfiguration == 2)
+            {
+                legString = "GroundbreakerLegs";
+            }
+            else if(legConfiguration == 3)
+            {
+                legString = "AfterburnerLegs";
+            }
+        }
     }
 
     void FixedUpdate()
@@ -408,7 +508,7 @@ public class playerScript : MonoBehaviour
                 Debug.DrawLine(transform.position, rightPerpPos, Color.green, 0f);
             }
 
-            Vector2 force = perpendicularDirection * swingForce / 3f;
+            Vector2 force = perpendicularDirection * swingForce;
             rb.AddForce(force, ForceMode2D.Force);
         }
         else
@@ -448,13 +548,13 @@ public class playerScript : MonoBehaviour
                             }
                             jumpDisableTimer = 0f;
                         }
-                        else if(jumpDisableTimer > 0.2f)
+                        else if(jumpDisableTimer > 0.2f && wallHang)
                         {
                             inputX = facingDirection; // apply force towards wall to let player rotate
                             targetVelocity = new Vector2(inputX * movementSpeed, jumpPower);
                         }
                     }
-                    else if(jumpDisableTimer > 0.2f)
+                    else if(jumpDisableTimer > 0.2f && wallHang)
                     {
                         inputX = facingDirection; // apply force towards wall to let player rotate
                         targetVelocity = new Vector2(inputX * movementSpeed, jumpPower);
@@ -462,12 +562,12 @@ public class playerScript : MonoBehaviour
                 }
                 else
                 {
-                    if(Input.GetAxisRaw("Vertical") < 1)
+                    if(Input.GetAxisRaw("Vertical") < 1 && wallHang)
                     {
                         inputX = facingDirection;
                         targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
 
-                        if(Input.GetAxisRaw("Vertical") == 0 && inputX == climbDirection && wallHang)
+                        if(Input.GetAxisRaw("Vertical") == 0 && inputX == climbDirection)
                         {
                             targetVelocity = new Vector2(inputX * movementSpeed , 0f);
                         }
@@ -910,6 +1010,7 @@ public class playerScript : MonoBehaviour
             i++;
         }
     }
+
 void BoxInteract()
     {
         if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
@@ -1128,6 +1229,8 @@ void BoxInteract()
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
     }
 
+    //  _______________________________________________________________________  //  ____________________________________________________________________  //
+
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
     {
@@ -1136,15 +1239,19 @@ void BoxInteract()
         bool hasLegs = false;
 
         rb.gravityScale = 2f;
-        for(int i = 0; i < transform.childCount; i++)
+        for(int i = 0; i < transform.childCount; i++) // loop through children to find if it has arms or legs
         {
             if(transform.GetChild(i).tag == "Arms")
             {
                 hasArms = true;
+                arms = transform.GetChild(i).gameObject;
+                armString = arms.name;
             }
             else if (transform.GetChild(i).tag == "Legs")
             {
                 hasLegs = true;
+                legs = transform.GetChild(i).gameObject;
+                legString = legs.name;
             }
         }
 
@@ -1254,24 +1361,32 @@ void BoxInteract()
 
             NonHeadConfig();
             fallMultiplier = 3f;
-            arms = gameObject.transform.Find(armString).gameObject;
-            if(armString == "LifterArms")
+            if(armString == "LifterArms" || armString == "ShieldArms")
             {
-                lifter = true;
-            }
-            else
-            {
-                lifter = false;
-            }
+                if(armString == "LifterArms")
+                {
+                    armConfiguration = 2;
+                    lifter = true;
+                }
+                else
+                {
+                    lifter = false;
+                }
 
-            if(armString == "ShieldArms")
-            {
-                shield = true;
+                if(armString == "ShieldArms")
+                {
+                    armConfiguration = 3;
+                    shield = true;
+                }
+                else
+                {
+                    shield = false;
+                    shieldBubble.SetActive(false);
+                }
             }
             else
             {
-                shield = false;
-                shieldBubble.SetActive(false);
+                armConfiguration = 1;
             }
 
             legString = "None"; // no legs
@@ -1326,9 +1441,12 @@ void BoxInteract()
             armString = "None"; // no arms
             lifter = false;
             shield = false;
-            legs = gameObject.transform.Find(legString).gameObject;
+
+            if(legString == "AfterburnerLegs" || legString == "GroundbreakerLegs")
+            {
                 if(legString == "AfterburnerLegs")
                 {
+                    legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
                     boostSprites = legs.transform.Find("BoostSprites").gameObject;
@@ -1346,12 +1464,18 @@ void BoxInteract()
 
                 if(legString == "GroundbreakerLegs")
                 {
+                    legConfiguration = 2;
                     groundbreaker = true;
                 }
                 else
                 {
                     groundbreaker = false;
                 }
+            }
+            else
+            {
+                legConfiguration = 1;
+            }
 
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             raycastYOffset = -0.95f;
@@ -1378,29 +1502,39 @@ void BoxInteract()
             jumpPower = jumpForce * 11f;
 
             NonHeadConfig();
-            arms = gameObject.transform.Find(armString).gameObject;
-            if(armString == "LifterArms")
+            if(armString == "LifterArms" || armString == "ShieldArms")
             {
-                lifter = true;
+                if(armString == "LifterArms")
+                {
+                    armConfiguration = 2;
+                    lifter = true;
+                }
+                else
+                {
+                    lifter = false;
+                }
+
+                if(armString == "ShieldArms")
+                {
+                    armConfiguration = 3;
+                    shield = true;
+                }
+                else
+                {
+                    shield = false;
+                    shieldBubble.SetActive(false);
+                }
             }
             else
             {
-                lifter = false;
+                armConfiguration = 1;
             }
 
-            if(armString == "ShieldArms")
+            if(legString == "AfterburnerLegs" || legString == "GroundbreakerLegs")
             {
-                shield = true;
-            }
-            else
-            {
-                shield = false;
-                shieldBubble.SetActive(false);
-            }
-
-            legs = gameObject.transform.Find(legString).gameObject;
                 if(legString == "AfterburnerLegs")
                 {
+                    legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
                     boostSprites = legs.transform.Find("BoostSprites").gameObject;
@@ -1415,14 +1549,21 @@ void BoxInteract()
                         boostSprites = null;
                     }
                 }
+
                 if(legString == "GroundbreakerLegs")
                 {
+                    legConfiguration = 2;
                     groundbreaker = true;
                 }
                 else
                 {
                     groundbreaker = false;
                 }
+            }
+            else
+            {
+                legConfiguration = 1;
+            }
 
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
@@ -1477,8 +1618,10 @@ void BoxInteract()
 
         if(scaler && hookShot)
         {
+            headString = "FullHead";
             headConfiguration = 4;
         }
+
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
 
@@ -1532,6 +1675,9 @@ void BoxInteract()
         isGrounded = false;
         cameraScript.TriggerShake(15f , true , 4);
         dying = true;
-        hookshotScript.DetachRope();
+        if(partConfiguration == 1 && hookshotScript.enabled)
+        {
+            hookshotScript.DetachRope();
+        }
     }
 }
