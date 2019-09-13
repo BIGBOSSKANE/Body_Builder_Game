@@ -1,10 +1,20 @@
-﻿using System.Collections;
+﻿/*
+Creator: Daniel
+Created: 13/04/2019
+Laste Edited by: Daniel
+Last Edit: 13/09/2019
+*/
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class playerSpawner : MonoBehaviour
 {
-    [Header("Configuration")]
+    public bool preview;
+
+    [Header("Configuration:")]
     [Tooltip("1 is head, 2 is head and arms, 3 is head and legs, 4 is full body")] [Range (1 , 4)] public int partConfiguration = 1;
     int previousPartConfig = 1;
     [Tooltip("1 is basic head, 2 is scaler, 3 is hookshot, 4 is all augments")] [Range (1 , 4)] public int headConfiguration = 1;
@@ -15,28 +25,24 @@ public class playerSpawner : MonoBehaviour
     int previousLegConfig = 1;
 
     
-    [Header("Details (Not Editable)")]
+    [Header("Details (Not Editable:)")]
     public string bodyConfiguration = "Head";
     public string headAugment = "Basic Head";
     public string armType = "Basic Arms";
     public string legType = "Basic Legs";
 
-
-    [Header("Prefabs:")]
-    public GameObject Head;
-    public GameObject HeadAndArms;
-    public GameObject HeadAndLegs;
-    public GameObject Fullbody;
-
     GameObject player;
     playerScript playerScript;
 
-    [HideInInspector] public Vector2 spawnPos;
+    Vector2 spawnPos;
+    Vector2 editorSpawnPos;
 
 
     void Awake()
     {
-        spawnPos = transform.position;
+        preview = true;
+        Preview();
+        spawnPos = editorSpawnPos;
         SpawnPlayer();
     }
 
@@ -47,19 +53,22 @@ public class playerSpawner : MonoBehaviour
         headConfiguration = head;
         armConfiguration = arms;
         legConfiguration = legs;
+        Preview();
     }
 
     void SpawnPlayer()
     {
+        spawnerPrefabHolder prefabHolder = gameObject.transform.Find("PrefabHolder").gameObject.GetComponent<spawnerPrefabHolder>();
+
         if(partConfiguration == 1)
         {
-            player = Instantiate(Head, transform.position, Quaternion.identity);
+            player = Instantiate(prefabHolder.Head, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
         }
         else if(partConfiguration == 2)
         {
-            Arms Arms = HeadAndArms.transform.Find("BasicArms").GetComponent<Arms>();
+            Arms Arms = prefabHolder.HeadAndArms.transform.Find("BasicArms").GetComponent<Arms>();
             if(armConfiguration == 1)
             {
                 Arms.armType = Arms.armIdentifier.Basic;
@@ -72,13 +81,13 @@ public class playerSpawner : MonoBehaviour
             {
                 Arms.armType = Arms.armIdentifier.Shield;
             }
-            player = Instantiate(HeadAndArms, transform.position, Quaternion.identity);
+            player = Instantiate(prefabHolder.HeadAndArms, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
         }
         else if(partConfiguration == 3)
         {
-            Legs Legs = HeadAndLegs.transform.Find("BasicLegs").GetComponent<Legs>();
+            Legs Legs = prefabHolder.HeadAndLegs.transform.Find("BasicLegs").GetComponent<Legs>();
             if(armConfiguration == 1)
             {
                 Legs.legType = Legs.legIdentifier.Basic;
@@ -92,13 +101,13 @@ public class playerSpawner : MonoBehaviour
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
 
-            player = Instantiate(HeadAndLegs, transform.position, Quaternion.identity);
+            player = Instantiate(prefabHolder.HeadAndLegs, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
         }
         else if(partConfiguration == 4)
         {
-            Arms Arms = Fullbody.transform.Find("BasicArms").GetComponent<Arms>();
+            Arms Arms = prefabHolder.Fullbody.transform.Find("BasicArms").GetComponent<Arms>();
             if(armConfiguration == 1)
             {
                 Arms.armType = Arms.armIdentifier.Basic;
@@ -112,7 +121,7 @@ public class playerSpawner : MonoBehaviour
                 Arms.armType = Arms.armIdentifier.Shield;
             }
 
-            Legs Legs = Fullbody.transform.Find("BasicLegs").GetComponent<Legs>();
+            Legs Legs = prefabHolder.Fullbody.transform.Find("BasicLegs").GetComponent<Legs>();
             if(armConfiguration == 1)
             {
                 Legs.legType = Legs.legIdentifier.Basic;
@@ -126,7 +135,7 @@ public class playerSpawner : MonoBehaviour
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
 
-            player = Instantiate(Fullbody, transform.position, Quaternion.identity);
+            player = Instantiate(prefabHolder.Fullbody, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
         }
@@ -161,83 +170,141 @@ public class playerSpawner : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-
     void OnDrawGizmos()
     {
-        if(partConfiguration != previousPartConfig)
+        Preview();
+    }
+    public void Preview()
+    {
+        if(partConfiguration == 1)
         {
-            if(partConfiguration == 1)
-            {
-                bodyConfiguration = "Head";
-            }
-            else if(partConfiguration == 2)
-            {
-                bodyConfiguration = "Head and Torso";
-            }
-            else if(partConfiguration == 3)
-            {
-                bodyConfiguration = "Head and Legs";
-            }
-            else if(partConfiguration == 4)
-            {
-                bodyConfiguration = "Full Body";
-            }
-            previousPartConfig = partConfiguration;
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.27f;
+        }
+        else if(partConfiguration == 2)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.725082f;
+        }
+        else if(partConfiguration == 3)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.997f;
+        }
+        else if(partConfiguration == 4)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 1.007f;
         }
 
-        if(headConfiguration != previousHeadConfig)
+        if(preview)
         {
-            if(headConfiguration == 1)
+            if(partConfiguration != previousPartConfig)
             {
-                headAugment = "Basic Head";
-            }
-            else if(headConfiguration == 2)
-            {
-                headAugment = "Scaler Head";
-            }
-            else if(headConfiguration == 3)
-            {
-                headAugment = "Hookshot Head";
-            }
-            else if(headConfiguration == 4)
-            {
-                headAugment = "All Augments";
-            }
-            previousHeadConfig = headConfiguration;
-        }
+                if(partConfiguration == 1)
+                {
+                    bodyConfiguration = "Head";
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = editorSpawnPos;
+                }
+                else if(partConfiguration == 2)
+                {
+                    bodyConfiguration = "Head and Torso";
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.5500002f);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.2550001f);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
+                }
+                else if(partConfiguration == 3)
+                {
+                    bodyConfiguration = "Head and Legs";
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.1550002f);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f);
+                }
+                else if(partConfiguration == 4)
+                {
+                    bodyConfiguration = "Full Body";
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.7550001f);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f);
+                }
 
-        if(legConfiguration != previousLegConfig)
-        {
-            if(legConfiguration == 1)
-            {
-                legType = "Basic Legs";
+                gameObject.transform.Find("LegIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(legConfiguration , partConfiguration);
+                gameObject.transform.Find("ArmIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(armConfiguration , partConfiguration);
+                previousPartConfig = partConfiguration;
             }
-            else if(legConfiguration == 2)
-            {
-                legType = "Groundbreaker Legs";
-            }
-            else if(legConfiguration == 3)
-            {
-                legType = "Afterburner Legs";
-            }
-            previousLegConfig = legConfiguration;
-        }
 
-        if(armConfiguration != previousArmConfig)
-        {
-            if(armConfiguration == 1)
+            if(headConfiguration != previousHeadConfig)
             {
-                armType = "Basic Arms";
+                if(headConfiguration == 1)
+                {
+                    headAugment = "Basic Head";
+
+
+                }
+                else if(headConfiguration == 2)
+                {
+                    headAugment = "Scaler Head";
+
+
+                }
+                else if(headConfiguration == 3)
+                {
+                    headAugment = "Hookshot Head";
+
+
+                }
+                else if(headConfiguration == 4)
+                {
+                    headAugment = "All Augments";
+
+
+                }
+                gameObject.transform.Find("HeadIndicator").gameObject.GetComponent<spawnerHeadSprite>().SetSprite(headConfiguration);
+                previousHeadConfig = headConfiguration;
             }
-            else if(armConfiguration == 2)
+
+            if(legConfiguration != previousLegConfig)
             {
-                armType = "Lifter Arms";
+                if(legConfiguration == 1)
+                {
+                    legType = "Basic Legs";
+
+                }
+                else if(legConfiguration == 2)
+                {
+                    legType = "Groundbreaker Legs";
+
+
+                }
+                else if(legConfiguration == 3)
+                {
+                    legType = "Afterburner Legs";
+
+
+                }
+                gameObject.transform.Find("LegIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(legConfiguration , partConfiguration);
+                previousLegConfig = legConfiguration;
             }
-            else if(armConfiguration == 3)
+
+            if(armConfiguration != previousArmConfig)
             {
-                armType = "Shield Arms";
+                if(armConfiguration == 1)
+                {
+                    armType = "Basic Arms";
+
+
+                }
+                else if(armConfiguration == 2)
+                {
+                    armType = "Lifter Arms";
+
+
+                }
+                else if(armConfiguration == 3)
+                {
+                    armType = "Shield Arms";
+
+
+                }
+                gameObject.transform.Find("ArmIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(armConfiguration , partConfiguration);
+                previousArmConfig = armConfiguration;
             }
-            previousArmConfig = armConfiguration;
         }
     }
 }
