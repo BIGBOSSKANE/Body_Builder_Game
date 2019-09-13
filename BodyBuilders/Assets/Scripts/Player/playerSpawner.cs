@@ -283,17 +283,17 @@ public class playerSpawner : MonoBehaviour
         else if(partConfiguration == 2)
         {
             editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 0.725082f;
+            verticalOffset = -0.198f;
         }
         else if(partConfiguration == 3)
         {
             editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 0.997f;
+            verticalOffset = -0.01f;
         }
         else if(partConfiguration == 4)
         {
             editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 1.007f;
+            verticalOffset = -0.042f;
         }
     }
 }
