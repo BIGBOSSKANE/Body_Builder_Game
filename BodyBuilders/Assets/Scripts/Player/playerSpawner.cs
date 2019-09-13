@@ -5,7 +5,6 @@ Laste Edited by: Daniel
 Last Edit: 13/09/2019
 */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +35,7 @@ public class playerSpawner : MonoBehaviour
 
     Vector2 spawnPos;
     Vector2 editorSpawnPos;
+    float verticalOffset;
 
 
     void Awake()
@@ -122,15 +122,15 @@ public class playerSpawner : MonoBehaviour
             }
 
             Legs Legs = prefabHolder.Fullbody.transform.Find("BasicLegs").GetComponent<Legs>();
-            if(armConfiguration == 1)
+            if(legConfiguration == 1)
             {
                 Legs.legType = Legs.legIdentifier.Basic;
             }
-            else if(armConfiguration == 2)
+            else if(legConfiguration == 2)
             {
                 Legs.legType = Legs.legIdentifier.Groundbreaker;
             }
-            else if(armConfiguration == 3)
+            else if(legConfiguration == 3)
             {
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
@@ -178,11 +178,13 @@ public class playerSpawner : MonoBehaviour
     {
         if(partConfiguration == 1)
         {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.27f;
+            editorSpawnPos = (Vector2)gameObject.transform.position;
+            verticalOffset = 0.27f;
         }
         else if(partConfiguration == 2)
         {
             editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.725082f;
+            verticalOffset = 0.725082f;
         }
         else if(partConfiguration == 3)
         {
