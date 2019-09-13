@@ -21,13 +21,21 @@ public class checkPoint : MonoBehaviour
     [Tooltip("Player respawn arms")] [Range (1 , 3)] public int armConfiguration = 1;
     [Tooltip("Player respawn legs")] [Range (1 , 3)] public int legConfiguration = 1;
     gameManager gameManager;
+    BoxCollider2D boxCollider;
 
 
     void Start()
     {
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
+        boxCollider.enabled = false;
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
         checkpointData = GameObject.Find("Player").gameObject.GetComponent<checkpointData>();
         gameManager = GameObject.Find("GameManager").GetComponent<gameManager>();
+    }
+
+    void Update()
+    {
+        boxCollider.enabled = true;
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -43,8 +51,7 @@ public class checkPoint : MonoBehaviour
                     armConfiguration = playerScript.armConfiguration;
                     legConfiguration = playerScript.legConfiguration;
                 }
-                //checkpointData.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armString , legString);
-                gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration , GameObject.Find("Player").gameObject);
+                gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
                 Debug.Log("Checkpoint Reached");
             }
         }

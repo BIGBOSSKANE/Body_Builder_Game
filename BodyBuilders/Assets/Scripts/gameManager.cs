@@ -36,7 +36,7 @@ public class gameManager : MonoBehaviour
 
     void Awake()
     {
-    // SINGLETON    
+    /// SINGLETON //================================================================
         if(GameManager == null)
         {
             GameManager = this;
@@ -45,39 +45,26 @@ public class gameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
         DontDestroyOnLoad(gameObject);
 
-    // FIND PLAYER
-        if(GameObject.Find("Player") != null)
+    /// GET PLAYER SPAWNER //=======================================================
+        if(GameObject.Find("PlayerSpawner") != null)
         {
-            player = GameObject.Find("Player").gameObject;
-            playerScript = player.GetComponent<playerScript>();
+            playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
+            playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
         }
     }
 
-    public void CheckpointStartCheck() // Called on player start
+    public void Initialise()
     {
-        if(GameObject.Find("Player").gameObject != null)
+        if(GameObject.Find("PlayerSpawner").gameObject != null)
         {
-            if(currentLevel != SceneManager.GetActiveScene().buildIndex) // first load into the level
+            if(currentLevel != SceneManager.GetActiveScene().buildIndex)
             {
-/*
-                player = GameObject.Find("Player").gameObject;
-                playerScript = player.GetComponent<playerScript>();
-                xPosition = player.transform.position.x;
-                yPosition = player.transform.position.y;
-                partConfiguration = playerScript.partConfiguration;
-                headConfiguration = playerScript.headConfiguration;
-                armConfiguration = playerScript.armConfiguration;
-                currentLevel = SceneManager.GetActiveScene().buildIndex;
-*/
-                // Destroy last level's player spawner, grab the new one, and make it a child of this object
-                Destroy(playerSpawner);
                 playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
-                playerSpawner.transform.parent = gameObject.transform;
                 playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
-
+                playerSpawnerScript.preview = true;
+                playerSpawnerScript.Preview();
                 xPosition = playerSpawner.transform.position.x;
                 yPosition = playerSpawner.transform.position.y;
                 partConfiguration = playerSpawnerScript.partConfiguration;
@@ -85,40 +72,21 @@ public class gameManager : MonoBehaviour
                 armConfiguration = playerSpawnerScript.armConfiguration;
                 legConfiguration = playerSpawnerScript.legConfiguration;
                 currentLevel = SceneManager.GetActiveScene().buildIndex;
-                
-                Debug.Log("First Spawn");
             }
-
-            playerSpawnerScript.OverrideVariables(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
-
-/*
-            player = GameObject.Find("Player").gameObject;
-
-            if(partConfiguration != 1 && partConfiguration != 3) arms = player.transform.Find(playerScript.armString).gameObject;
-            legConfiguration = playerScript.legConfiguration;
-            if(legConfiguration != 1) legs = player.transform.Find(playerScript.legString).gameObject;
-            playerScript = player.GetComponent<playerScript>();
-*/
-            playerScript.Respawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
+            
+            playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
+            playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
+            playerSpawnerScript.OverrideSpawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
         }
     }
 
-    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig , GameObject playerPrefab) // set checkpoint when entering a checkpoint
+    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig) // set checkpoint when entering a checkpoint
     {
-        player = playerPrefab;
-        playerScript = player.GetComponent<playerScript>();
-
         xPosition = checkpointPos.x;
         yPosition = checkpointPos.y;
-        partConfiguration = playerScript.partConfiguration;
-        headConfiguration = playerScript.headConfiguration;
+        partConfiguration = bodyParts;
+        headConfiguration = headParts;
         armConfiguration = armsConfig;
         legConfiguration = legsConfig;
-        /*
-        if(partConfiguration != 1 && partConfiguration != 3) arms = player.transform.Find(playerScript.armString).gameObject;
-        legConfiguration = legsConfig;
-        if(partConfiguration != 1 && partConfiguration != 2) legs = player.transform.Find(playerScript.legString).gameObject;
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
-        */
     }
 }

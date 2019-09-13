@@ -199,8 +199,6 @@ public class playerScript : MonoBehaviour
     bool ceilingAbove = false;
     float afterburnerApex;
     bool afterburnerGlide = false;
-    bool switchToFrictionMaterial = false;
-    float switchToFrictionMaterialTimer = 0f;
     checkpointData checkpointData;
     gameManager gameManager;
 
@@ -228,37 +226,6 @@ public class playerScript : MonoBehaviour
         camera = Camera.main;
         cameraScript = camera.GetComponent<Camera2DFollow>();
         cameraAdjuster = true;
-
-
-        /*
-        gameManager = GameObject.Find("GameManager").GetComponent<gameManager>();
-        gameManager.CheckpointStartCheck();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        - Have another game object that calls the function in the Game Manager on Awake, then destroys itself (will do it on every scene load)
-        - Game manager will call the spawn player function in the playerSpawner script, rather than anything in this script
-
-        - To track and destroy objects in the scene, create an array in another script (that is destroyed upon scene reset)
-            - Every object no longer in that array upon the point of reaching a checkpoint gets sent to a list in the game manager
-                which will systematically delete them on a scene reload
-
-
-        */
     }
 
     void Start()
@@ -287,83 +254,8 @@ public class playerScript : MonoBehaviour
         facingDirection = 1;
         previousPartConfiguration = 0;
         checkpointData = gameObject.GetComponent<checkpointData>();
-        //checkpointData.CheckpointStartCheck();
         camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
         rb.sharedMaterial = frictionMaterial;
-    }
-
-    public void Respawn(Vector2 respawnPoint , int partConfig , int headConfig , int armConfig , int legConfig) // called from checkpointData
-    {
-        transform.position = respawnPoint;
-        headConfiguration = headConfig;
-        partConfiguration = partConfig;
-        legConfiguration = legConfig;
-
-        ConfigureHead();
-
-        partHandler partHandler = gameObject.GetComponent<partHandler>();
-        partHandler.HandleParts(partConfiguration , armConfiguration , legConfiguration);
-    }
-
-    public void ConfigureHead()
-    {
-        if(headConfiguration == 1) // basic
-        {
-            headString = "BasicHead";
-            scaler = false;
-            hookShot = false;
-        }
-        else if(headConfiguration == 2) // scaler
-        {
-            headString = "ScalerHead";
-            scaler = true;
-            hookShot = false;
-        }
-        else if(headConfiguration == 3) // hookshot
-        {
-            headString = "HookshotHead";
-            scaler = false;
-            hookShot = true;
-        }
-        else if(headConfiguration == 4) // full
-        {
-            headString = "FullHead";
-            scaler = true;
-            hookShot = true;
-        }
-
-        if(partConfiguration == 2 || partConfiguration == 4)
-        {
-            if(armConfiguration == 1)
-            {
-                armString = "BasicArms";
-            }
-            else if(armConfiguration == 2)
-            {
-                armString = "LifterArms";
-            }
-            else if(armConfiguration == 3)
-            {
-            armString = "ShieldArms";
-            }
-        }
-
-
-        if(partConfiguration == 3 || partConfiguration == 4)
-        {
-            if(legConfiguration == 1)
-            {
-                legString = "BasicLegs";
-            }
-            else if(legConfiguration == 2)
-            {
-                legString = "GroundbreakerLegs";
-            }
-            else if(legConfiguration == 3)
-            {
-                legString = "AfterburnerLegs";
-            }
-        }
     }
 
     void FixedUpdate()
@@ -630,16 +522,6 @@ public class playerScript : MonoBehaviour
             }
 
             previousFacingDirection = facingDirection;
-        }
-
-        if(switchToFrictionMaterial && switchToFrictionMaterialTimer > 0f && partConfiguration == 1) // switches to friction material after a time delay when switching to head (avoids x velocity drop)
-        {
-            switchToFrictionMaterialTimer -= Time.fixedDeltaTime;
-        }
-        else if(partConfiguration == 1)
-        {
-            rb.sharedMaterial = frictionMaterial;
-            switchToFrictionMaterial = false;
         }
 
         speed = rb.velocity.x;
@@ -1271,8 +1153,7 @@ void BoxInteract()
                 AkSoundEngine.PostEvent("DetachLegs" , gameObject);
             }
 
-            switchToFrictionMaterialTimer = (rb.velocity.y > 0)? 0.4f : 0.7f;
-            switchToFrictionMaterial = true;
+            rb.sharedMaterial = frictionMaterial;
             partConfiguration = 1; // just a head
             movementSpeed = augmentedMovementSpeed * 5f;
             jumpPower = jumpForce * 6f;

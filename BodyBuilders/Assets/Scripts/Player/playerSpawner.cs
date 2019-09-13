@@ -37,7 +37,7 @@ public class playerSpawner : MonoBehaviour
     Vector2 editorSpawnPos;
     float verticalOffset;
 
-
+/*
     void Awake()
     {
         preview = true;
@@ -45,15 +45,21 @@ public class playerSpawner : MonoBehaviour
         spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
         SpawnPlayer();
     }
+*/
+    void Awake()
+    {
+        GameObject.Find("GameManager").gameObject.GetComponent<gameManager>().Initialise();
+        Destroy(gameObject);
+    }
 
-    public void OverrideVariables(Vector2 spawnPosition, int parts , int head , int arms , int legs) // called by the GameManagerScript
+    public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs) // called by the GameManagerScript
     {
         spawnPos = spawnPosition + Vector2.up * verticalOffset;
         partConfiguration = parts;
         headConfiguration = head;
         armConfiguration = arms;
         legConfiguration = legs;
-        Preview();
+        SpawnPlayer();
     }
 
     void SpawnPlayer()
@@ -160,8 +166,6 @@ public class playerSpawner : MonoBehaviour
             playerScript.scaler = true;
             playerScript.hookShot = true;
         }
-
-        // Reference a function in all scripts that reference the player and player script, and call for them to reassign that variable
     }
 
     void Update()
@@ -170,33 +174,9 @@ public class playerSpawner : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
         Preview();
-    }
-    public void Preview()
-    {
-        if(partConfiguration == 1)
-        {
-            editorSpawnPos = (Vector2)gameObject.transform.position;
-            verticalOffset = 0.27f;
-        }
-        else if(partConfiguration == 2)
-        {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 0.725082f;
-        }
-        else if(partConfiguration == 3)
-        {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 0.997f;
-        }
-        else if(partConfiguration == 4)
-        {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
-            verticalOffset = 1.007f;
-        }
-
         if(preview)
         {
             if(partConfiguration != previousPartConfig)
@@ -238,26 +218,18 @@ public class playerSpawner : MonoBehaviour
                 if(headConfiguration == 1)
                 {
                     headAugment = "Basic Head";
-
-
                 }
                 else if(headConfiguration == 2)
                 {
                     headAugment = "Scaler Head";
-
-
                 }
                 else if(headConfiguration == 3)
                 {
                     headAugment = "Hookshot Head";
-
-
                 }
                 else if(headConfiguration == 4)
                 {
                     headAugment = "All Augments";
-
-
                 }
                 gameObject.transform.Find("HeadIndicator").gameObject.GetComponent<spawnerHeadSprite>().SetSprite(headConfiguration);
                 previousHeadConfig = headConfiguration;
@@ -268,19 +240,14 @@ public class playerSpawner : MonoBehaviour
                 if(legConfiguration == 1)
                 {
                     legType = "Basic Legs";
-
                 }
                 else if(legConfiguration == 2)
                 {
                     legType = "Groundbreaker Legs";
-
-
                 }
                 else if(legConfiguration == 3)
                 {
                     legType = "Afterburner Legs";
-
-
                 }
                 gameObject.transform.Find("LegIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(legConfiguration , partConfiguration);
                 previousLegConfig = legConfiguration;
@@ -291,24 +258,42 @@ public class playerSpawner : MonoBehaviour
                 if(armConfiguration == 1)
                 {
                     armType = "Basic Arms";
-
-
                 }
                 else if(armConfiguration == 2)
                 {
                     armType = "Lifter Arms";
-
-
                 }
                 else if(armConfiguration == 3)
                 {
                     armType = "Shield Arms";
-
-
                 }
                 gameObject.transform.Find("ArmIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(armConfiguration , partConfiguration);
                 previousArmConfig = armConfiguration;
             }
+        }
+    }
+
+    public void Preview()
+    {
+        if(partConfiguration == 1)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position;
+            verticalOffset = 0.27f;
+        }
+        else if(partConfiguration == 2)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
+            verticalOffset = 0.725082f;
+        }
+        else if(partConfiguration == 3)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
+            verticalOffset = 0.997f;
+        }
+        else if(partConfiguration == 4)
+        {
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
+            verticalOffset = 1.007f;
         }
     }
 }
