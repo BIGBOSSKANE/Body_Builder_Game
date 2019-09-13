@@ -42,13 +42,13 @@ public class playerSpawner : MonoBehaviour
     {
         preview = true;
         Preview();
-        spawnPos = editorSpawnPos;
+        spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
         SpawnPlayer();
     }
 
     public void OverrideVariables(Vector2 spawnPosition, int parts , int head , int arms , int legs) // called by the GameManagerScript
     {
-        spawnPos = spawnPosition;
+        spawnPos = spawnPosition + Vector2.up * verticalOffset;
         partConfiguration = parts;
         headConfiguration = head;
         armConfiguration = arms;
@@ -183,16 +183,18 @@ public class playerSpawner : MonoBehaviour
         }
         else if(partConfiguration == 2)
         {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.725082f;
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
             verticalOffset = 0.725082f;
         }
         else if(partConfiguration == 3)
         {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 0.997f;
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
+            verticalOffset = 0.997f;
         }
         else if(partConfiguration == 4)
         {
-            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up * 1.007f;
+            editorSpawnPos = (Vector2)gameObject.transform.position + Vector2.up;
+            verticalOffset = 1.007f;
         }
 
         if(preview)
@@ -202,28 +204,28 @@ public class playerSpawner : MonoBehaviour
                 if(partConfiguration == 1)
                 {
                     bodyConfiguration = "Head";
-                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = editorSpawnPos;
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = editorSpawnPos + Vector2.up * verticalOffset;
                 }
                 else if(partConfiguration == 2)
                 {
                     bodyConfiguration = "Head and Torso";
-                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.5500002f);
-                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.2550001f);
-                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.5500002f + verticalOffset);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.2550001f + verticalOffset);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + verticalOffset);
                 }
                 else if(partConfiguration == 3)
                 {
                     bodyConfiguration = "Head and Legs";
-                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.1550002f);
-                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
-                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f);
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.1550002f + verticalOffset);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + verticalOffset);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f + verticalOffset);
                 }
                 else if(partConfiguration == 4)
                 {
                     bodyConfiguration = "Full Body";
-                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.7550001f);
-                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y);
-                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f);
+                    gameObject.transform.Find("HeadIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + 0.7550001f + verticalOffset);
+                    gameObject.transform.Find("ArmIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y + verticalOffset);
+                    gameObject.transform.Find("LegIndicator").gameObject.transform.position = new Vector2(editorSpawnPos.x , editorSpawnPos.y - 0.01399994f + verticalOffset);
                 }
 
                 gameObject.transform.Find("LegIndicator").gameObject.GetComponent<spawnerSprites>().SetSprite(legConfiguration , partConfiguration);
