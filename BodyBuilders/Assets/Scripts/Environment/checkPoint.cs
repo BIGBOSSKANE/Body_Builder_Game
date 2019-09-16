@@ -22,6 +22,10 @@ public class checkPoint : MonoBehaviour
     [Tooltip("Player respawn legs")] [Range (1 , 3)] public int legConfiguration = 1;
     gameManager gameManager;
     BoxCollider2D boxCollider;
+    int armIdentifier;
+    int legIdentifier;
+    int augmentScalerIdentifier;
+    int augmentHookshotIdentifier;
 
 
     void Start()
@@ -50,8 +54,13 @@ public class checkPoint : MonoBehaviour
                     headConfiguration = playerScript.headConfiguration;
                     armConfiguration = playerScript.armConfiguration;
                     legConfiguration = playerScript.legConfiguration;
+                    armIdentifier = playerScript.armIdentifier;
+                    legIdentifier = playerScript.legIdentifier;
+                    augmentScalerIdentifier = playerScript.augmentScalerIdentifier;
+                    augmentHookshotIdentifier = playerScript.augmentHookshotIdentifier;
                 }
-                gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
+                gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
+                                          armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
                 Debug.Log("Checkpoint Reached");
             }
         }

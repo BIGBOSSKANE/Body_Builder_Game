@@ -19,10 +19,12 @@ public class jumpPad : activate
     [Tooltip("Does the bounce pad reflect the player's vertical velocity?")] public bool forceReflection; // does the player bounce higher when they fall from higher?
     Rigidbody2D colRb; // the collider of this object
     GameObject player; // the player gameObject
+    playerScript playerScript;
 
     void Start()
     {
         player = GameObject.Find("Player").gameObject;
+        playerScript = player.GetComponent<playerScript>();
 
         if(!forceReflection) // disable the bouncy physics material to prevent velocity reflection if force refelction is off
         {
@@ -68,7 +70,7 @@ public class jumpPad : activate
 
         if(col.gameObject.tag == "Player")
         {
-            player.GetComponent<playerScript>().forceSlaved = true;
+            playerScript.forceSlaved = true;
             colRb = player.GetComponent<Rigidbody2D>();
             if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
             {
@@ -77,6 +79,13 @@ public class jumpPad : activate
             else // apply a generic force upwards
             {
                 colRb.AddForce(bounceDirection * jumpForce, ForceMode2D.Impulse);
+            }
+
+            if(bounceDirection.y > 0 && playerScript.maximumJumps == 2)
+            {
+                playerScript.jumpGate = true;
+                playerScript.jumpGateTimer = 0f;
+                playerScript.remainingJumps = 1;
             }
         }
         else // provide a generic force upwards

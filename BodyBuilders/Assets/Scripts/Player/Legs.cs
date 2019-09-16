@@ -21,6 +21,8 @@ public class Legs : MonoBehaviour
     [Tooltip("What type of legs are these?")] public legIdentifier legType;
     legIdentifier previousLegIdentifier;
 
+    [Tooltip("Make sure each instance of legs in the level has a different number, starting at 1.")] public int instance = 1;
+
     GameObject player;
     GameObject head;
     playerScript playerScript;

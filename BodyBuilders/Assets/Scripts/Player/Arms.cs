@@ -20,6 +20,7 @@ public class Arms : MonoBehaviour
     [Tooltip("What type of arms are these?")] public armIdentifier armType;
     armIdentifier previousArmIdentifier;
 
+    [Tooltip("Make sure each instance of arms in the level has a different number, starting at 1.")] public int instance = 1;
     GameObject player;
     GameObject head;
     playerScript playerScript;

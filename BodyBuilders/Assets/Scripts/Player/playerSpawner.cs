@@ -36,29 +36,29 @@ public class playerSpawner : MonoBehaviour
     Vector2 spawnPos;
     Vector2 editorSpawnPos;
     float verticalOffset;
+    
+    int armIdentifier;
+    int legIdentifier;
+    int augmentScalerIdentifier;
+    int augmentHookshotIdentifier;
 
-/*
-    void Awake()
-    {
-        preview = true;
-        Preview();
-        spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
-        SpawnPlayer();
-    }
-*/
+
     void Awake()
     {
         GameObject.Find("GameManager").gameObject.GetComponent<gameManager>().Initialise();
-        Destroy(gameObject);
     }
 
-    public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs) // called by the GameManagerScript
+    public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs , int armIdenti , int legIdenti , int scalerIdenti , int hookshotIdenti) // called by the GameManagerScript
     {
-        spawnPos = spawnPosition + Vector2.up * verticalOffset;
+        spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
         partConfiguration = parts;
         headConfiguration = head;
         armConfiguration = arms;
         legConfiguration = legs;
+        armIdentifier = armIdenti;
+        legIdentifier = legIdenti;
+        augmentScalerIdentifier = scalerIdenti;
+        augmentHookshotIdentifier = hookshotIdenti;
         SpawnPlayer();
     }
 
@@ -90,19 +90,20 @@ public class playerSpawner : MonoBehaviour
             player = Instantiate(prefabHolder.HeadAndArms, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
+            Arms.instance = armIdentifier;
         }
         else if(partConfiguration == 3)
         {
             Legs Legs = prefabHolder.HeadAndLegs.transform.Find("BasicLegs").GetComponent<Legs>();
-            if(armConfiguration == 1)
+            if(legConfiguration == 1)
             {
                 Legs.legType = Legs.legIdentifier.Basic;
             }
-            else if(armConfiguration == 2)
+            else if(legConfiguration == 2)
             {
                 Legs.legType = Legs.legIdentifier.Groundbreaker;
             }
-            else if(armConfiguration == 3)
+            else if(legConfiguration == 3)
             {
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
@@ -110,6 +111,7 @@ public class playerSpawner : MonoBehaviour
             player = Instantiate(prefabHolder.HeadAndLegs, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
+            Legs.instance = legIdentifier;
         }
         else if(partConfiguration == 4)
         {
@@ -144,27 +146,37 @@ public class playerSpawner : MonoBehaviour
             player = Instantiate(prefabHolder.Fullbody, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
+            Arms.instance = armIdentifier;
+            Legs.instance = legIdentifier;
         }
 
         if(headConfiguration == 1) // basic
         {
             playerScript.scaler = false;
             playerScript.hookShot = false;
+            playerScript.augmentScalerIdentifier = 0;
+            playerScript.augmentHookshotIdentifier = 0;
         }
         else if(headConfiguration == 2) // scaler
         {
             playerScript.scaler = true;
             playerScript.hookShot = false;
+            playerScript.augmentScalerIdentifier = augmentScalerIdentifier;
+            playerScript.augmentHookshotIdentifier = 0;
         }
         else if(headConfiguration == 3) // hookshot
         {
             playerScript.scaler = false;
             playerScript.hookShot = true;
+            playerScript.augmentScalerIdentifier = 0;
+            playerScript.augmentHookshotIdentifier = augmentHookshotIdentifier;
         }
         else if(headConfiguration == 4) // all augments
         {
             playerScript.scaler = true;
             playerScript.hookShot = true;
+            playerScript.augmentScalerIdentifier = augmentScalerIdentifier;
+            playerScript.augmentHookshotIdentifier = augmentHookshotIdentifier;
         }
     }
 

@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1278711899482175483}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.02, y: 0, z: 0}
-  m_LocalScale: {x: 0.75343, y: 0.75343, z: 0.75343}
+  m_LocalScale: {x: 0.40519798, y: 0.40519798, z: 0.40519798}
   m_Children: []
   m_Father: {fileID: 1278711900084521887}
   m_RootOrder: 0
@@ -68,15 +68,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: c03c72978d15ecb4d91060d3a10d14f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a343d81a14f7cf74eb4ac71e78fd4f41, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.56}
+  m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1278711900084521885
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 1278711900084521858}
   - component: {fileID: 1278711900084521857}
   m_Layer: 12
-  m_Name: HookShot
+  m_Name: Augment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,7 +108,7 @@ Transform:
   m_GameObject: {fileID: 1278711900084521885}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.30431, y: 0.30431, z: 0.30431}
+  m_LocalScale: {x: 0.2246535, y: 0.2246535, z: 0.2246535}
   m_Children:
   - {fileID: 1278711899482175484}
   m_Father: {fileID: 0}
@@ -126,13 +126,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ec28ddf1cbc96248b4a837c2e03ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  headType: 2
-  headString: 
-  player: {fileID: 0}
-  head: {fileID: 0}
-  playerScript: {fileID: 0}
-  headPos: {x: 0, y: 0}
-  secondSprite: {fileID: 1278711899482175483}
+  augmentType: 0
+  instance: 1
+  scalerSprite: {fileID: 21300000, guid: a343d81a14f7cf74eb4ac71e78fd4f41, type: 3}
+  scalerSize: 0.2246535
+  hookshotSprite: {fileID: 21300000, guid: 4df6e9cd4f25ef143906583b4f236b9c, type: 3}
+  hookshotSize: 0.30431
 --- !u!212 &1278711900084521886
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -170,12 +169,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 4df6e9cd4f25ef143906583b4f236b9c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a343d81a14f7cf74eb4ac71e78fd4f41, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.56}
+  m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

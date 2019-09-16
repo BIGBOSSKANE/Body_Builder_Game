@@ -5,7 +5,6 @@ Laste Edited by: Daniel
 Last Edit: 13/09/2019
 */
 
-
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,9 +19,7 @@ public class gameManager : MonoBehaviour
     public float yPosition;
     public int partConfiguration;
     public int headConfiguration;
-    GameObject arms;
     public int armConfiguration;
-    GameObject legs;
     public int legConfiguration;
     GameObject scalerAugment;
     GameObject hookshotAugment;
@@ -33,6 +30,14 @@ public class gameManager : MonoBehaviour
 
     GameObject playerSpawner;
     playerSpawner playerSpawnerScript;
+    
+    private GameObject[] arms;
+    int armIdentifier;
+    private GameObject[] legs;
+    int legIdentifier;
+    private GameObject[] augments;
+    int augmentScalerIdentifier; // scaler
+    int augmentHookshotIdentifier; // hookshot
 
     void Awake()
     {
@@ -57,8 +62,56 @@ public class gameManager : MonoBehaviour
 
     public void Initialise()
     {
-        if(GameObject.Find("PlayerSpawner").gameObject != null)
+        if(GameObject.Find("PlayerSpawner").gameObject != null) /// CULL PARTS AND AUGMENTS ON THE MAP THAT THE PLAYER CURRENTLY HAS EQUIPPED //
         {
+            if(currentLevel == SceneManager.GetActiveScene().buildIndex)
+            {
+                if(partConfiguration != 1 & partConfiguration != 3)
+                {
+                    GameObject[] arms = GameObject.FindGameObjectsWithTag("Arms");
+                    if(arms.Length != 0)
+                    {
+                        for(int i = 0; i < arms.Length; i++)
+                        {
+                            if(arms[i].GetComponent<Arms>().instance == armIdentifier)
+                            {
+                                Destroy(arms[i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(partConfiguration >= 3)
+                {
+                    GameObject[] legs = GameObject.FindGameObjectsWithTag("Legs");
+                    if(legs.Length != 0)
+                    {
+                        for(int i = 0; i < legs.Length; i++)
+                        {
+                            if(legs[i].GetComponent<Legs>().instance == legIdentifier)
+                            {
+                                Destroy(legs[i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                GameObject[] augments = GameObject.FindGameObjectsWithTag("HeadAugment");
+                if(augments.Length != 0)
+                {
+                    for(int i = 0; i < augments.Length; i++)
+                    {
+                        int foundIdentifier = augments[i].GetComponent<augmentPickup>().instance;
+                        if((foundIdentifier == augmentScalerIdentifier || foundIdentifier == augmentHookshotIdentifier))
+                        {
+                            Destroy(augments[i]);
+                        }
+                    }
+                }
+            }
+
             if(currentLevel != SceneManager.GetActiveScene().buildIndex)
             {
                 playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
@@ -71,16 +124,21 @@ public class gameManager : MonoBehaviour
                 headConfiguration = playerSpawnerScript.headConfiguration;
                 armConfiguration = playerSpawnerScript.armConfiguration;
                 legConfiguration = playerSpawnerScript.legConfiguration;
+                armIdentifier = 0;
+                legIdentifier = 0;
+                augmentScalerIdentifier = 0;
+                augmentHookshotIdentifier = 0;
                 currentLevel = SceneManager.GetActiveScene().buildIndex;
             }
             
             playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
             playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
-            playerSpawnerScript.OverrideSpawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration);
+            playerSpawnerScript.OverrideSpawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
+                                              armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
         }
     }
 
-    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig) // set checkpoint when entering a checkpoint
+    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig , int armsIdenti , int legsIdenti , int augmentScalerIdenti , int augmentHookshotIdenti) // set checkpoint when entering a checkpoint
     {
         xPosition = checkpointPos.x;
         yPosition = checkpointPos.y;
@@ -88,5 +146,9 @@ public class gameManager : MonoBehaviour
         headConfiguration = headParts;
         armConfiguration = armsConfig;
         legConfiguration = legsConfig;
+        armIdentifier = armsIdenti;
+        legIdentifier = legsIdenti;
+        augmentScalerIdentifier = augmentScalerIdenti;
+        augmentHookshotIdentifier = augmentHookshotIdenti;
     }
 }

@@ -79,13 +79,13 @@ public class playerScript : MonoBehaviour
 
     [HideInInspector] public bool isGrounded; // is the player on the ground?
     [HideInInspector] public float maxHeight; // the maximum height of the jump
-    bool jumpGate; // prevent jumping while this is true
+    [HideInInspector] public bool jumpGate; // prevent jumping while this is true
     [HideInInspector] public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
-    float jumpGateTimer; // timer for jump gate
+    [HideInInspector] public float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
     [HideInInspector] public int remainingJumps; // how many jumps does the player have left?
-    int maximumJumps = 1; // how many jumps does the player have?
+    [HideInInspector] public int maximumJumps = 1; // how many jumps does the player have?
 
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
     float unheldJumpReduction = 2f; // reduces jump power if jump button isn't held
@@ -202,6 +202,11 @@ public class playerScript : MonoBehaviour
     checkpointData checkpointData;
     gameManager gameManager;
 
+    [HideInInspector] public int armIdentifier = 0;
+    [HideInInspector] public int legIdentifier = 0;
+    [HideInInspector] public int augmentScalerIdentifier = 0;
+    [HideInInspector] public int augmentHookshotIdentifier = 0;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -267,6 +272,7 @@ public class playerScript : MonoBehaviour
             if(deathTimer <= 0 )
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                //GameObject.Find("GameManager").GetComponent<gameManager>().RestartLevel();
             }
             return; // stop the player from doing anything, we could later replace this with a time slow effect
         }
@@ -509,11 +515,12 @@ public class playerScript : MonoBehaviour
                     rb.velocity = new Vector2(rb.velocity.x , jumpPower);
                     //AkSoundEngine.PostEvent("Jump" , gameObject);
                 }
-                else if(afterburner == true && !climbing && remainingJumps == 1f)
+                else if(afterburner == true && !climbing)// && remainingJumps == 1f)
                 {
                     boostSprites.SetActive(true);
                     rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
                     afterburnerApex = transform.position.y;
+                    remainingJumps --;
                     //AkSoundEngine.PostEvent("Jump" , gameObject);
                 }
                 remainingJumps --;
@@ -633,7 +640,7 @@ public class playerScript : MonoBehaviour
         }
 
         afterburnerGlide = false;
-        if(afterburner && remainingJumps == 0)
+        if(afterburner && remainingJumps <= 0)
         {
             if(transform.position.y > afterburnerApex) afterburnerApex = transform.position.y; // set the afterburner apex to be peak of the second jump (equal to height until the player starts descending)
             if(transform.position.y < afterburnerApex) afterburnerGlide = true; // if desecending, turn glide on
@@ -1111,7 +1118,14 @@ void BoxInteract()
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
     }
 
+
+
+
     //  _______________________________________________________________________  //  ____________________________________________________________________  //
+
+
+
+
 
     public void UpdateParts() // increase raycastYOffset, decrease groundcheckerDistance
     // call when acquiring or detaching part - reconfigures scaling, controls and colliders - 1 is head, 2 adds torso, 3 adds legs, 4 adds torso and legs
@@ -1128,12 +1142,14 @@ void BoxInteract()
                 hasArms = true;
                 arms = transform.GetChild(i).gameObject;
                 armString = arms.name;
+                armIdentifier = arms.GetComponent<Arms>().instance;
             }
             else if (transform.GetChild(i).tag == "Legs")
             {
                 hasLegs = true;
                 legs = transform.GetChild(i).gameObject;
                 legString = legs.name;
+                legIdentifier = legs.GetComponent<Legs>().instance;
             }
         }
 
