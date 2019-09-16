@@ -28,6 +28,7 @@ public class bladebot : MonoBehaviour
     public LayerMask laserLayer;
     LineRenderer lineRenderer;
     float radius;
+    playerScript playerScript;
 
     void Start()
     {
@@ -36,8 +37,9 @@ public class bladebot : MonoBehaviour
         radius = gameObject.GetComponent<CircleCollider2D>().radius;
         patrolPoint1 = GameObject.Find("patrolPoint1").gameObject.transform.position;
         patrolPoint2 = GameObject.Find("patrolPoint2").gameObject.transform.position;
+        playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
 
-        if(Mathf.Abs(patrolPoint2.x - patrolPoint1.x) > Mathf.Abs(patrolPoint2.y - patrolPoint1.y))
+        if (Mathf.Abs(patrolPoint2.x - patrolPoint1.x) > Mathf.Abs(patrolPoint2.y - patrolPoint1.y))
         {
             verticalPatrol = false;
         }
@@ -142,9 +144,14 @@ public class bladebot : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if(col.tag == "Player" || col.tag == "Groundbreakable" || col.tag == "Enemy")
+        if(col.tag == "Groundbreakable" || col.tag == "Enemy")
         {
             Destroy(col.gameObject);
+        }
+
+       if(col.tag == "Player")
+        {
+            playerScript.Die(0.2f);
         }
     }
 
