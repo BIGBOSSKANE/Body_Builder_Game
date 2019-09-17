@@ -36,7 +36,7 @@ public class gameManager : MonoBehaviour
     private GameObject[] legs;
     int legIdentifier;
     private GameObject[] augments;
-    int augmentScalerIdentifier; // scaler
+    public int augmentScalerIdentifier; // scaler
     int augmentHookshotIdentifier; // hookshot
 
     void Awake()
@@ -101,6 +101,7 @@ public class gameManager : MonoBehaviour
                 GameObject[] augments = GameObject.FindGameObjectsWithTag("HeadAugment");
                 if(augments.Length != 0)
                 {
+                    Debug.Log("Heyo");
                     for(int i = 0; i < augments.Length; i++)
                     {
                         int foundIdentifier = augments[i].GetComponent<augmentPickup>().instance;
