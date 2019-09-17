@@ -59,7 +59,7 @@ using Random=UnityEngine.Random;
         [Tooltip("Reduce camera movement to zero after this many seconds of no scout input")] public float scoutInputTime = 2f;
         float scoutInputTimer;
 
-        bool shiftHeld = false;
+        bool scouting = false;
         Vector3 wayPointPos;
         float wayPointDistance;
         [HideInInspector] public bool waypointCycling = false;
@@ -212,6 +212,24 @@ using Random=UnityEngine.Random;
             t = 0f;
         }
 
+        public void ToggleScoutMode(bool toggle)
+        {
+            if(toggle)
+            {
+                scouting = true;
+                AkSoundEngine.PostEvent("EnterFan" , gameObject);
+                rb.isKinematic = false;
+                rb.simulated = true;
+            }
+            else
+            {
+                scouting = false;
+                AkSoundEngine.PostEvent("ExitFan" , gameObject);
+                rb.isKinematic = true;
+                rb.simulated = false;
+            }
+        }
+
         // Update is called once per frame
         private void Update()
         {
@@ -225,23 +243,7 @@ using Random=UnityEngine.Random;
             {
                 if(!lockView)
                 {
-                    if(Input.GetKeyDown(KeyCode.LeftShift))
-                    {
-                        shiftHeld = true;
-                        AkSoundEngine.PostEvent("EnterFan" , gameObject);
-                        rb.isKinematic = false;
-                        rb.simulated = true;
-                    }
-
-                    if(Input.GetKeyUp(KeyCode.LeftShift))
-                    {
-                        shiftHeld = false;
-                        AkSoundEngine.PostEvent("ExitFan" , gameObject);
-                        rb.isKinematic = true;
-                        rb.simulated = false;
-                    }
-
-                    if(shiftHeld)
+                    if(scouting)
                     {
                         if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
                         {
@@ -315,7 +317,7 @@ using Random=UnityEngine.Random;
                                              Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
                                              Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
 
-                transform.position = newPos;
+                if(!scouting) transform.position = newPos;
 
                 m_LastTargetPosition = target.position;
 
@@ -434,7 +436,7 @@ using Random=UnityEngine.Random;
             lockView = false;
             waypointCycling = false;
             waypointCyclingTimer = 0f;
-            shiftHeld = false;
+            scouting = false;
             resizeDuration = standardResizeDuration;
             playerScript.lockController = false;
             playerScript.UpdateParts();

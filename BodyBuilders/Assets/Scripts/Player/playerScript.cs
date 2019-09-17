@@ -200,6 +200,7 @@ public class playerScript : MonoBehaviour
     bool afterburnerGlide = false;
     checkpointData checkpointData;
     gameManager gameManager;
+    bool scouting = false;
 
     [HideInInspector] public int armIdentifier = 0;
     [HideInInspector] public int legIdentifier = 0;
@@ -281,16 +282,22 @@ public class playerScript : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
-            cameraScript.Resize(5 , cameraScript.standardResizeDuration , 1f); // resize the camera for scout mode
-            lockController = true;
-            inputX = 0f;
-            rawInputX = 0;
-        }
-
-        if(Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            cameraScript.Resize(partConfiguration , 0.4f , 1f);
-            lockController = false;
+            if(!lockController)
+            {
+                cameraScript.ToggleScoutMode(true);
+                cameraScript.Resize(5 , cameraScript.standardResizeDuration , 1f); // resize the camera for scout mode
+                lockController = true;
+                inputX = 0f;
+                rawInputX = 0;
+                scouting = true;
+            }
+            else
+            {
+                cameraScript.ToggleScoutMode(false);
+                cameraScript.Resize(partConfiguration , 0.4f , 1f);
+                lockController = false;
+                scouting = false;
+            }
         }
 
         if(!lockController)
