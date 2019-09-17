@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class newBladeBot : MonoBehaviour
 {
-    public Vector2 startPos;
+    public Vector3 startPos;
 
     public bool playerDetect;
 
     playerScript playerScript;
+
+    bool moved = false;
 
     public GameObject dD; //detect down
     public GameObject dU; //detect up
@@ -19,6 +21,8 @@ public class newBladeBot : MonoBehaviour
     bool down = false;
     bool left = false;
     bool right = false;
+
+    public float speedAccelerationPerSecond = 0.5f;
 
     Rigidbody2D rb2d;
 
@@ -44,7 +48,7 @@ public class newBladeBot : MonoBehaviour
         UpDestination = GameObject.Find("UpDestination").transform.position;
         DownDestination = GameObject.Find("DownDestination").transform.position;
 
-        startPos = gameObject.transform.position;
+        startPos = GameObject.Find("StartPosition").transform.position;
 
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
 
@@ -54,92 +58,92 @@ public class newBladeBot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if (dD.GetComponent<BladeBotDetect>().playerDetect == true)
+        /*if()
         {
-            Debug.Log("down detected");
-            playerDetect = true;
-            if (playerDetect)
-            {
-                ChargeD();
-            }
+             moved = true;
         }
-        if (dU.GetComponent<BladeBotDetect>().playerDetect == true)
+
+        if (!moved)
         {
-            Debug.Log("up detected");
-            playerDetect = true;
-            if (playerDetect)
-            {
-                ChargeU();
-            }
-        }
-        if (dL.GetComponent<BladeBotDetect>().playerDetect == true)
-        {
-            Debug.Log("left detected");
-            playerDetect = true;
-            if (playerDetect)
-            {
-                ChargeL();
-            }
-        }
-        if (dR.GetComponent<BladeBotDetect>().playerDetect == true)
-        {
-            Debug.Log("right detected");
-            playerDetect = true;
-            if (playerDetect)
-            {
-                ChargeR();
-            }
-        }
-        if (movingBack)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, startPos, speed * Time.time);
+            Debug.Log("reset");
+            movingBack = false;
             dU.SetActive(true);
             dD.SetActive(true);
             dL.SetActive(true);
             dR.SetActive(true);
+        }*/
+
+        speed += speedAccelerationPerSecond * Time.deltaTime;
+
+        if (down)
+        {
+            Debug.Log("down detected");
+            transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed);
         }
-        speed = 2.5f * Time.time;
+
+        if (up)
+        {
+            Debug.Log("up detected");
+            transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed);
+        }
+
+        if (left)
+        {
+            Debug.Log("left detected");
+            transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed);
+        }
+
+        if (right)
+        {
+            Debug.Log("right detected");
+            transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed);
+        }
+
+        if (movingBack)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, startPos, 5 * Time.deltaTime);
+        }
     }
 
-    void ChargeU()
+    public void ChargeU()
     {
         dU.SetActive(false);
         dD.SetActive(false);
         dL.SetActive(false);
         dR.SetActive(false);
-        transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed);
+        up = true;
     }
 
-    void ChargeD()
+    public void ChargeD()
     {
         dU.SetActive(false);
         dD.SetActive(false);
         dL.SetActive(false);
         dR.SetActive(false);
-        transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed);
+        down = true;
     }
 
-    void ChargeL()
+    public void ChargeL()
     {
         dU.SetActive(false);
         dD.SetActive(false);
         dL.SetActive(false);
         dR.SetActive(false);
-        transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed);
+        left = true;
     }
 
-    void ChargeR()
+    public void ChargeR()
     {
         dU.SetActive(false);
         dD.SetActive(false);
         dL.SetActive(false);
         dR.SetActive(false);
-        transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed);
+        right = true;
     }
 
     IEnumerator WaitASec()
     {
+        Debug.Log("waiting");
         yield return new WaitForSeconds(2);
         movingBack = true;
     }
@@ -159,8 +163,13 @@ public class newBladeBot : MonoBehaviour
         if (col.gameObject.tag == "Environment")
         {
             Debug.Log("colided with environment");
+            rb2d.velocity = Vector2.zero;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
             playerDetect = false;
-            WaitASec();
+            StartCoroutine(WaitASec());
         }
     }
 }
