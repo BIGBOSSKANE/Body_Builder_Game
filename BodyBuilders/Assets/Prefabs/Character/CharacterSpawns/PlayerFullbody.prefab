@@ -51,7 +51,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundBreaker: 0
-  legType: 2
+  legType: 1
+  instance: 0
   BasicSprite: {fileID: 21300000, guid: 85b884d0a5520094cb61fa24dc57c7c5, type: 3}
   GroundbreakerSprite: {fileID: 21300000, guid: af23c6343c5b1734384b75e2fc2091ca,
     type: 3}
@@ -308,6 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   armType: 2
+  instance: 0
   BasicSprite: {fileID: 21300000, guid: fec36799c82b2414b83e952432071141, type: 3}
   LifterSprite: {fileID: 21300000, guid: acad2e0f3035cdf4ba334e22133004d5, type: 3}
   ShieldSprite: {fileID: 21300000, guid: e76535bf45b533e46841e35b249dd768, type: 3}
@@ -5562,8 +5564,11 @@ MonoBehaviour:
   lastGroundedHeight: 15.851477
   isGrounded: 1
   maxHeight: 15.851477
+  jumpGate: 0
   jumpBan: 0
+  jumpGateTimer: 0
   remainingJumps: 1
+  maximumJumps: 1
   jumpLayer:
     serializedVersion: 2
     m_Bits: 76236289
@@ -5577,7 +5582,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 7278080
   tetherPoint: {x: 0, y: 0}
-  swingForce: 4
+  swingForce: 3
   isSwinging: 0
   partConfiguration: 4
   headConfiguration: 1
@@ -5600,6 +5605,10 @@ MonoBehaviour:
   lockController: 0
   laserMaterialAim: {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
   laserMaterialFire: {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
+  armIdentifier: 0
+  legIdentifier: 0
+  augmentScalerIdentifier: 0
+  augmentHookshotIdentifier: 0
 --- !u!114 &4174665125201699021
 MonoBehaviour:
   m_ObjectHideFlags: 0

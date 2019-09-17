@@ -38,7 +38,6 @@ Still need to fix:
 Still need to add:
 
     headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
-    expander head
 */
 
 
@@ -185,7 +184,7 @@ public class playerScript : MonoBehaviour
     Vector2 laserEndpoint;
     [HideInInspector] public float forceSlavedTimer = 0f;
     int previousFacingDirection;
-    bool scalerTrueGrounded = false;
+    [HideInInspector] public bool scalerTrueGrounded = false;
     float deathTimer = 0;
     [HideInInspector] public bool dying;
     [HideInInspector] public bool lockController = false;
@@ -329,11 +328,6 @@ public class playerScript : MonoBehaviour
             isGrounded = true;
             coyoteJump = true;
 
-            if(isSwinging && !wasGrounded && scalerTrueGrounded) // if you are swinging, and hit the ground, detach the rope
-            {
-                hookshotScript.DetachRope();
-            }
-
             timeSlowScript.TimeNormal(); // disable any time slow effects
 
             if(maxHeight > (1f + transform.position.y)) // cause the ground to shake if you just landed
@@ -391,6 +385,11 @@ public class playerScript : MonoBehaviour
 
             // optimised swinging code sourced from raywenderlich.com - Sean Duffy
             Vector2 playerToHookDirection = ((Vector2)hookshotAnchor.transform.position - (Vector2)transform.position).normalized;
+
+            if((!wasGrounded || playerToHookDirection.y < 0.8f) && scalerTrueGrounded) // if you are swinging, and hit the ground, detach the rope
+            {
+                hookshotScript.DetachRope();
+            }
 
             Vector2 perpendicularDirection = Vector2.zero;
             if (rawInputX < 0)

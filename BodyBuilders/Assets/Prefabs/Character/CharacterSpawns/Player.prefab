@@ -10280,8 +10280,11 @@ MonoBehaviour:
   lastGroundedHeight: 0
   isGrounded: 0
   maxHeight: 0
+  jumpGate: 0
   jumpBan: 0
+  jumpGateTimer: 0
   remainingJumps: 0
+  maximumJumps: 1
   jumpLayer:
     serializedVersion: 2
     m_Bits: 76236289
@@ -10295,7 +10298,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 7278080
   tetherPoint: {x: 0, y: 0}
-  swingForce: 4
+  swingForce: 3
   isSwinging: 0
   partConfiguration: 1
   headConfiguration: 1
@@ -10318,6 +10321,10 @@ MonoBehaviour:
   lockController: 0
   laserMaterialAim: {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
   laserMaterialFire: {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
+  armIdentifier: 0
+  legIdentifier: 0
+  augmentScalerIdentifier: 0
+  augmentHookshotIdentifier: 0
 --- !u!114 &5744412106282342316
 MonoBehaviour:
   m_ObjectHideFlags: 0
