@@ -34,7 +34,7 @@ public class playerSpawner : MonoBehaviour
     playerScript playerScript;
 
     Vector2 spawnPos;
-    Vector2 editorSpawnPos;
+    [HideInInspector] public Vector2 editorSpawnPos;
     float verticalOffset;
     
     int armIdentifier;
@@ -46,11 +46,12 @@ public class playerSpawner : MonoBehaviour
     void Awake()
     {
         GameObject.Find("GameManager").gameObject.GetComponent<gameManager>().Initialise();
+        spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
     }
 
     public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs , int armIdenti , int legIdenti , int scalerIdenti , int hookshotIdenti) // called by the GameManagerScript
     {
-        spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
+        spawnPos = spawnPosition + Vector2.up * verticalOffset;
         partConfiguration = parts;
         headConfiguration = head;
         armConfiguration = arms;

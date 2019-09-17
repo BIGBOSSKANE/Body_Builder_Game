@@ -118,8 +118,8 @@ public class gameManager : MonoBehaviour
                 playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
                 playerSpawnerScript.preview = true;
                 playerSpawnerScript.Preview();
-                xPosition = playerSpawner.transform.position.x;
-                yPosition = playerSpawner.transform.position.y;
+                xPosition = playerSpawnerScript.editorSpawnPos.x;
+                yPosition = playerSpawnerScript.editorSpawnPos.y;
                 partConfiguration = playerSpawnerScript.partConfiguration;
                 headConfiguration = playerSpawnerScript.headConfiguration;
                 armConfiguration = playerSpawnerScript.armConfiguration;
@@ -130,10 +130,11 @@ public class gameManager : MonoBehaviour
                 augmentHookshotIdentifier = 0;
                 currentLevel = SceneManager.GetActiveScene().buildIndex;
             }
-            
+
+            Vector2 spawnPos = new Vector2(xPosition , yPosition);
             playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
             playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
-            playerSpawnerScript.OverrideSpawn(new Vector2(xPosition , yPosition) , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
+            playerSpawnerScript.OverrideSpawn(spawnPos , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
                                               armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
         }
     }
