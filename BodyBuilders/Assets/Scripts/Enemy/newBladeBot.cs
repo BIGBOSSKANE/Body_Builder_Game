@@ -22,13 +22,13 @@ public class newBladeBot : MonoBehaviour
     bool left = false;
     bool right = false;
 
-    public float speedAccelerationPerSecond = 0.5f;
+    public float speedAccelerationPerSecond = 1f;
 
     Rigidbody2D rb2d;
 
     bool movingBack = false;
 
-    float speed;
+    public float speed;
 
     Vector2 RightDestination;
     Vector2 LeftDestination;
@@ -58,12 +58,7 @@ public class newBladeBot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if()
-        {
-             moved = true;
-        }
-
-        if (!moved)
+        if(gameObject.transform.position == startPos)
         {
             Debug.Log("reset");
             movingBack = false;
@@ -71,32 +66,39 @@ public class newBladeBot : MonoBehaviour
             dD.SetActive(true);
             dL.SetActive(true);
             dR.SetActive(true);
-        }*/
+        }
 
-        speed += speedAccelerationPerSecond * Time.deltaTime;
+        else
+        {
+            Debug.Log("moving");
+            dU.SetActive(false);
+            dD.SetActive(false);
+            dL.SetActive(false);
+            dR.SetActive(false);
+        }
 
-        if (down)
+                if (down)
         {
             Debug.Log("down detected");
-            transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed);
+            transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (up)
         {
             Debug.Log("up detected");
-            transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed);
+            transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (left)
         {
             Debug.Log("left detected");
-            transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed);
+            transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (right)
         {
             Debug.Log("right detected");
-            transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed);
+            transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (movingBack)
