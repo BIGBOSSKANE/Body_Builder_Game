@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewGyre : MonoBehaviour
+public class gyreAlerted : MonoBehaviour
 {
-    public float velocity = 2.5f;
+    public float velocity = 5f;
 
     public Transform sightStart;
     public Transform sightEnd;
@@ -22,17 +22,20 @@ public class NewGyre : MonoBehaviour
 
     public Vector3 pos;
 
+    bool playerColliding;
+
+    public float time = 3.5f;
+
     public bool patrolling = true;
 
-    public bool detected = false;
-
+    public bool detected = true;
 
     // Start is called before the first frame update
     void Start()
     {
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
         rb2d = gameObject.GetComponent<Rigidbody2D>();
-        Vector2 pos = new Vector3(0f, 0.5f,0f);
+        Vector2 pos = new Vector3(0f, 0f,0f);
         patrolling = true;
     }
 
@@ -52,7 +55,7 @@ public class NewGyre : MonoBehaviour
             velocity *= -1;
         }
 
-        if(detected)
+        if (!detected)
         {
             StartCoroutine(Processing());
         }
@@ -68,7 +71,7 @@ public class NewGyre : MonoBehaviour
     public void Transforming()
     {
         Destroy(gameObject);
-        Instantiate(transformation, gameObject.transform.position + pos, Quaternion.identity);
+        Instantiate(transformation, gameObject.transform.position, Quaternion.identity);
     }
 
     void OnCollisionEnter2D(Collision2D col)
