@@ -28,6 +28,7 @@ public class elevatorFinal : activate
     Vector2 topPosition;
     Vector2 botttomPosition;
     Vector2 motion;
+    bool jumpBan;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
 
 //===========================//==========================//======================//===================//
@@ -83,19 +84,23 @@ public class elevatorFinal : activate
             moveTimer = 0f;
         }
         
+
+        bool wasJumpBanned = jumpBan;
+
         if(overcharge && ascending)
         {
             if(playerOnboard) // if the elevator is ascending with a slam, prevent the player from jumping (until right at the end)
             {
-                playerScript.jumpBan = true;
+                jumpBan = true;
                 playerScript.remainingJumps = playerScript.maximumJumps;
                 Debug.Log("Jump Banned");
             }
         }
         else // the player can jump normally and the slam force will not be applied
         {
-            if(overcharge && !ascending && moveTimer > 0.8f) playerScript.jumpBan = true;
-            else playerScript.jumpBan = false;
+            if(overcharge && !ascending && moveTimer > 0.8f) jumpBan = true;
+            else jumpBan = false;
+            
             slam = false;
             if(Input.GetAxisRaw("Vertical") > 0.5f && !slam)
             {
@@ -108,6 +113,12 @@ public class elevatorFinal : activate
                     Unparent(player);
                 }
             }
+        }
+
+        if(jumpBan != wasJumpBanned)
+        {
+            if(jumpBan) playerScript.jumpBan = true;
+            else playerScript.jumpBan = false;
         }
 
         if(ascending)
