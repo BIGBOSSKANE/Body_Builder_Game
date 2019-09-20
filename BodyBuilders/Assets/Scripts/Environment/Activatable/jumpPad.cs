@@ -16,7 +16,7 @@ public class jumpPad : activate
     [Tooltip("Bounce force while overcharged")] public float overchargeBounceForce; // boosted bounce force applied
     [Tooltip("If jump boost is on, how much higher does the player go?")] public float jumpForceMultiplier = 1.2f; // increase the amount of bounce force applied if the player is pressing up
     float jumpForce; // the actual force applied (one of the ones above)
-    [Tooltip("Does the bounce pad reflect the player's vertical velocity?")] public bool forceReflection; // does the player bounce higher when they fall from higher?
+    // [Tooltip("Does the bounce pad reflect the player's vertical velocity?")] public bool forceReflection; // does the player bounce higher when they fall from higher?
     Rigidbody2D colRb; // the collider of this object
     GameObject player; // the player gameObject
     playerScript playerScript;
@@ -26,10 +26,8 @@ public class jumpPad : activate
         player = GameObject.Find("Player").gameObject;
         playerScript = player.GetComponent<playerScript>();
 
-        if(!forceReflection) // disable the bouncy physics material to prevent velocity reflection if force refelction is off
-        {
-            gameObject.GetComponent<BoxCollider2D>().sharedMaterial = null;
-        }
+        /* if(!forceReflection) */ gameObject.GetComponent<BoxCollider2D>().sharedMaterial = null;
+
         if(!jumpBooster)
         {
             jumpForceMultiplier = 1f;
@@ -70,8 +68,10 @@ public class jumpPad : activate
 
         if(col.gameObject.tag == "Player")
         {
+            colRb = col.rigidbody;
+            colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y);
             playerScript.forceSlaved = true;
-            colRb = player.GetComponent<Rigidbody2D>();
+
             if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
             {
                 colRb.AddForce(bounceDirection * jumpForce * jumpForceMultiplier, ForceMode2D.Impulse);
@@ -81,20 +81,18 @@ public class jumpPad : activate
                 colRb.AddForce(bounceDirection * jumpForce, ForceMode2D.Impulse);
             }
 
-            if(bounceDirection.y > 0 && playerScript.maximumJumps == 2)
+            if(bounceDirection.y > 0)
             {
                 playerScript.jumpGate = true;
                 playerScript.jumpGateTimer = 0f;
-                playerScript.remainingJumps = 1;
+                playerScript.remainingJumps = playerScript.maximumJumps - 1;
             }
         }
-        else // provide a generic force upwards
+        else if(col.rigidbody != null) // provide a generic force upwards
         {
-            if(col.gameObject.GetComponent<Rigidbody2D>() != null)
-            { 
-                colRb = col.gameObject.GetComponent<Rigidbody2D>();
-                colRb.AddForce(bounceDirection * jumpForce / 2f, ForceMode2D.Impulse);
-            }
+            colRb = col.rigidbody;
+            colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y);
+            colRb.AddForce(bounceDirection * jumpForce / 2f, ForceMode2D.Impulse);
         }
     }
 }

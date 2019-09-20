@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ef6fd30c175bf418418dd2124784f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laserChargeTime: 3
+  laserChargeTime: 2.5
   laserPauseTime: 0.5
   laserFireTime: 2
   laserLayer:
@@ -374,9 +374,9 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 33024
-  materialCharge: {fileID: 0}
-  materialPause: {fileID: 0}
-  materialFire: {fileID: 0}
+  materialCharge: {fileID: 2100000, guid: 9a04c459d1a881043a495db772dc4276, type: 2}
+  materialPause: {fileID: 2100000, guid: 2bb267ed0d21deb42b09ca495926cf6f, type: 2}
+  materialFire: {fileID: 2100000, guid: 74bfb6f6591102c46975dd54b2394fe7, type: 2}
 --- !u!61 &1509266148
 BoxCollider2D:
   m_ObjectHideFlags: 0

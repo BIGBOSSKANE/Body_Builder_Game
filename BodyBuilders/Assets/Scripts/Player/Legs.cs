@@ -14,7 +14,7 @@ public class Legs : MonoBehaviour
     bool attached;
     [HideInInspector] public bool groundBreaker = false; // when ground breakers are dropped, they will continue to do their thing
     float unavailableTimer = 1f;
-    BoxCollider2D boxCol;
+    BoxCollider2D solidBoxCol;
     Rigidbody2D rb;
 
     public enum legIdentifier{ Basic, Groundbreaker, Afterburner} // sets up for the dropdown menu of options
@@ -26,8 +26,8 @@ public class Legs : MonoBehaviour
     GameObject player;
     GameObject head;
     playerScript playerScript;
-    GameObject solidCollider;
-    BoxCollider2D solidBoxCollider;
+    GameObject playerColliderObject;
+    BoxCollider2D playerBoxCol;
     timeSlow timeSlowScript;
     float yCastOffset = -0.86f;
     float raycastDistance = 0.17f;
@@ -48,14 +48,14 @@ public class Legs : MonoBehaviour
     {
         player = GameObject.Find("Player");
         playerScript = player.GetComponent<playerScript>();
-        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        solidBoxCol = gameObject.GetComponent<BoxCollider2D>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         timeSlowScript = player.GetComponent<timeSlow>();
         head = player.transform.Find("Head").gameObject;
         jumpLayer = playerScript.jumpLayer;
-        solidCollider = transform.Find("solidCollider").gameObject;
-        solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        solidBoxCollider.enabled = true;
+        playerColliderObject = transform.Find("playerCollider").gameObject;
+        playerBoxCol = playerColliderObject.GetComponent<BoxCollider2D>();
+        playerBoxCol.enabled = true;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         SetType();
         CheckForParent();
@@ -95,9 +95,9 @@ public class Legs : MonoBehaviour
         }
         else if(!attached)
         {
-            boxCol.enabled = true;
+            playerBoxCol.enabled = true;
             boxColTimer = 0f;
-            gameObject.layer = 18;
+            playerColliderObject.layer = 18;
         }
 
         if(transform.position.y <= (maxHeight - groundbreakerDistance))
@@ -151,8 +151,8 @@ public class Legs : MonoBehaviour
         maxHeight = maxHeightCalled;
         groundbreakerDistance = groundbreakerDistanceCalled;
         transform.parent = null;
-        solidBoxCollider.enabled = true;
-        boxCol.enabled = true;
+        solidBoxCol.enabled = true;
+        playerBoxCol.enabled = true;
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
@@ -166,8 +166,8 @@ public class Legs : MonoBehaviour
     public void Attached()
     {
         attached = true;
-        boxCol.enabled = false;
-        solidBoxCollider.enabled = false;
+        solidBoxCol.enabled = false;
+        playerBoxCol.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground
     }
@@ -177,8 +177,8 @@ public class Legs : MonoBehaviour
         Vector2 thisPos = gameObject.transform.position;
         if(col.gameObject.tag == "Player" && playerScript.partConfiguration != 2 && playerScript.isGrounded == true) // reset the collider if the player is not jumping
         {
-            boxCol.enabled = false;
-            boxCol.enabled = true;
+            playerBoxCol.enabled = false;
+            playerBoxCol.enabled = true;
         }
         else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
         {

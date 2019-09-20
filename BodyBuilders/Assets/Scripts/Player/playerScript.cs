@@ -7,7 +7,6 @@ Last Edit 06/09/2019
 
 /*
 
-
 To do:
  - Bladebot
  - Refine screenshake
@@ -201,11 +200,13 @@ public class playerScript : MonoBehaviour
     checkpointData checkpointData;
     gameManager gameManager;
     bool scouting = false;
+    [HideInInspector] public bool onElevator = false;
 
     [HideInInspector] public int armIdentifier = 0;
     [HideInInspector] public int legIdentifier = 0;
     [HideInInspector] public int augmentScalerIdentifier = 0;
     [HideInInspector] public int augmentHookshotIdentifier = 0;
+    [HideInInspector] public Vector2 currentVelocity;
 
     void Awake()
     {
@@ -512,33 +513,40 @@ public class playerScript : MonoBehaviour
             }
 
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
+            if(!jumpBan) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
 
-            if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
-            // this last bit ensures the player can always jump, which is how the spiderclimb works
-            {
-                if(isGrounded || (coyoteTime && coyoteJump))
-                {
-                    rb.velocity = new Vector2(rb.velocity.x , jumpPower);
-                    //AkSoundEngine.PostEvent("Jump" , gameObject);
-                }
-                else if(afterburner == true && !climbing)// && remainingJumps == 1f)
-                {
-                    boostSprites.SetActive(true);
-                    rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
-                    afterburnerApex = transform.position.y;
-                    remainingJumps --;
-                    //AkSoundEngine.PostEvent("Jump" , gameObject);
-                }
-                remainingJumps --;
-                jumpGateTimer = 0f;
-                jumpGate = true;
-            }
 
             previousFacingDirection = facingDirection;
         }
 
         speed = rb.velocity.x;
+        currentVelocity = rb.velocity;
     }
+
+    public void Jump()
+    {
+        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
+        // this last bit ensures the player can always jump, which is how the spiderclimb works
+        {
+            if(isGrounded || (coyoteTime && coyoteJump))
+            {
+                rb.velocity = new Vector2(rb.velocity.x , jumpPower);
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
+            }
+            else if(afterburner == true && !climbing)// && remainingJumps == 1f)
+            {
+                boostSprites.SetActive(true);
+                rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
+                afterburnerApex = transform.position.y;
+                remainingJumps --;
+                //AkSoundEngine.PostEvent("Jump" , gameObject);
+            }
+            remainingJumps --;
+            jumpGateTimer = 0f;
+            jumpGate = true;
+        }
+    }
+
 
     void Update()
     {
@@ -694,6 +702,7 @@ public class playerScript : MonoBehaviour
     bool GroundCheck()
     {
         jumpDisableTimer += Time.fixedDeltaTime; // jumpDisableTimer is applied by walljumping, preventing the grounded state from triggering interfering jumps for 0.2 seconds
+
         if(jumpBan) // jump ban is applied by the elevator script to lock the player to it when slamming upwards
         {
             return false;

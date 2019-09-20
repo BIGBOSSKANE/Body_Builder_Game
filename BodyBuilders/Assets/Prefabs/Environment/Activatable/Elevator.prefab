@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2798922310534911072}
-  - component: {fileID: 2798922310534911086}
   - component: {fileID: 2798922310534911073}
   - component: {fileID: 2798922310534911084}
   - component: {fileID: 2798922310534911082}
@@ -36,33 +35,6 @@ Transform:
   m_Father: {fileID: 2798922312065972270}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2798922310534911086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2798922310534911075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7ed93398479b1d4a8de9c940f9e3e4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activated: 1
-  overcharge: 0
-  overchargeable: 1
-  antiSync: 1
-  moveTime: 5
-  slamUpTime: 1
-  launchForce: 3
-  jumpLaunchForce: 6
-  jumpTimeOffset: 0.3
-  childDisableTime: 1
-  liftableObjects:
-    serializedVersion: 2
-    m_Bits: 265472
-  highPoint: {x: 0, y: 0}
-  lowPoint: {x: 0, y: 0}
 --- !u!212 &2798922310534911073
 SpriteRenderer:
   m_ObjectHideFlags: 0

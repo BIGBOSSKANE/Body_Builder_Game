@@ -208,14 +208,10 @@ public class bansheeScript : MonoBehaviour
             }
             else
             {
-                if(laserTag != laser.collider.tag)
+                if(laserTag == "Shield")
                 {
-                    if(laserTag == "Shield")
-                    {
-                        playerScript.EndDeflect();
-                        playerScript.DeathRay(false);
-                        Debug.Log("Did it");
-                    }
+                    playerScript.EndDeflect();
+                    playerScript.DeathRay(false);
                 }
                 laserTag = "null";
                 collisionEffect.SetActive(false);

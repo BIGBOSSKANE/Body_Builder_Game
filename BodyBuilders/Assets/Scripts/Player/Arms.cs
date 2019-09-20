@@ -13,7 +13,8 @@ public class Arms : MonoBehaviour
 {
     bool attached = false;
     float unavailableTimer = 1f;
-    BoxCollider2D boxCol; // player pickup collider
+    BoxCollider2D playerBoxCol; // player pickup collider
+    GameObject playerColliderObject;
     float boxColTimer;
     Rigidbody2D rb;
     public enum armIdentifier{Basic, Lifter, Shield} // sets up for the dropdown menu of options
@@ -24,7 +25,6 @@ public class Arms : MonoBehaviour
     GameObject player;
     GameObject head;
     playerScript playerScript;
-    GameObject solidCollider;
     BoxCollider2D solidBoxCollider; // solid collider on the non-player layer
 
     [Header("Sprites:")]
@@ -39,11 +39,13 @@ public class Arms : MonoBehaviour
         player = GameObject.Find("Player");
         head = player.transform.Find("Head").gameObject;
         playerScript = player.GetComponent<playerScript>();
-        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        solidBoxCollider = gameObject.GetComponent<BoxCollider2D>();
         rb = gameObject.GetComponent<Rigidbody2D>();
-        solidCollider = transform.Find("solidCollider").gameObject;
-        solidBoxCollider = solidCollider.GetComponent<BoxCollider2D>();
-        solidBoxCollider.enabled = true;
+
+        playerColliderObject = gameObject.transform.Find("playerCollider").gameObject;
+        playerBoxCol = playerColliderObject.GetComponent<BoxCollider2D>();
+        playerBoxCol.enabled = true;
+
         unavailableTimer = 0f;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         SetType();
@@ -87,9 +89,9 @@ public class Arms : MonoBehaviour
         }
         else if(!attached)
         {
-            boxCol.enabled = true;
+            playerBoxCol.enabled = true;
             boxColTimer = 0f;
-            gameObject.layer = 18;
+            playerColliderObject.layer = 18;
         }
     }
 
@@ -112,15 +114,16 @@ public class Arms : MonoBehaviour
         attached = false;
         unavailableTimer = 0f;
         rb.isKinematic = false;
-        gameObject.layer = 13;
+        playerColliderObject.layer = 13;
         boxColTimer = (playerScript.isGrounded)? 0.4f : 0.6f;
-        boxCol.enabled = false;
+        playerBoxCol.enabled = false;
+        gameObject.layer = 13;
     }
 
     public void Attached()
     {
         attached = true;
-        boxCol.enabled = false;
+        playerBoxCol.enabled = false;
         solidBoxCollider.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
@@ -150,8 +153,8 @@ public class Arms : MonoBehaviour
         else if(col.gameObject.tag == "Player" && playerScript.isGrounded == true)
         // this resets the collider, so that if the player is pushing against it and then jumps, they can still connect
         {
-            boxCol.enabled = false;
-            boxCol.enabled = true;
+            playerBoxCol.enabled = false;
+            playerBoxCol.enabled = true;
         }
         else if(col.gameObject.tag == "Legs")
         {
