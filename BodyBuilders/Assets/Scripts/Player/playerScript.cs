@@ -82,7 +82,7 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public float jumpGateTimer; // timer for jump gate
     float jumpGateDuration = 0.6f; // the duration of the jumpGate
 
-    [HideInInspector] public int remainingJumps; // how many jumps does the player have left?
+    public int remainingJumps; // how many jumps does the player have left?
     [HideInInspector] public int maximumJumps = 1; // how many jumps does the player have?
 
     float fallMultiplier = 2.5f; // increase fall speed on downwards portion of the jump arc
@@ -200,7 +200,6 @@ public class playerScript : MonoBehaviour
     checkpointData checkpointData;
     gameManager gameManager;
     bool scouting = false;
-    [HideInInspector] public bool onElevator = false;
 
     [HideInInspector] public int armIdentifier = 0;
     [HideInInspector] public int legIdentifier = 0;
@@ -290,14 +289,12 @@ public class playerScript : MonoBehaviour
                 lockController = true;
                 inputX = 0f;
                 rawInputX = 0;
-                scouting = true;
             }
             else
             {
                 cameraScript.ToggleScoutMode(false);
                 cameraScript.Resize(partConfiguration , 0.4f , 1f);
                 lockController = false;
-                scouting = false;
             }
         }
 
@@ -1551,7 +1548,6 @@ void BoxInteract()
         rb.constraints = RigidbodyConstraints2D.FreezePositionY; // freeze movement temporarily
         rb.constraints = RigidbodyConstraints2D.FreezePositionX;
         rb.sharedMaterial = slipperyMaterial;
-        jumpGate = true;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
         scalerAugment.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable

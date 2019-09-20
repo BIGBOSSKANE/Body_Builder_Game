@@ -14,7 +14,6 @@ public class elevatorFinal : activate
     [Tooltip("What layers can the elevator lift?")] public LayerMask liftableObjects; // what objects does the elevator interact with?
     float moveTimer = 0f; // the current time of the elevator's movement
     bool ascending = true; // is the elevator moving up?
-    float triggerCheckTime = 0.3f; // intervals at which the trigger collider will automatically check for objects
     bool playerOnboard = false; // is the player on board?
     bool slam; // interval at which the player can jump to get the slam bonus
     bool jumpSlam; // did the player add vertical input within a short window of the slam summit?
@@ -23,11 +22,13 @@ public class elevatorFinal : activate
     Vector2 slamDirection; // the vector direction of the elevator slam
     GameObject player; // the player gameObject
     GameObject holder; // the holder gameObject to which elevator childed objects are assigned
+    GameObject elevatorPlatform; // the solid elevator platform
     playerScript playerScript; // the player's script, used to reference part configuration, and prevent jumping during slam up
     BoxCollider2D pickupPoint; // the collider used to check for objects
     Vector2 topPosition;
     Vector2 botttomPosition;
     Vector2 motion;
+    float pickupInitialOffset;
     bool jumpBan;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
 
@@ -44,12 +45,14 @@ public class elevatorFinal : activate
         playerOnboard = false;
         player = GameObject.Find("Player").gameObject;
         holder = gameObject.transform.parent.gameObject.transform.Find("ElevatorHolder").gameObject;
+        elevatorPlatform = gameObject.transform.Find("ElevatorSolid").gameObject;
         holder.transform.position = Vector3.zero;
         holder.transform.localScale = new Vector3(1f , 1f, 1f);
         holder.transform.rotation = Quaternion.Euler(0f , 0f , 0f);
         playerScript = player.GetComponent<playerScript>();
         slamDirection = topPosition - botttomPosition; // get the direction of the slam movement and normalize it
         slamDirection = slamDirection.normalized; // note that the player can only have a vertical force applied
+        pickupInitialOffset = pickupPoint.offset.y;
     }
 
 //===========================//==========================//======================//===================//
@@ -79,16 +82,22 @@ public class elevatorFinal : activate
             {
                 Debug.Log("Slammed");
                 SummitSlam();
+                onBoard.Clear();
             }
             ascending = !ascending;
             moveTimer = 0f;
         }
-        
+        else if(moveTimer > 0.1f && overcharge && !ascending)
+        {
+            
+        }
 
         bool wasJumpBanned = jumpBan;
 
         if(overcharge && ascending)
         {
+            elevatorPlatform.layer = 25; // dynamic environment is a non-jumpable layer
+
             if(playerOnboard) // if the elevator is ascending with a slam, prevent the player from jumping (until right at the end)
             {
                 jumpBan = true;
@@ -98,6 +107,8 @@ public class elevatorFinal : activate
         }
         else // the player can jump normally and the slam force will not be applied
         {
+            elevatorPlatform.layer = 23; // elevator layer is a jumpable layer
+
             if(overcharge && !ascending && moveTimer > 0.8f) jumpBan = true;
             else jumpBan = false;
             
@@ -123,6 +134,7 @@ public class elevatorFinal : activate
 
         if(ascending)
         {
+            pickupPoint.offset = new Vector2(0 , pickupInitialOffset);
             if(overcharge) // move timer speeds up
             {
                 moveTimer += Time.fixedDeltaTime / slamUpTime;
@@ -142,7 +154,11 @@ public class elevatorFinal : activate
 
             if(moveTimer > (1 - childDisableTime) && !playerOnboard)
             {
-                //pickupPoint.enabled = false;
+                pickupPoint.offset = new Vector2(0 , 5000f);
+            }
+            else
+            {
+                pickupPoint.offset = new Vector2(0 , pickupInitialOffset);
             }
 
             // smoothly move downwards based on the move timer
@@ -162,6 +178,10 @@ public class elevatorFinal : activate
             if(child.tag == "Player" && Input.GetAxisRaw("Vertical") > 0.1f) // set jump boost force for player
             {
                 slamLaunchForce = jumpLaunchForce;
+                jumpBan = false;
+                playerScript.jumpBan = false;
+                playerScript.jumpGateTimer = 0f;
+                playerScript.coyoteTimeLimit = 0.4f;
                 playerScript.remainingJumps = playerScript.maximumJumps - 1;
             }
             else
@@ -230,6 +250,8 @@ public class elevatorFinal : activate
             }
             playerOnboard = false; // player is no longer on board
             if(!slam) onBoard.Remove(player);
+            jumpBan = false;
+            playerScript.jumpBan = false;
             player.transform.parent = null; // the player is no longer a child of the holder
         }
         else // set the leg or arm full game object so that it is no longer the child of the holder
@@ -245,7 +267,7 @@ public class elevatorFinal : activate
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector3 collisionNormal = col.contacts[0].normal;
-        if(collisionNormal.y < 0.55f)
+        if(collisionNormal.y < 0.55f && col.transform.position.y >= holder.transform.position.y)
         {
             Parent(col.gameObject);
             Debug.Log(col.gameObject.name + " has boarded");
