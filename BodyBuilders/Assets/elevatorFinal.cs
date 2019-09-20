@@ -30,6 +30,7 @@ public class elevatorFinal : activate
     Vector2 motion;
     float pickupInitialOffset;
     bool jumpBan;
+    float jumpCutTimer = 3f;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
 
 //===========================//==========================//======================//===================//
@@ -83,13 +84,20 @@ public class elevatorFinal : activate
                 Debug.Log("Slammed");
                 SummitSlam();
                 onBoard.Clear();
+                jumpCutTimer = 0f; // sets jumpCut within the limits
             }
             ascending = !ascending;
             moveTimer = 0f;
         }
-        else if(moveTimer > 0.1f && overcharge && !ascending)
+
+        if(jumpCutTimer > -1f && jumpCutTimer < 1f) // while within the limits, increase in value to 0.1, cutting off the player's remaining jumps by 1 to offset the ground check on the elevator
         {
-            
+            jumpCutTimer += Time.fixedDeltaTime;
+            if(jumpCutTimer > 0.1f)
+            {
+                playerScript.remainingJumps = playerScript.maximumJumps-1;
+                jumpCutTimer = 3f;
+            }
         }
 
         bool wasJumpBanned = jumpBan;
