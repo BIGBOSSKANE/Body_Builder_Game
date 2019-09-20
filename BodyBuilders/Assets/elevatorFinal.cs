@@ -206,6 +206,7 @@ public class elevatorFinal : activate
                 if(!onBoard.Contains(player)) onBoard.Add(player); // add parent gameObject
                 player.transform.parent = holder.transform;
                 playerScript.jumpBan = true;
+                jumpBan = true; // reset jumpBan just to make sure it is not overwritten
             }
             else
             {
