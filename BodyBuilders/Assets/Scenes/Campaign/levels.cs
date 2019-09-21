@@ -70,6 +70,7 @@ Level 7:
         - Put charged power cells in power stations to activate linked objects (in this case, a door)
     - Force the player to discard their arms and swap out for shield arms
     - The level at this stage will consist of a linear group of rectangular rooms.
+    
     - In the first room, the player will be unable to pass through a closed door.
         - There is a banshee in the middle of the room.
         - There is also a pair of laser routers in the room; one is positioned in the far wall above the door, and is connected to the door by a wire. It is pointed to the right. The other laser router is positioned at the top left of the room and is pointed right at the one above the door.

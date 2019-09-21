@@ -120,6 +120,8 @@ public class cameraWaypoint : MonoBehaviour
                 playerPos = col.gameObject.transform.position;
                 NextCoordinate();
             }
+
+            if(firstPointLock && onlyOnce) Destroy(gameObject);
         }
     }
 

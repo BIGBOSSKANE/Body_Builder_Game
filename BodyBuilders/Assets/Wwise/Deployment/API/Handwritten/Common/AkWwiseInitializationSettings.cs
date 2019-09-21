@@ -340,7 +340,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 		}
 
 		AkCallbackManager.Init(ActivePlatformSettings.CallbackManagerInitializationSettings);
-		UnityEngine.Debug.Log("WwiseUnity: Sound engine initialized successfully.");
+		//UnityEngine.Debug.Log("WwiseUnity: Sound engine initialized successfully.");
 		AkBankManager.LoadInitBank();
 		return true;
 	}

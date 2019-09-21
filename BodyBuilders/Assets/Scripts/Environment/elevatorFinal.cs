@@ -108,7 +108,6 @@ public class elevatorFinal : activate
             {
                 jumpBan = true;
                 playerScript.remainingJumps = playerScript.maximumJumps;
-                Debug.Log("Jump Banned");
             }
         }
         else // the player can jump normally and the slam force will not be applied
@@ -276,7 +275,6 @@ public class elevatorFinal : activate
         if(collisionNormal.y < 0.55f && col.transform.position.y >= holder.transform.position.y)
         {
             Parent(col.gameObject);
-            Debug.Log(col.gameObject.name + " has boarded");
         }
     }
 
