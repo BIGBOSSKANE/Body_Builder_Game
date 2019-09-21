@@ -55,10 +55,10 @@ public class Legs : MonoBehaviour
         jumpLayer = playerScript.jumpLayer;
         playerColliderObject = transform.Find("playerCollider").gameObject;
         playerBoxCol = playerColliderObject.GetComponent<BoxCollider2D>();
-        playerBoxCol.enabled = true;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         SetType();
         CheckForParent();
+        playerBoxCol.enabled = true;
         unavailableTimer = 1f;
     }
 

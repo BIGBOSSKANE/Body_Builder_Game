@@ -69,7 +69,6 @@ public class elevatorFinal : activate
 
         ElevatorMovement(); // the elevator moves
         holder.transform.position = transform.position; // set the holder's position
-
     }
 
 //===========================//==========================//======================//===================//
@@ -81,7 +80,6 @@ public class elevatorFinal : activate
         {
             if(ascending && overcharge) // call for the slam force effect when at the peak of a slam
             {
-                Debug.Log("Slammed");
                 SummitSlam();
                 onBoard.Clear();
                 jumpCutTimer = 0f; // sets jumpCut within the limits
@@ -117,7 +115,7 @@ public class elevatorFinal : activate
         {
             elevatorPlatform.layer = 23; // elevator layer is a jumpable layer
 
-            if(overcharge && !ascending && moveTimer > 0.8f) jumpBan = true;
+            if(overcharge && !ascending && moveTimer > 0.8f && playerOnboard) jumpBan = true;
             else jumpBan = false;
             
             slam = false;

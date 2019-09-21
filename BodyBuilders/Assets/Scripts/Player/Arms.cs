@@ -46,10 +46,11 @@ public class Arms : MonoBehaviour
         playerBoxCol = playerColliderObject.GetComponent<BoxCollider2D>();
         playerBoxCol.enabled = true;
 
-        unavailableTimer = 0f;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         SetType();
         CheckForParent();
+        playerBoxCol.enabled = true;
+        unavailableTimer = 1f;
     }
 
     public void SetType()
@@ -122,6 +123,7 @@ public class Arms : MonoBehaviour
 
     public void Attached()
     {
+        Debug.Log("Attached");
         attached = true;
         playerBoxCol.enabled = false;
         solidBoxCollider.enabled = false;
@@ -155,12 +157,15 @@ public class Arms : MonoBehaviour
         {
             playerBoxCol.enabled = false;
             playerBoxCol.enabled = true;
+            Debug.Log("Grounded");
         }
         else if(col.gameObject.tag == "Legs")
         {
             // add options for legs to attach here
         }
     }
+
+
 
     void OnDrawGizmos()
     {

@@ -920,7 +920,7 @@ void BoxInteract()
             {
                 if(closestBox != null)
                 {
-                    if(((closestBox.tag != "HeavyLiftable")||(closestBox.tag != "powerCell")) || lifter)
+                    if(((closestBox.tag != "HeavyLiftable") && (closestBox.tag != "powerCell")) || lifter)
                     {
                         AkSoundEngine.PostEvent("PickUpBox" , gameObject);
                         closestBox.transform.parent = this.transform;
