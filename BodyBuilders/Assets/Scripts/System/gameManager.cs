@@ -73,7 +73,7 @@ public class gameManager : MonoBehaviour
                     {
                         for(int i = 0; i < arms.Length; i++)
                         {
-                            if(arms[i].GetComponent<Arms>().instance == armIdentifier)
+                            if(arms[i].name != "playerCollider" && arms[i].GetComponent<Arms>().instance == armIdentifier)
                             {
                                 Destroy(arms[i]);
                                 break;
@@ -89,7 +89,7 @@ public class gameManager : MonoBehaviour
                     {
                         for(int i = 0; i < legs.Length; i++)
                         {
-                            if(legs[i].GetComponent<Legs>().instance == legIdentifier)
+                            if(legs[i].name != "playerCollider" && legs[i].GetComponent<Legs>().instance == legIdentifier)
                             {
                                 Destroy(legs[i]);
                                 break;
@@ -101,7 +101,6 @@ public class gameManager : MonoBehaviour
                 GameObject[] augments = GameObject.FindGameObjectsWithTag("HeadAugment");
                 if(augments.Length != 0)
                 {
-                    Debug.Log("Heyo");
                     for(int i = 0; i < augments.Length; i++)
                     {
                         int foundIdentifier = augments[i].GetComponent<augmentPickup>().instance;

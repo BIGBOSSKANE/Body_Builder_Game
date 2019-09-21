@@ -5,28 +5,55 @@ using UnityEngine;
 public class powerCell : activate
 {
     Rigidbody2D rb;
+    SpriteRenderer spriteRenderer;
+    bool wasActivated;
+    bool wasOvercharged;
+    public int identifier;
+
 
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        wasActivated = false;
     }
 
     void Update()
     {
-        if(activated) // if the power cell is charged
+        if(activated != wasActivated) // if the power cell is charged
         {
-            if(overcharge)
+            if(activated)
             {
-                gameObject.name = "overchargedPowerCell";
+                if(overcharge)
+                {
+                    gameObject.name = "overchargedPowerCell";
+                    spriteRenderer.color = Color.green;
+                }
+                else
+                {
+                    gameObject.name = "chargedPowerCell";
+                    spriteRenderer.color = Color.yellow;
+                }
+                if(gameObject.transform.parent != null && gameObject.transform.parent.gameObject.tag == "PowerStation")
+                {
+                    transform.parent.gameObject.GetComponent<powerStation>().UpdateCharge(activated , overcharge);
+                }
+                wasActivated = true;
             }
             else
             {
-                gameObject.name = "chargedPowerCell";
+                gameObject.name = "unchargedPowerCell";
+                spriteRenderer.color = Color.grey;
+                wasActivated = false;
             }
         }
-        else
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if(wasOvercharged != overcharge && overcharge)
         {
-            gameObject.name = "unchargedPowerCell";
+            activated = true;
         }
     }
 }

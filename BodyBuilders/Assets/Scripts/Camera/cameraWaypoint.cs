@@ -35,7 +35,7 @@ public class cameraWaypoint : MonoBehaviour
     Camera2DFollow cameraScript;
     Vector2 previousPosition; // used for drawing lines between locations
     Vector2 playerPos;
-    [SerializeField] private SubClass[] waypointCycle;
+    [Tooltip("To create a new waypoint, increase the size of this array, then adjust the parameters of each waypoint.")] public SubClass[] waypointCycle;
 
     public SubClass GetValue (int index)
     {

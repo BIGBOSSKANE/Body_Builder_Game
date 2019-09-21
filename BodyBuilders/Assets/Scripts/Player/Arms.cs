@@ -123,7 +123,6 @@ public class Arms : MonoBehaviour
 
     public void Attached()
     {
-        Debug.Log("Attached");
         attached = true;
         playerBoxCol.enabled = false;
         solidBoxCollider.enabled = false;

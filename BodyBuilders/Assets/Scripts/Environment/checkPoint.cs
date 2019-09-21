@@ -22,10 +22,10 @@ public class checkPoint : MonoBehaviour
     [Tooltip("Player respawn legs")] [Range (1 , 3)] public int legConfiguration = 1;
     gameManager gameManager;
     BoxCollider2D boxCollider;
-    int armIdentifier;
-    int legIdentifier;
-    int augmentScalerIdentifier;
-    int augmentHookshotIdentifier;
+    public int armIdentifier;
+    public int legIdentifier;
+    public int augmentScalerIdentifier;
+    public int augmentHookshotIdentifier;
 
 
     void Start()
