@@ -138,6 +138,7 @@ Transform:
   - {fileID: 341929783118576127}
   - {fileID: 341929781027250970}
   - {fileID: 341929781484341446}
+  - {fileID: 868572189045546334}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -273,13 +274,12 @@ MonoBehaviour:
   colliding: 0
   transformation: {fileID: 4429156300681675984, guid: 10875a44717d0c94c8d2581360f8238c,
     type: 3}
-  rCLeft: {fileID: 341929781484341446}
-  lCLeft: {fileID: 0}
-  range: 15
   pos: {x: 0, y: 0, z: 0}
   time: 3.5
   patrolling: 0
   detected: 1
+  distance: 100
+  groundDetection: {fileID: 868572189045546334}
 --- !u!1 &341929781484341305
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,4 +382,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 341929781194705467}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7401697134921286157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 868572189045546334}
+  m_Layer: 11
+  m_Name: Ground Detect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &868572189045546334
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7401697134921286157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.39865, y: -0.682, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 341929781194705467}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

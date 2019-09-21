@@ -78,6 +78,7 @@ public class gyreDetect : MonoBehaviour
             {
                 Debug.Log("found again");
                 colliding = true;
+                time = resetTime;
             }
             else
             {

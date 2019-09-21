@@ -10,8 +10,6 @@ public class newBladeBot : MonoBehaviour
 
     playerScript playerScript;
 
-    bool moved = false;
-
     public GameObject dD; //detect down
     public GameObject dU; //detect up
     public GameObject dL; //detect left
