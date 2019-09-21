@@ -15,7 +15,7 @@ public class bansheeScript : MonoBehaviour
     GameObject collisionEffect;
     GameObject burstEffect;
     [Tooltip("How long must the laser focus to activate the death ray?")] public float laserChargeTime = 1.5f;
-    float  laserChargeTimer = 0f;    
+    public float  laserChargeTimer = 0f;    
     bool isCharging = false;
     [Tooltip("How long does the laser stop before firing the death ray?")] public float laserPauseTime = 0.5f;
     float laserPauseTimer = 0f;
@@ -88,6 +88,7 @@ public class bansheeScript : MonoBehaviour
             RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, laserRange , laserLayer);
             if(laser.collider != null)
             {
+                Debug.Log(laser.collider.gameObject.name);
                 laserEndpoint = laser.point;
                 collisionEffect.SetActive(true);
 
@@ -118,18 +119,18 @@ public class bansheeScript : MonoBehaviour
                     {
                         playerScript.DeathRay(false);
                         playerScript.EndDeflect();
-                        if(isFiring)
+                    }
+                    if(isFiring)
+                    {
+                        if(!killedPlayer)
                         {
-                            if(!killedPlayer)
-                            {
-                                playerScript.Die(0.4f);
-                                killedPlayer = true;
-                            }
+                            playerScript.Die(0.4f);
+                            killedPlayer = true;
                         }
-                        else if(!isPaused)
-                        {
-                            isCharging = true;
-                        }
+                    }
+                    else if(!isPaused)
+                    {
+                        isCharging = true;
                     }
                 }
                 else if(laser.collider.tag == "Shield") // if it hits the player's force field shield
@@ -228,7 +229,8 @@ public class bansheeScript : MonoBehaviour
             isCharging = false;
             collisionEffect.SetActive(false);
             laserLine.enabled = false;
-            laserChargeTimer -= 2f * Time.deltaTime;
+            if(laserChargeTimer > 0) laserChargeTimer -= 2f * Time.deltaTime;
+            if(laserChargeTimer <= 0) laserChargeTimer = 0f;
         }
 
         if(isCharging)
