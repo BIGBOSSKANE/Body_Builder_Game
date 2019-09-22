@@ -88,10 +88,11 @@ public class playerSpawner : MonoBehaviour
             {
                 Arms.armType = Arms.armIdentifier.Shield;
             }
+            
+            Arms.instance = armIdentifier;
             player = Instantiate(prefabHolder.HeadAndArms, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
-            Arms.instance = armIdentifier;
         }
         else if(partConfiguration == 3)
         {
@@ -109,10 +110,10 @@ public class playerSpawner : MonoBehaviour
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
 
+            Legs.instance = legIdentifier;
             player = Instantiate(prefabHolder.HeadAndLegs, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
-            Legs.instance = legIdentifier;
         }
         else if(partConfiguration == 4)
         {
@@ -144,11 +145,11 @@ public class playerSpawner : MonoBehaviour
                 Legs.legType = Legs.legIdentifier.Afterburner;
             }
 
+            Arms.instance = armIdentifier;
+            Legs.instance = legIdentifier;
             player = Instantiate(prefabHolder.Fullbody, spawnPos, Quaternion.identity);
             playerScript = player.GetComponent<playerScript>();
             player.name = "Player";
-            Arms.instance = armIdentifier;
-            Legs.instance = legIdentifier;
         }
 
         if(headConfiguration == 1) // basic

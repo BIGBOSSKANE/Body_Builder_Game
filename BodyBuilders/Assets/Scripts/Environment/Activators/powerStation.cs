@@ -58,7 +58,6 @@ public class powerStation : activate
     {
         if(col.tag == "powerCell" && !holdingPowerCell)
         {
-            Debug.Log("Added powercell");
             attachedPowerCell = col.gameObject;
             attachedRb = attachedPowerCell.GetComponent<Rigidbody2D>();
             attachedRb.velocity = Vector2.zero;

@@ -89,7 +89,6 @@ public class bansheeScript : MonoBehaviour
             RaycastHit2D laser = Physics2D.Raycast(laserOrigin, laserOriginDirection, laserRange , laserLayer);
             if(laser.collider != null)
             {
-                Debug.Log(laser.collider.gameObject.name);
                 laserEndpoint = laser.point;
                 collisionEffect.SetActive(true);
 

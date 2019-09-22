@@ -32,12 +32,12 @@ public class gameManager : MonoBehaviour
     playerSpawner playerSpawnerScript;
     
     private GameObject[] arms;
-    int armIdentifier;
+    public int armIdentifier;
     private GameObject[] legs;
-    int legIdentifier;
+    public int legIdentifier;
     private GameObject[] augments;
     public int augmentScalerIdentifier; // scaler
-    int augmentHookshotIdentifier; // hookshot
+    public int augmentHookshotIdentifier; // hookshot
 
     void Awake()
     {
