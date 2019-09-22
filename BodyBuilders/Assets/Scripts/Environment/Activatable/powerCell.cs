@@ -7,9 +7,7 @@ public class powerCell : activate
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
     bool wasActivated;
-    bool wasOvercharged;
     public int identifier;
-
 
     void Start()
     {
@@ -45,14 +43,6 @@ public class powerCell : activate
                 spriteRenderer.color = Color.grey;
                 wasActivated = false;
             }
-        }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if(wasOvercharged != overcharge && overcharge)
-        {
-            activated = true;
         }
     }
 }

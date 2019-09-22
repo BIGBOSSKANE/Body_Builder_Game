@@ -53,6 +53,7 @@ public class elevatorScript : activate
         playerScript = player.GetComponent<playerScript>();
         slamDirection = topPosition - botttomPosition; // get the direction of the slam movement and normalize it
         slamDirection = slamDirection.normalized; // note that the player can only have a vertical force applied
+        jumpSlam = true;
     }
 
 

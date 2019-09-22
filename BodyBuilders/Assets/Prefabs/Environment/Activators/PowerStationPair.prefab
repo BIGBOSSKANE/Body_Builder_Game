@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2850406549715735482}
   - component: {fileID: 2850406549715735483}
   m_Layer: 13
-  m_Name: PowerStation
+  m_Name: PowerStationPair
   m_TagString: PowerStation
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,6 +100,8 @@ MonoBehaviour:
   antiSync: 1
   holdingPowerCell: 0
   canStoreCharge: 0
+  lockChargedPowerCell: 0
+  lockOverchargedPowerCell: 0
   currentCore: Empty
   activates: []
 --- !u!61 &2850406549715735483
@@ -142,7 +144,7 @@ GameObject:
   - component: {fileID: 2850406551026161715}
   - component: {fileID: 2850406551026161724}
   m_Layer: 10
-  m_Name: unchargedPowerCell
+  m_Name: PowerCell
   m_TagString: powerCell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,6 +180,7 @@ MonoBehaviour:
   overcharge: 0
   overchargeable: 1
   antiSync: 1
+  identifier: 0
 --- !u!212 &2850406551026161714
 SpriteRenderer:
   m_ObjectHideFlags: 0

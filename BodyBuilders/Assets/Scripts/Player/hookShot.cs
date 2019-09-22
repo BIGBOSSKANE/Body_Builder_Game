@@ -93,7 +93,8 @@ public class hookShot : MonoBehaviour
         }
 
         aimDirection = Quaternion.Euler(0 , 0 , aimAngle * Mathf.Rad2Deg) * Vector2.right;
-        augmentAimDirection = Quaternion.Euler(0 , 0 , (aimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
+        float scaleX = transform.localScale.x;
+        augmentAimDirection = Quaternion.Euler(0 , 0 , (aimAngle * Mathf.Rad2Deg) + scaleX * 45f) * Vector2.right;
 
         playerPosition = transform.position;
 
@@ -109,7 +110,7 @@ public class hookShot : MonoBehaviour
             {
                 firedAimAngle = Mathf.PI * 2 + aimAngle;
             }
-            Vector3 augmentFiredDirection = Quaternion.Euler(0 , 0 , (firedAimAngle * Mathf.Rad2Deg) + transform.localScale.x * 45f) * Vector2.right;
+            Vector3 augmentFiredDirection = Quaternion.Euler(0 , 0 , (firedAimAngle * Mathf.Rad2Deg) + scaleX * 45f) * Vector2.right;
             hookShotAugment.transform.up = augmentFiredDirection;
             playerScript.ropeDirection = augmentFiredDirection;
         }

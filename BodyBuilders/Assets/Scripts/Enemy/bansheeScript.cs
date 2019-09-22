@@ -134,6 +134,14 @@ public class bansheeScript : MonoBehaviour
                         isCharging = true;
                     }
                 }
+                else if(laser.collider.tag == "powerCell")
+                {
+                    if(laserTag != "powerCell" && isFiring)
+                    {
+                        powerCell = laser.transform.gameObject.GetComponent<powerCell>();
+                        powerCell.activated = true;
+                    }
+                }
                 else if(laser.collider.tag == "HeldBox")
                 {
                     collisionEffect.transform.position = laser.point;
@@ -142,6 +150,7 @@ public class bansheeScript : MonoBehaviour
                         if(playerScript.heldBoxTag == "powerCell")
                         {
                             powerCell powerCell = target.transform.Find("PowerCell").GetComponent<powerCell>();
+                            Debug.Log(powerCell);
                             powerCell.activated = true;
                         }
                     }

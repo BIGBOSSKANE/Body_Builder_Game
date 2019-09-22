@@ -201,7 +201,6 @@ public class playerScript : MonoBehaviour
     bool afterburnerGlide = false;
     checkpointData checkpointData;
     gameManager gameManager;
-    bool scouting = false;
 
     [HideInInspector] public int armIdentifier = 0;
     [HideInInspector] public int legIdentifier = 0;
@@ -305,14 +304,20 @@ public class playerScript : MonoBehaviour
             inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
             rawInputX = Mathf.RoundToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
         }
+        else
+        {
+            inputX = 0f;
+            rawInputX = 0;
+        }
 
-        if(((facingDirection == -1 && inputX > 0) || facingDirection == 1 && inputX < 0) && !isSwinging)
+        if(((facingDirection == -1 && rawInputX > 0.5) || facingDirection == 1 && rawInputX < -0.5) && !isSwinging)
         {
             reverseDirectionTimer = 0f;
-            Vector3 Scaler = transform.localScale;
-            facingDirection = rawInputX;
-            Scaler.x = facingDirection;
-            transform.localScale = Scaler;
+            if(Mathf.Abs(rawInputX) >= 0.5f)
+            {
+                facingDirection = Mathf.CeilToInt(rawInputX);
+                transform.localScale = new Vector3(facingDirection , 1 , 1);
+            }
         }
 
         if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
