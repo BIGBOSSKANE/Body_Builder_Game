@@ -310,9 +310,9 @@ public class playerScript : MonoBehaviour
         {
             reverseDirectionTimer = 0f;
             Vector3 Scaler = transform.localScale;
-            Scaler.x *= -1;
-            transform.localScale = Scaler;
             facingDirection = rawInputX;
+            Scaler.x = facingDirection;
+            transform.localScale = Scaler;
         }
 
         if(isGrounded) // check if the player has just landed or if they have been on the ground for a while
@@ -936,7 +936,6 @@ void BoxInteract()
                         holding = true;
                         if(closestBox.tag == "powerCell")
                         {
-
                             heldPowerCellCol.enabled = true;
                             heldBox = closestBox.gameObject;
                             heldBoxTag = closestBox.tag;
