@@ -26,6 +26,7 @@ public class laserRouter : activate
     Vector2 originalPosition; // starting point if moving due to an activate call
     [Tooltip("Where to move to when non-rotationally patrolling")] public Vector2 moveTo; // end point when moving due to an activate call
     Vector2 targetPosition; // the endpoint of the movement, put into world space
+    GameObject player; // the player
     protected bool deathRay = false; // will the ray kill?
     protected float colRadius; // radius of the circle collider
     protected GameObject aimSprite; // sprite indicating the aim direction
@@ -55,6 +56,7 @@ public class laserRouter : activate
 
     void Start()
     {
+        player = GameObject.Find("Player").gameObject;
         aimSprite = gameObject.transform.Find("aimSprite").gameObject;
         coreSprite = aimSprite.transform.Find("coreSprite").gameObject;
         coreSprite.SetActive(false);
@@ -184,6 +186,19 @@ public class laserRouter : activate
                     }
                 }
             }
+            else if(laser.collider.tag == "HeldBox")
+            {
+                collisionEffect.transform.position = laser.point;
+                if(laserTag != "HeldBox" && charged)
+                {
+                    if(playerScript.heldBoxTag == "powerCell")
+                    {
+                        powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
+                        powerCell.activated = true;
+                        if(overcharge) powerCell.overcharge = true;
+                    }
+                }
+            }
             else if(laser.collider.tag == "Shield")
             {
                 if(laserTag != "Shield") // if the most recent collider hit was not the player
@@ -226,7 +241,6 @@ public class laserRouter : activate
                     Destroy(laser.collider.gameObject);
                 }
             }
-
             if(laser.collider.tag == "powerCell")
             {
                 if(laserTag != "powerCell")
@@ -304,6 +318,19 @@ public class laserRouter : activate
                     else
                     {
                         laserRouter.DeathRay(false);
+                    }
+                }
+            }
+            else if(laser.collider.tag == "HeldBox")
+            {
+                collisionEffect.transform.position = laser.point;
+                if(laserTag != "HeldBox" && charged)
+                {
+                    if(playerScript.heldBoxTag == "powerCell")
+                    {
+                        powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
+                        powerCell.activated = true;
+                        if(overcharge) powerCell.overcharge = true;
                     }
                 }
             }

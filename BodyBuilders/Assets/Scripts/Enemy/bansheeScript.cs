@@ -61,6 +61,7 @@ public class bansheeScript : MonoBehaviour
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
         laserLine.material = materialCharge;
+
     }
 
     // Update is called once per frame
@@ -131,6 +132,18 @@ public class bansheeScript : MonoBehaviour
                     else if(!isPaused)
                     {
                         isCharging = true;
+                    }
+                }
+                else if(laser.collider.tag == "HeldBox")
+                {
+                    collisionEffect.transform.position = laser.point;
+                    if(laserTag != "HeldBox" && isFiring)
+                    {
+                        if(playerScript.heldBoxTag == "powerCell")
+                        {
+                            powerCell powerCell = target.transform.Find("PowerCell").GetComponent<powerCell>();
+                            powerCell.activated = true;
+                        }
                     }
                 }
                 else if(laser.collider.tag == "Shield") // if it hits the player's force field shield

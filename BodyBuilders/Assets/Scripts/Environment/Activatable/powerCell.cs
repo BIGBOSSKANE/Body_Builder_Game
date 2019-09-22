@@ -16,6 +16,7 @@ public class powerCell : activate
         rb = gameObject.GetComponent<Rigidbody2D>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         wasActivated = false;
+        spriteRenderer.color = Color.grey;
     }
 
     void Update()
@@ -26,12 +27,10 @@ public class powerCell : activate
             {
                 if(overcharge)
                 {
-                    gameObject.name = "overchargedPowerCell";
                     spriteRenderer.color = Color.green;
                 }
                 else
                 {
-                    gameObject.name = "chargedPowerCell";
                     spriteRenderer.color = Color.yellow;
                 }
                 if(gameObject.transform.parent != null && gameObject.transform.parent.gameObject.tag == "PowerStation")

@@ -116,6 +116,8 @@ public class playerScript : MonoBehaviour
     GameObject arms; // the arms component
     [HideInInspector] public string armString; // this is referenced from the name of the arm prefab
     bool holding = false; // is the player holding a box?
+    [HideInInspector] public GameObject heldBox;
+    [HideInInspector] public string heldBoxTag;
     bool lifter = false; // do you have the lifter augment?
     [HideInInspector] public bool shield = false; // do you have the shield augment?
     bool climbing = false; // are you climbing?
@@ -901,11 +903,14 @@ public class playerScript : MonoBehaviour
         {
             if(hitCollider[i].gameObject.tag == "HeavyLiftable" || hitCollider[i].gameObject.tag == "Box" || hitCollider[i].gameObject.tag == "powerCell")
             {
-                distanceFromPickupPoint = Vector2.Distance(hitCollider[i].gameObject.transform.position , boxHoldPos.position);
-                if(distanceFromPickupPoint < previousDistanceFromPickupPoint || previousDistanceFromPickupPoint == 0)
+                if(!(hitCollider[i].gameObject.tag == "powerCell" && hitCollider[i].GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Static)) // if not a locked powercell
                 {
-                    previousDistanceFromPickupPoint = distanceFromPickupPoint;
-                    closestBox = hitCollider[i].gameObject;
+                    distanceFromPickupPoint = Vector2.Distance(hitCollider[i].gameObject.transform.position , boxHoldPos.position);
+                    if(distanceFromPickupPoint < previousDistanceFromPickupPoint || previousDistanceFromPickupPoint == 0)
+                    {
+                        previousDistanceFromPickupPoint = distanceFromPickupPoint;
+                        closestBox = hitCollider[i].gameObject;
+                    }
                 }
             }
             i++;
@@ -931,11 +936,16 @@ void BoxInteract()
                         holding = true;
                         if(closestBox.tag == "powerCell")
                         {
+
                             heldPowerCellCol.enabled = true;
+                            heldBox = closestBox.gameObject;
+                            heldBoxTag = closestBox.tag;
                         }
                         else
                         {
                             heldBoxCol.enabled = true;
+                            heldBox = closestBox.gameObject;
+                            heldBoxTag = closestBox.tag;
                         }
                     }
                 }
@@ -960,6 +970,8 @@ void BoxInteract()
             closestBox.GetComponent<Collider2D>().enabled = true;
             holding = false;
             closestBox = null;
+            heldBox = null;
+            heldBoxTag = null;
         } 
     }
 

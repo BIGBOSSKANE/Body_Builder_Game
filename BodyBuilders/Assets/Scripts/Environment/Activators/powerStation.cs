@@ -6,6 +6,8 @@ public class powerStation : activate
 {
     [Tooltip("Is there a power cell in the station?")] public bool holdingPowerCell = false; // has a power cell been placed in the power station, activating it
     [Tooltip("Can the power station store charge after the power cell is removed?")] public bool canStoreCharge = false;
+    [Tooltip("Can a charged power cell ever be removed from the station?")] public bool lockChargedPowerCell = false;
+    [Tooltip("Can an overcharged power cell ever be removed from the station?")] public bool lockOverchargedPowerCell = false;
     public string currentCore = "Empty";
     GameObject attachedPowerCell;
     SpriteRenderer spriteRenderer;
@@ -67,11 +69,17 @@ public class powerStation : activate
             powerCellIdentifier = powerCell.identifier;
 
             UpdateCharge(powerCell.activated , powerCell.overcharge);
+
+            if((powerCell.activated && lockChargedPowerCell) || (powerCell.overcharge && powerCell.activated && lockOverchargedPowerCell))
+            {
+                attachedRb.bodyType = RigidbodyType2D.Static;
+            }
         }
     }
 
     public void UpdateCharge(bool activate , bool overcharged)
     {
+        bool wasActivated = activated;
         if(activate) activated = true;
         if(overcharged && overchargeable) overcharge = true;
 
@@ -81,7 +89,8 @@ public class powerStation : activate
             else spriteRenderer.color = new Color32(254 , 165 , 0 , 255);
         }
         else spriteRenderer.color = Color.black;
-        StateChange(activated);
+       
+       if(wasActivated != activated) StateChange(activated);
     }
 
     void OnTriggerExit2D(Collider2D col)
@@ -94,6 +103,7 @@ public class powerStation : activate
 
     void DetachPowercell()
     {
+        bool wasActivated = activated;
         Debug.Log("Exited");
         attachedPowerCell = null;
         holdingPowerCell = false;
@@ -104,8 +114,8 @@ public class powerStation : activate
             activated = false;
             overcharge = false;
             spriteRenderer.color = Color.black;
+            if(wasActivated != activated) StateChange(activated);
         }
-        StateChange(activated);
     }
 
     void StateChange(bool active)
