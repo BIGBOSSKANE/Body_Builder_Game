@@ -119,6 +119,7 @@ public class Arms : MonoBehaviour
         boxColTimer = (playerScript.isGrounded)? 0.4f : 0.6f;
         playerBoxCol.enabled = false;
         gameObject.layer = 13;
+        playerColliderObject.SetActive(true);
     }
 
     public void Attached()
@@ -128,6 +129,7 @@ public class Arms : MonoBehaviour
         solidBoxCollider.enabled = false;
         rb.isKinematic = true;
         gameObject.layer = 0; // switch physics layers so that the player raycast doesn't think it's ground
+        playerColliderObject.SetActive(false);
     }
 
     void OnCollisionEnter2D(Collision2D col)

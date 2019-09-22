@@ -157,6 +157,7 @@ public class Legs : MonoBehaviour
         unavailableTimer = 0f;
         rb.isKinematic = false;
         gameObject.layer = 13;
+        playerColliderObject.SetActive(true);
         if(gameObject.name == "GroundbreakerLegs")
         {
             groundBreaker = true;
@@ -169,6 +170,7 @@ public class Legs : MonoBehaviour
         solidBoxCol.enabled = false;
         playerBoxCol.enabled = false;
         rb.isKinematic = true;
+        playerColliderObject.SetActive(false);
         gameObject.layer = 0; // switch physics layers so the player raycast doesn't think it's ground
     }
 
