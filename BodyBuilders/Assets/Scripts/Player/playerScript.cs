@@ -387,14 +387,7 @@ public class playerScript : MonoBehaviour
 
             forceSlaved = true;
             forceSlavedTimer = 0f;
-
-            /*
-            if(rawInputX != 0)
-            {
-                rb.AddForce(new Vector2(rawInputX * 3f, 0f) , ForceMode2D.Force); // apply the swinging force
-            }
-            */
-
+            
             // optimised swinging code sourced from raywenderlich.com - Sean Duffy
             Vector2 playerToHookDirection = ((Vector2)hookshotAnchor.transform.position - (Vector2)transform.position).normalized;
 
@@ -438,7 +431,7 @@ public class playerScript : MonoBehaviour
                 targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
             }
 
-            if(scalingWall)
+            if(scalingWall) // Scaler Climbing and Jumping
             {
                 if(Input.GetAxisRaw("Vertical") > 0) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
                 {

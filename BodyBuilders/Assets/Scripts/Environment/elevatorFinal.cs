@@ -7,8 +7,8 @@ public class elevatorFinal : activate
     [Tooltip("How long does the elevator take to move normally?")] [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Tooltip("How long does the elevator take to slam upwards?")] [Range (0.1f , 5f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
     // public bool overcharge = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
-    [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 10f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
-    [Tooltip("How much futher is the player launched if they jump at the apex of the slam?")] [Range (0f , 10f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
+    [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 20f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
+    [Tooltip("How much futher is the player launched if they jump at the apex of the slam?")] [Range (0f , 20f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
     [Tooltip("What is the window in which the player can jump to get the boosted launch force?")] [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
     [Tooltip("Disables the childing collider for this long before hitting the bottom (avoids jostling the player)")] [Range (0f , 1f)] public float childDisableTime = 1f; // how much time does the elevator have from the bottom of the movement to disable the childing trigger collider (prevents jittering)
     [Tooltip("What layers can the elevator lift?")] public LayerMask liftableObjects; // what objects does the elevator interact with?
@@ -19,6 +19,7 @@ public class elevatorFinal : activate
     bool jumpSlam; // did the player add vertical input within a short window of the slam summit?
     [Tooltip("The high/end point of the elevator (if it slams, it will be towards this)")] public Vector2 highPoint; // the position of the elevator's endpoint (the elevator slams towards this)
     [Tooltip("The low/starting point of the elevator (It will start here)")] public Vector2 lowPoint; // the position of the elevator's starting point
+     [Range (1f , 20f)] [Tooltip("Use to set the vertical force when slamming horizontally")] public float verticalForceOverride = 3f;
     Vector2 slamDirection; // the vector direction of the elevator slam
     GameObject player; // the player gameObject
     GameObject holder; // the holder gameObject to which elevator childed objects are assigned
@@ -32,6 +33,7 @@ public class elevatorFinal : activate
     bool jumpBan;
     float jumpCutTimer = 3f;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
+    bool horizontal;
 
 //===========================//==========================//======================//===================//
 
@@ -54,6 +56,7 @@ public class elevatorFinal : activate
         slamDirection = topPosition - botttomPosition; // get the direction of the slam movement and normalize it
         slamDirection = slamDirection.normalized; // note that the player can only have a vertical force applied
         pickupInitialOffset = pickupPoint.offset.y;
+        horizontal = (Mathf.Abs(slamDirection.x) > Mathf.Abs(slamDirection.y))? true : false;
     }
 
 //===========================//==========================//======================//===================//
@@ -157,6 +160,11 @@ public class elevatorFinal : activate
         {
             moveTimer += Time.fixedDeltaTime / moveTime; // cannot slam down, only moves at normal speed
 
+            if(moveTimer > 0.2f && !ascending && overcharge)
+            {
+                elevatorPlatform.layer = 23;
+            }
+
             if(moveTimer > (1 - childDisableTime) && !playerOnboard)
             {
                 pickupPoint.offset = new Vector2(0 , 5000f);
@@ -180,20 +188,33 @@ public class elevatorFinal : activate
         foreach (GameObject child in onBoard)
         {
             float slamLaunchForce = 0f;
-            if(child.tag == "Player" && Input.GetAxisRaw("Vertical") > 0.1f) // set jump boost force for player
+            if(child.tag == "Player" && Input.GetAxisRaw("Vertical") > 0.1f || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x))) // set jump boost force for player
             {
                 slamLaunchForce = jumpLaunchForce;
                 jumpBan = false;
                 playerScript.jumpBan = false;
                 playerScript.jumpGateTimer = 0f;
                 playerScript.coyoteTimeLimit = 0.4f;
+                playerScript.forceSlaved = true;
                 playerScript.remainingJumps = playerScript.maximumJumps - 1;
+                elevatorPlatform.layer = 25;
             }
             else
             {
                 if(child.tag == "Player") // set standard force on player
                 {
                     slamLaunchForce = launchForce * 1f;
+                    if(horizontal)
+                    {
+                        jumpBan = false;
+                        playerScript.jumpBan = false;
+                        playerScript.jumpGateTimer = 0f;
+                        playerScript.coyoteTimeLimit = 0.4f;
+                        playerScript.forceSlaved = true;
+                        playerScript.remainingJumps = playerScript.maximumJumps - 1;
+
+                        elevatorPlatform.layer = 25;
+                    }
                 }
                 else if(child.tag == "Legs" || child.tag == "Arms") // set force on legs and arms
                 {
@@ -209,7 +230,9 @@ public class elevatorFinal : activate
                 }
             }
 
-            child.GetComponent<Rigidbody2D>().AddForce(slamDirection * slamLaunchForce , ForceMode2D.Impulse);
+            Vector2 slamForce = slamDirection * slamLaunchForce;
+            if(slamForce.y < verticalForceOverride) slamForce.y = verticalForceOverride;
+            child.GetComponent<Rigidbody2D>().AddForce(slamForce , ForceMode2D.Impulse);
             Unparent(child);
         }
     }
