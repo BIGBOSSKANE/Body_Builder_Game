@@ -190,8 +190,8 @@ public class playerSpawner : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        Preview();
-        if(preview)
+        Preview(); // always make sure the placement is correct
+        if(preview) // preview part configuration
         {
             if(partConfiguration != previousPartConfig)
             {
