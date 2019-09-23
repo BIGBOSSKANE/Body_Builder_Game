@@ -71,6 +71,7 @@ public class jumpPad : activate
             colRb = col.rigidbody;
             colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y);
             playerScript.forceSlaved = true;
+            colRb.gravityScale = 2f;
 
             if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
             {

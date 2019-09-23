@@ -256,8 +256,8 @@ public class hookShot : MonoBehaviour
         ropeAttached = false;
         distanceJoint.enabled = false;
         lineRenderer.enabled = false;
-        playerScript.isSwinging = false;
+        if(playerScript != null) playerScript.isSwinging = false;
         hookShotAnchorPoint.transform.position = transform.position;
-        if(!ropeMiss && !playerScript.scalerTrueGrounded) gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
+        if(!ropeMiss && !playerScript.scalerTrueGrounded && distanceJoint.distance > 0.3f) rb.AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
     }
 }

@@ -22,11 +22,13 @@ public class fanZone : activate
     public float lockVelocityBounds = 0.25f; // if the player is moving beneath this speed, it can be locked
     Rigidbody2D colRb; // the rigidbodies of effected objects
     GameObject player; // the player game object
-    bool actingOnPlayer = false;
+    playerScript playerScript; // the player script
+    bool actingOnPlayer = false; // is the fan currently acting upon the player
 
     void Start()
     {
         player = GameObject.Find("Player").gameObject;
+        playerScript = player.GetComponent<playerScript>();
     }
     
     void OnTriggerExit2D(Collider2D col)
@@ -55,6 +57,12 @@ public class fanZone : activate
             }
 
             colRb = player.GetComponent<Rigidbody2D>();
+
+            colRb.gravityScale = 2f;
+            if(playerScript.isSwinging)
+            {
+                player.GetComponent<hookShot>().DetachRope();
+            }
 
             if(colRb.velocity.y < 0f) // if moving down, reduce velocity
             {
