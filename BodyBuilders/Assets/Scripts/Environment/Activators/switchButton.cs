@@ -14,6 +14,7 @@ public class switchButton : MonoBehaviour
     public bool activated;
     public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
     public bool overcharger = false; // does the button overcharge activatable dependent objects?
+    public bool stayActivated = false;
     public GameObject [] activates;
     int triggerCounter;
 
@@ -28,7 +29,8 @@ public class switchButton : MonoBehaviour
         triggerCounter ++;
         if(triggerCounter == 1)
         {
-            activated = !activated;
+            if(stayActivated) activated = true;
+            else activated = !activated;
             StateChange(activated);
         }
     }

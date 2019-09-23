@@ -32,6 +32,7 @@ public class elevatorFinal : activate
     float pickupInitialOffset;
     bool jumpBan;
     float jumpCutTimer = 3f;
+    bool jumpCut;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
     bool horizontal;
 
@@ -85,7 +86,7 @@ public class elevatorFinal : activate
             {
                 SummitSlam();
                 onBoard.Clear();
-                jumpCutTimer = 0f; // sets jumpCut within the limits
+                Debug.Log("Slammed");
             }
             ascending = !ascending;
             moveTimer = 0f;
@@ -94,10 +95,12 @@ public class elevatorFinal : activate
         if(jumpCutTimer > -1f && jumpCutTimer < 1f) // while within the limits, increase in value to 0.1, cutting off the player's remaining jumps by 1 to offset the ground check on the elevator
         {
             jumpCutTimer += Time.fixedDeltaTime;
-            if(jumpCutTimer > 0.1f)
+            if(jumpCutTimer > 0.1f && jumpCut)
             {
+                Debug.Log("JumpCut");
                 playerScript.remainingJumps = playerScript.maximumJumps-1;
                 jumpCutTimer = 3f;
+                jumpCut = false;
             }
         }
 
@@ -190,6 +193,8 @@ public class elevatorFinal : activate
             float slamLaunchForce = 0f;
             if(child.tag == "Player" && Input.GetAxisRaw("Vertical") > 0.1f || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x))) // set jump boost force for player
             {
+                jumpCut = true;
+                jumpCutTimer = 0f; // sets jumpCut within the limits
                 slamLaunchForce = jumpLaunchForce;
                 jumpBan = false;
                 playerScript.jumpBan = false;
@@ -206,6 +211,9 @@ public class elevatorFinal : activate
                     slamLaunchForce = launchForce * 1f;
                     if(horizontal)
                     {
+                        // only set these if you want to subtract a player jump even if they don't jump boost from the elevator
+                        //jumpCut = true;
+                        //jumpCutTimer = 0f; // sets jumpCut within the limits
                         jumpBan = false;
                         playerScript.jumpBan = false;
                         playerScript.jumpGateTimer = 0f;
