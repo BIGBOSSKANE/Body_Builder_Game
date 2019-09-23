@@ -12,6 +12,7 @@ using UnityEngine;
 public class cameraWaypoint : MonoBehaviour
 {
     [Tooltip("Destroys itself after first cycle. Otherwise it retriggers whenever the player re-enters")] public bool onlyOnce = true;
+    [Tooltip("Ends other effects and resets the camera")] public bool endEffect = false;
 
     [Header("Lock To Zone:")]
     [Tooltip("Locks player view to first location and size, until player leaves the area")] public bool firstPointLock = true;
@@ -33,6 +34,7 @@ public class cameraWaypoint : MonoBehaviour
     int waypointCount; // number of waypoints
     int currentWaypoint = 0; // current waypoint
     Camera2DFollow cameraScript;
+    playerScript playerScript;
     Vector2 previousPosition; // used for drawing lines between locations
     Vector2 playerPos;
     [Tooltip("To create a new waypoint, increase the size of this array, then adjust the parameters of each waypoint.")] public SubClass[] waypointCycle;
@@ -52,6 +54,7 @@ public class cameraWaypoint : MonoBehaviour
         }
         waypointCount = waypointCycle.Length;
         cameraScript = Camera.main.GetComponent<Camera2DFollow>();
+        playerScript = GameObject.Find("Player").GetComponent<playerScript>();
         if(firstPointLock)
         {
             unlockOnInput = false;
@@ -112,6 +115,11 @@ public class cameraWaypoint : MonoBehaviour
             {
                 cameraScript.LockAxis(lockAxis , lockX , lockY , lockAxisPos , 5 , 0.2f);
                 Destroy(this.gameObject);
+            }
+            else if(endEffect)
+            {
+                cameraScript.EndCycle();
+                playerScript.UpdateParts();
             }
             else
             {
