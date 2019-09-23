@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class elevatorFinal : activate
 {
-    [Tooltip("THe elevator will ascend when toggled on, and descend when toggled off")] public bool toggleOnly = false;
+    // [Tooltip("THe elevator will ascend when toggled on, and descend when toggled off")] public bool toggleOnly = false;
     [Tooltip("How long does the elevator take to move normally?")] [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Tooltip("How long does the elevator take to slam upwards?")] [Range (0.1f , 5f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
-    // public bool overcharge = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
     [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 20f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
     [Tooltip("How much futher is the player launched if they jump at the apex of the slam?")] [Range (0f , 20f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
     //[Tooltip("What is the window in which the player can jump to get the boosted launch force?")] [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
