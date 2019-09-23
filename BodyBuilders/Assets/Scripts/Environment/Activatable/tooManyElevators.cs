@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class elevatorFinal : activate
+public class tooManyElevators : activate
 {
-    [Tooltip("THe elevator will ascend when toggled on, and descend when toggled off")] public bool toggleOnly = false;
     [Tooltip("How long does the elevator take to move normally?")] [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Tooltip("How long does the elevator take to slam upwards?")] [Range (0.1f , 5f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
     // public bool overcharge = false; // will the elevator slam upwards?         ***Make sure the elevator is completely vertical for this to work***
     [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 20f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
     [Tooltip("How much futher is the player launched if they jump at the apex of the slam?")] [Range (0f , 20f)] public float jumpLaunchForce = 6f; // if the player jumps at the apex of a slam, they get launched further
-    //[Tooltip("What is the window in which the player can jump to get the boosted launch force?")] [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
+    [Tooltip("What is the window in which the player can jump to get the boosted launch force?")] [Range (0f , 2f)] public float jumpTimeOffset = 0.2f; // how much time does the player have from the peak of a slam, to get the jump boost?
     [Tooltip("Disables the childing collider for this long before hitting the bottom (avoids jostling the player)")] [Range (0f , 1f)] public float childDisableTime = 1f; // how much time does the elevator have from the bottom of the movement to disable the childing trigger collider (prevents jittering)
     [Tooltip("What layers can the elevator lift?")] public LayerMask liftableObjects; // what objects does the elevator interact with?
     float moveTimer = 0f; // the current time of the elevator's movement
@@ -36,7 +35,6 @@ public class elevatorFinal : activate
     bool jumpCut;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
     bool horizontal;
-    float parentBlocker = 0f;
 
 //===========================//==========================//======================//===================//
 
@@ -82,13 +80,10 @@ public class elevatorFinal : activate
     /// <summary>Move the Elevator.</summary>
     void ElevatorMovement()
     {
-        bool wasJumpBanned = jumpBan; // track if jump ban was on to see if it changes
-
         if(moveTimer >= 1f) // reverse direction when movement is complete
         {
             if(ascending && overcharge) // call for the slam force effect when at the peak of a slam
             {
-                playerScript.lockController = false;
                 SummitSlam();
                 onBoard.Clear();
             }
@@ -96,7 +91,6 @@ public class elevatorFinal : activate
             moveTimer = 0f;
         }
 
-/*
         if(jumpCutTimer > -1f && jumpCutTimer < 1f) // while within the limits, increase in value to 0.1, cutting off the player's remaining jumps by 1 to offset the ground check on the elevator
         {
             jumpCutTimer += Time.fixedDeltaTime;
@@ -107,7 +101,8 @@ public class elevatorFinal : activate
                 jumpCut = false;
             }
         }
-*/
+
+        bool wasJumpBanned = jumpBan;
 
         if(overcharge && ascending)
         {
@@ -116,17 +111,35 @@ public class elevatorFinal : activate
             if(playerOnboard) // if the elevator is ascending with a slam, prevent the player from jumping (until right at the end)
             {
                 jumpBan = true;
-                playerScript.jumpBan = true;
                 playerScript.remainingJumps = playerScript.maximumJumps - 1;
-                playerScript.lockController = true;
             }
         }
         else // the player can jump normally and the slam force will not be applied
         {
+            if(overcharge && !ascending && moveTimer > 0.8f && playerOnboard) jumpBan = true;
+            else jumpBan = false;
+            
             slam = false;
+            /*
+            if(Input.GetAxisRaw("Vertical") > 0.5f && !slam)
+            {
+                if(onBoard.Contains(player))
+                {
+                    if(ascending) motion = (topPosition - botttomPosition) / moveTime;
+                    else motion = (botttomPosition - topPosition) / moveTime;
+
+                    playerScript.Jump();
+                    Unparent(player);
+                }
+            }
+            */
         }
 
-        parentBlocker += Time.deltaTime;
+        if(jumpBan != wasJumpBanned)
+        {
+            if(jumpBan) playerScript.jumpBan = true;
+            else playerScript.jumpBan = false;
+        }
 
         if(ascending)
         {
@@ -148,25 +161,17 @@ public class elevatorFinal : activate
         {
             moveTimer += Time.fixedDeltaTime / moveTime; // cannot slam down, only moves at normal speed
 
-            if(elevatorPlatform.layer == 23 && moveTimer > (1 - childDisableTime) && !ascending && overcharge) // when about to slam again
+            if(moveTimer > 0.7f && !ascending && overcharge)
             {
                 elevatorPlatform.layer = 25;
-                if(playerOnboard) jumpBan = true;
             }
-            
-            if(moveTimer > 0.1f && moveTimer < (1 - childDisableTime)) // just after slamming, let the player detect the elevator platform as ground
+            else if(moveTimer > 0.3f && playerOnboard && Input.GetAxisRaw("Vertical") > 0.5f)
             {
-                if(elevatorPlatform.layer == 25)
-                {
-                    elevatorPlatform.layer = 23;
-                }
-
-                if(Input.GetAxisRaw("Vertical") > 0.5f && playerOnboard) // if the player jumps, let them
-                {
-                    parentBlocker = 0f;
-                    Unparent(player);
-                    Debug.Log("Unparented");
-                }
+                //if(onBoard.Contains(player)) Unparent(player);
+            }
+            else if(moveTimer > 0.2f && !ascending && overcharge)
+            {
+                elevatorPlatform.layer = 23;
             }
 
             if(moveTimer > (1 - childDisableTime) && !playerOnboard)
@@ -178,21 +183,10 @@ public class elevatorFinal : activate
                 pickupPoint.offset = new Vector2(0 , pickupInitialOffset);
             }
 
-
-            if(jumpBan != wasJumpBanned && playerOnboard)
-            {
-                if(jumpBan) playerScript.jumpBan = true;
-                else playerScript.jumpBan = false;
-            }
-
             // smoothly move downwards based on the move timer
             transform.position = new Vector2(Mathf.SmoothStep(topPosition.x , botttomPosition.x , moveTimer) , Mathf.SmoothStep(topPosition.y , botttomPosition.y , moveTimer));
         }
     }
-
-
-
-
 
 //===========================//==========================//======================//===================//
 
@@ -203,7 +197,7 @@ public class elevatorFinal : activate
         foreach (GameObject child in onBoard)
         {
             float slamLaunchForce = 0f;
-            if(child.tag == "Player" && (Input.GetAxisRaw("Vertical") > 0.1f || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x)))) // set jump boost force for player
+            if(child.tag == "Player" && Input.GetAxisRaw("Vertical") > 0.1f || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x))) // set jump boost force for player
             {
                 slamLaunchForce = jumpLaunchForce;
                 jumpCut = true;
@@ -212,9 +206,8 @@ public class elevatorFinal : activate
                 playerScript.jumpGate = true;
                 playerScript.jumpGateTimer = 0f;
                 playerScript.coyoteTimeLimit = 0.4f;
-                elevatorPlatform.layer = 25;
-                playerScript.forceSlaved = true;
                 playerScript.remainingJumps = playerScript.maximumJumps - 1;
+                elevatorPlatform.layer = 25;
             }
             else
             {
@@ -228,13 +221,12 @@ public class elevatorFinal : activate
                         jumpCutTimer = 0f; // sets jumpCut within the limits
                         //
                         jumpBan = false;
-                        playerScript.jumpBan = false;
                         playerScript.jumpGate = true;
                         playerScript.jumpGateTimer = 0f;
                         playerScript.coyoteTimeLimit = 0.4f;
-                        elevatorPlatform.layer = 25;
                         playerScript.forceSlaved = true;
                         playerScript.remainingJumps = playerScript.maximumJumps - 1;
+                        elevatorPlatform.layer = 25;
                     }
                 }
                 else if(child.tag == "Legs" || child.tag == "Arms") // set force on legs and arms
@@ -254,7 +246,6 @@ public class elevatorFinal : activate
             Vector2 slamForce = slamDirection * slamLaunchForce;
             if(slamForce.y < verticalForceOverride) slamForce.y = verticalForceOverride;
             Unparent(child);
-            Debug.Log(slamForce);
             child.GetComponent<Rigidbody2D>().AddForce(slamForce , ForceMode2D.Impulse);
         }
     }
@@ -268,29 +259,17 @@ public class elevatorFinal : activate
         {
             if(child.tag == "Player") // if the player is not on board already, add them
             {
-                if(!ascending)
+                if(playerScript.partConfiguration == 1) // prevent unity issues where ghost colliders would activate
                 {
-                    jumpBan = false;
-                    playerScript.jumpBan = false;
-                    playerScript.isGrounded = true;
+                    Destroy(player.GetComponent<BoxCollider2D>());
                 }
-
-                if(parentBlocker > childDisableTime - 0.01f)
-                {
-                    if(playerScript.partConfiguration == 1) // prevent unity issues where ghost colliders would activate
-                    {
-                        Destroy(player.GetComponent<BoxCollider2D>());
-                    }
-                    playerOnboard = true; // the player is now on board
-                    if(!onBoard.Contains(player)) onBoard.Add(player); // add parent gameObject
-                    player.transform.parent = holder.transform;
-                    playerScript.isGrounded = true;
-                    if(moveTimer > (1 - childDisableTime))
-                    {
-                        playerScript.jumpGate = true;
-                        playerScript.jumpGateTimer = 0.1f;
-                    }
-                }
+                playerOnboard = true; // the player is now on board
+                if(!onBoard.Contains(player)) onBoard.Add(player); // add parent gameObject
+                player.transform.parent = holder.transform;
+                playerScript.isGrounded = true;
+                playerScript.jumpGate = true;
+                playerScript.jumpGateTimer = 0f;
+                //jumpBan = true; // reset jumpBan just to make sure it is not overwritten
             }
             else
             {
@@ -344,7 +323,6 @@ public class elevatorFinal : activate
         if(col.tag != "Untagged" && col.tag != "PassThroughPlatform" && col.tag != "Environment")
         {
             Unparent(col.gameObject);
-            if(col.tag == "Player") playerScript.jumpBan = false;
         }
     }
 

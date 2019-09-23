@@ -530,12 +530,11 @@ public class playerScript : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
                 //AkSoundEngine.PostEvent("Jump" , gameObject);
             }
-            else if(afterburner == true && !climbing)// && remainingJumps == 1f)
+            else if(afterburner == true && !climbing && remainingJumps == 1)
             {
                 boostSprites.SetActive(true);
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
                 afterburnerApex = transform.position.y;
-                remainingJumps --;
                 //AkSoundEngine.PostEvent("Jump" , gameObject);
             }
             remainingJumps --;
@@ -547,6 +546,8 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
+        if(Input.GetKeyDown("w")) Debug.Log(jumpBan);
+
         if(dying)
         {
             return;
@@ -771,7 +772,6 @@ public class playerScript : MonoBehaviour
                         }
                     }
                 }
-
             }
         }
         else if(partConfiguration == 2 || partConfiguration == 4) // for climbing ladders
