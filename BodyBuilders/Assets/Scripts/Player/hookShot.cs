@@ -20,6 +20,8 @@ public class hookShot : MonoBehaviour
     float rappelTime = 0f;
     int rappelDirection = 0;
     [HideInInspector] public bool ropeAttached = false;
+    [Tooltip("How long before you can fire the hookshot again")] public float cooldown = 0.3f;
+    float cooldownTimer;
     [Tooltip("Rappel descent and climb speed of the rope")] public float ropeClimbSpeed = 2f;
     [Tooltip("Maximum distance of the rope")] public float maxropeLength = 8f;
     Vector3 augmentAimDirection;
@@ -54,6 +56,8 @@ public class hookShot : MonoBehaviour
 
     void Update()
     {
+        cooldownTimer += Time.deltaTime;
+
         worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         
         if(previousMousePos != worldMousePos)
@@ -173,8 +177,9 @@ public class hookShot : MonoBehaviour
 
     private void HookShotFire()
     {
-        if(Input.GetMouseButtonDown(1) && !shiftHeld)
+        if(Input.GetMouseButtonDown(1) && !shiftHeld && cooldownTimer > cooldown)
         {
+            cooldownTimer = 0f;
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
             if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11 && !(aimDirection.y < 0.8f && playerScript.scalerTrueGrounded))
             {
