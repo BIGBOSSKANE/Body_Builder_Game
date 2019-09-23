@@ -212,8 +212,9 @@ public class elevatorFinal : activate
                     if(horizontal)
                     {
                         // only set these if you want to subtract a player jump even if they don't jump boost from the elevator
-                        //jumpCut = true;
-                        //jumpCutTimer = 0f; // sets jumpCut within the limits
+                        jumpCut = true;
+                        jumpCutTimer = 0f; // sets jumpCut within the limits
+                        //
                         jumpBan = false;
                         playerScript.jumpBan = false;
                         playerScript.jumpGateTimer = 0f;
