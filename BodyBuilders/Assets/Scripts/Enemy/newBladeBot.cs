@@ -160,7 +160,7 @@ public class newBladeBot : MonoBehaviour
             Destroy(col.gameObject);
         }
 
-        if (col.gameObject.tag == "Environment")
+        if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy")
         {
             Debug.Log("colided with environment");
             rb2d.velocity = Vector2.zero;
