@@ -14,6 +14,7 @@ public class pressureButton : MonoBehaviour
     [Tooltip("Is the button currently triggered?")] public bool activated;
     [Tooltip("Does the button require a heavy box or powercell to be activated?")] public bool heavyButton; // does the button require a heavyliftable or powercell to weigh it down?
     [Tooltip("If the button is used to rotate something, is this left/clockwise or right/anticlockwise?")] public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
+    [Tooltip("Does the rotational direction alternate each time its state is switched?")] public bool alternateRotation = false;
     [Tooltip("Does this button overcharge the activated dependents?")] public bool overcharger = false; // does the button trigger the overcharge function of the activatable dependent object
     [Tooltip("What does this button activate?")] public GameObject [] activates;
 
@@ -67,5 +68,7 @@ public class pressureButton : MonoBehaviour
                 }
             }
         }
+        
+        if(alternateRotation) right = !right;
     }
 }

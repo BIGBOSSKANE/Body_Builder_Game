@@ -37,7 +37,7 @@ public class laserRouter : activate
     float rotateTimer = 0f; // time tracker for rotation
     float moveTimer = 0f; // time tracker for movement
     [Tooltip("How long does it take to move between points?")] public float moveTimeTotal = 1f; // time taken to move between points
-    [Tooltip("How fast does the router rotate?")] public float rotatePatrolSpeed = 1f; // speed of rotation;
+    [Tooltip("How fast does the router rotate? While rotating via a switch, increasing this decreases the rotation speed.")] public float rotatePatrolSpeed = 1f; // speed of rotation;
     protected LineRenderer laserLine; // the line renderer for the laser
     protected string laserTag; // name of the thing hit by the laser
     protected playerScript playerScript; // get a reference to the player script
@@ -114,7 +114,7 @@ public class laserRouter : activate
             aimSprite.transform.rotation = Quaternion.Slerp(aimSprite.transform.rotation, targetRotation, rotateTimer);
         }
 
-        rotateTimer += Time.deltaTime;
+        rotateTimer += Time.deltaTime / rotatePatrolSpeed;
         if(rotateTimer >= 1f)
         {
             rotating = false; 

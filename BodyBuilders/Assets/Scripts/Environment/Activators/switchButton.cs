@@ -13,6 +13,7 @@ public class switchButton : MonoBehaviour
 {
     public bool activated;
     public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
+    [Tooltip("Does the rotational direction alternate each time its state is switched?")] public bool alternateRotation = false;
     public bool overcharger = false; // does the button overcharge activatable dependent objects?
     public bool stayActivated = false;
     public GameObject [] activates;
@@ -55,6 +56,8 @@ public class switchButton : MonoBehaviour
                     activateScript.Overcharge(active); // if the button is active, overcharge the activatable dependent object
                 }
             }
+        
+            if(alternateRotation) right = !right;
         }
     }
 }
