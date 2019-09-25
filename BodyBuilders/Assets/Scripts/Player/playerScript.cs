@@ -546,8 +546,6 @@ public class playerScript : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown("w")) Debug.Log(jumpBan);
-
         if(dying)
         {
             return;
