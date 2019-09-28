@@ -52,6 +52,7 @@ public class playerScript : MonoBehaviour
     private Vector2 currentSpawnPoint;
 
 // BASIC MOVEMENT
+    public bool spaceForJump = false;
     [HideInInspector] public bool forceSlaved = false;
     [HideInInspector] public bool scalingWall = false;
     private float inputX; // get player Input value
@@ -433,7 +434,7 @@ public class playerScript : MonoBehaviour
 
             if(scalingWall) // Scaler Climbing and Jumping
             {
-                if(Input.GetAxisRaw("Vertical") > 0) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
+                if(Input.GetAxisRaw("Vertical") > 0 || (spaceForJump && Input.GetKey(KeyCode.Space))) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
                 {
                     if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
@@ -522,7 +523,7 @@ public class playerScript : MonoBehaviour
 
     public void Jump()
     {
-        if((Input.GetButton("Jump") || Input.GetAxisRaw("Vertical") > 0f) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
+        if((/*Input.GetButton("Jump")*/ (((spaceForJump || partConfiguration == 1) && Input.GetKey(KeyCode.Space)) || ((!spaceForJump || partConfiguration == 1) && Input.GetAxisRaw("Vertical") > 0f))) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
         // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
             if(isGrounded || (coyoteTime && coyoteJump))
@@ -586,7 +587,7 @@ public class playerScript : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.constraints = RigidbodyConstraints2D.FreezePositionY;
 
-            if(Input.GetAxis("Vertical") == 0f && wallSliding == false)
+            if(Input.GetAxis("Vertical") == 0f && !Input.GetKey(KeyCode.Space) && wallSliding == false)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 transform.rotation = Quaternion.identity;
@@ -595,7 +596,8 @@ public class playerScript : MonoBehaviour
             {
                 //rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                rb.velocity = new Vector2(rb.position.x , Input.GetAxis("Vertical") * climbSpeed);
+                if(!spaceForJump) rb.velocity = new Vector2(rb.position.x , Input.GetAxis("Vertical") * climbSpeed);
+                else rb.velocity = new Vector2(rb.position.x , climbSpeed);
                 transform.rotation = Quaternion.identity;
             }
 
@@ -972,7 +974,7 @@ void BoxInteract()
 
     void DetachPart()
     {
-        if (Input.GetKeyDown("space") && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
+        if ((!spaceForJump && Input.GetKeyDown("space")) || (spaceForJump && Input.GetAxisRaw("Vertical") > 0.1f) && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
         {
             jumpDisableTimer = 0f;
             float velX = rb.velocity.x;

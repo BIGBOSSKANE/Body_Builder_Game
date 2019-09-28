@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class playerSpawner : MonoBehaviour
 {
+    public bool spaceForJump;
     public bool preview;
 
     [Header("Configuration:")]
@@ -180,6 +181,8 @@ public class playerSpawner : MonoBehaviour
             playerScript.augmentScalerIdentifier = augmentScalerIdentifier;
             playerScript.augmentHookshotIdentifier = augmentHookshotIdentifier;
         }
+        
+        playerScript.spaceForJump = spaceForJump;
     }
 
     void Update()

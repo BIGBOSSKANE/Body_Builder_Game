@@ -5,6 +5,7 @@ using UnityEngine;
 public class elevatorFinal : activate
 {
     // [Tooltip("THe elevator will ascend when toggled on, and descend when toggled off")] public bool toggleOnly = false;
+    bool spaceForJump = false;
     [Tooltip("How long does the elevator take to move normally?")] [Range (0.1f , 20f)] public float moveTime = 5f; // how long between positions?
     [Tooltip("How long does the elevator take to slam upwards?")] [Range (0.1f , 5f)] public float slamUpTime = 0.8f; // how long does the elevator take to slam upwards?
     [Tooltip("How much launch force does the elevator provide at the apex of an upwards slam?")] [Range (0f , 20f)] public float launchForce = 3f; // force applied at the movement apex when slamming up
@@ -31,8 +32,6 @@ public class elevatorFinal : activate
     Vector2 motion;
     float pickupInitialOffset;
     bool jumpBan;
-    float jumpCutTimer = 3f;
-    bool jumpCut;
     public List<GameObject> onBoard = new List<GameObject>(); // objects currently onboard
     bool horizontal;
     float parentBlocker = 0f;
@@ -55,6 +54,7 @@ public class elevatorFinal : activate
         holder.transform.localScale = new Vector3(1f , 1f, 1f);
         holder.transform.rotation = Quaternion.Euler(0f , 0f , 0f);
         playerScript = player.GetComponent<playerScript>();
+        if(playerScript.spaceForJump) spaceForJump = true;
         slamDirection = topPosition - botttomPosition; // get the direction of the slam movement and normalize it
         slamDirection = slamDirection.normalized; // note that the player can only have a vertical force applied
         pickupInitialOffset = pickupPoint.offset.y;
@@ -160,11 +160,10 @@ public class elevatorFinal : activate
                     elevatorPlatform.layer = 23;
                 }
 
-                if(Input.GetAxisRaw("Vertical") > 0.5f && playerOnboard) // if the player jumps, let them
+                if(Input.GetAxisRaw("Vertical") > 0.5f || Input.GetKey(KeyCode.Space) && playerOnboard) // if the player jumps, let them
                 {
                     parentBlocker = 0f;
                     Unparent(player);
-                    Debug.Log("Unparented");
                 }
             }
 
@@ -202,11 +201,9 @@ public class elevatorFinal : activate
         foreach (GameObject child in onBoard)
         {
             float slamLaunchForce = 0f;
-            if(child.tag == "Player" && (Input.GetAxisRaw("Vertical") > 0.1f || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x)))) // set jump boost force for player
+            if(child.tag == "Player" && ((Input.GetAxisRaw("Vertical") > 0.1f || spaceForJump && Input.GetKey(KeyCode.Space)) || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x)))) // set jump boost force for player
             {
                 slamLaunchForce = jumpLaunchForce;
-                jumpCut = true;
-                jumpCutTimer = 0f; // sets jumpCut within the limits
                 jumpBan = false;
                 playerScript.jumpGate = true;
                 playerScript.jumpGateTimer = 0f;
@@ -222,9 +219,6 @@ public class elevatorFinal : activate
                     slamLaunchForce = launchForce;
                     if(horizontal)
                     {
-                        // only set these if you want to subtract a player jump even if they don't jump boost from the elevator
-                        jumpCut = true;
-                        jumpCutTimer = 0f; // sets jumpCut within the limits
                         //
                         jumpBan = false;
                         playerScript.jumpBan = false;
@@ -253,7 +247,6 @@ public class elevatorFinal : activate
             Vector2 slamForce = slamDirection * slamLaunchForce;
             if(slamForce.y < verticalForceOverride) slamForce.y = verticalForceOverride;
             Unparent(child);
-            Debug.Log(slamForce);
             child.GetComponent<Rigidbody2D>().AddForce(slamForce , ForceMode2D.Impulse);
         }
     }
