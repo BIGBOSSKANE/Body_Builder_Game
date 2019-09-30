@@ -29,62 +29,45 @@ public class passThroughPlatform : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.LeftShift))
+        if(playerScript.lockController) return;
+        
+        if(playerScript.isSwinging) gameObject.layer = 13;
+        else gameObject.layer = 14;
+
+        if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
         {
-            shiftHeld = true;
+            waitTimer = 0.1f;
         }
 
-        if(Input.GetKeyUp(KeyCode.LeftShift))
+        if(playerAbove == true && InputManager.JoystickLeftVertical() < -0.8f)
         {
-            shiftHeld = false;
-        }
-
-        if(playerScript.isSwinging == true)
-        {
-            gameObject.layer = 13;
-        }
-        else
-        {
-            gameObject.layer = 14;
-        }
-
-
-        if(!shiftHeld)
-        {
-            if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
+            Debug.Log(InputManager.JoystickLeftVertical());
+            if(waitTimer <= 0f)
             {
+                effector.rotationalOffset = 180f;
+                AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
                 waitTimer = 0.1f;
-            }
-
-            if(playerAbove == true && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)))
-            {
-                if(waitTimer <= 0f)
-                {
-                    effector.rotationalOffset = 180f;
-                    AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
-                    waitTimer = 0.1f;
-                    resetTimer = 0.4f;
-                }
-                else
-                {
-                    waitTimer -= Time.deltaTime;
-                }        
-            }
-
-            if(!playerAbove || resetTimer <= 0f)
-            {
-                effector.rotationalOffset = 0f;
-                resetTimer = 0.6f;
+                resetTimer = 0.4f;
             }
             else
             {
-                resetTimer -= Time.deltaTime;
-            }
+                waitTimer -= Time.deltaTime;
+            }        
+        }
 
-            if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                effector.rotationalOffset = 0f;
-            }   
+        if(!playerAbove || resetTimer <= 0f)
+        {
+            effector.rotationalOffset = 0f;
+            resetTimer = 0.6f;
+        }
+        else
+        {
+            resetTimer -= Time.deltaTime;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            effector.rotationalOffset = 0f;
         }
     }
 

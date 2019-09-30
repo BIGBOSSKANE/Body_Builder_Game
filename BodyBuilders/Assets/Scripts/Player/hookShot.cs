@@ -7,7 +7,7 @@ public class hookShot : MonoBehaviour
     bool shiftHeld = false;
     // Mouse Move Tracker
     bool mouseMoved;
-    float mouseMovedTime = 2f;
+    float mouseMovedTime = 0.1f;
     float mouseMovedTimer;
     Vector2 worldMousePos;
     Vector2 aimDirection;
@@ -58,15 +58,16 @@ public class hookShot : MonoBehaviour
     {
         cooldownTimer += Time.deltaTime;
 
-        worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mousePos = (Vector2)Input.mousePosition;
         
-        if(previousMousePos != worldMousePos)
+        if(previousMousePos != mousePos)
         {
             mouseMoved = true;
             mouseMovedTimer = mouseMovedTime;
         }
+        else mouseMoved = false;
 
-        previousMousePos = worldMousePos;
+        previousMousePos = mousePos;
 
         if(mouseMoved == true)
         {
@@ -78,17 +79,19 @@ public class hookShot : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            shiftHeld = true;
-        }
 
-        if(Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            shiftHeld = false;
-        }
-
+        worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 facingDirection = new Vector2(worldMousePos.x - transform.position.x , worldMousePos.y - transform.position.y);
+        if(mouseMoved != true)
+        {
+            if(InputManager.JoystickRight() != Vector2.zero) facingDirection = InputManager.JoystickRight();
+        }
+        else
+        {
+            InputManager.previousJoystickRightHorizontal = 0f;
+            InputManager.previousJoystickRightVertical = 0f;
+        }
+        
         float aimAngle = Mathf.Atan2(facingDirection.y , facingDirection.x);
 
         if(aimAngle < 0f)
@@ -139,12 +142,12 @@ public class hookShot : MonoBehaviour
 
         if(ropeAttached)
         {
-            if((Input.GetAxisRaw("Vertical") < 0.5f && Input.GetAxisRaw("Vertical") > -0.5f) || shiftHeld)
+            if((InputManager.JoystickLeftVertical() < 0.4f && InputManager.JoystickLeftVertical() > -0.4f) || playerScript.lockController)
             {
                 rappelDirection = 0;
                 rappelTime = 0f;
             }
-            else if(Input.GetAxisRaw("Vertical") > 0f)
+            else if(InputManager.JoystickLeftVertical() > 0.1f)
             {
                 if(rappelDirection == -1 || rappelDirection == 0)
                 {
@@ -153,7 +156,7 @@ public class hookShot : MonoBehaviour
                 rappelDirection = 1;
                 distanceJoint.distance -= ropeClimbSpeed * Time.deltaTime * rappelTime;
             }
-            else if(Input.GetAxisRaw("Vertical") < 0f)
+            else if(InputManager.JoystickLeftVertical() < -0.1f)
             {
                 if(rappelDirection == 1)
                 {
@@ -177,11 +180,11 @@ public class hookShot : MonoBehaviour
 
     private void HookShotFire()
     {
-        if(Input.GetMouseButtonDown(1) && !shiftHeld && cooldownTimer > cooldown)
+        if(InputManager.Cast() && !playerScript.lockController && cooldownTimer > cooldown)
         {
             cooldownTimer = 0f;
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
-            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11 && !(aimDirection.y < 0.8f && playerScript.scalerTrueGrounded))
+            if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11)
             {
                 if(hit.collider.gameObject.tag == "TetherPoint")
                 {
@@ -191,19 +194,31 @@ public class hookShot : MonoBehaviour
                 {
                     ropeAnchorPoint = hit.point;
                 }
-                playerScript.forceSlaved = false;
+
+                lineRenderer.enabled = true;
+                ropeAttachedTime = 0f;
                 hookShotAnchorPoint.SetActive(true);
+
+                if(aimDirection.y < 0.8f && playerScript.scalerTrueGrounded)
+                {
+                    if(hit.collider != null) ropeAnchorPoint = hit.point;
+                    ropeAttached = false;
+                    ropeMiss = true;
+                    Debug.Log("Heyo");
+                    return;
+                }
+
+                playerScript.forceSlaved = false;
                 ropeAttached = true;
                 ropeMiss = false;
-                ropeAttachedTime = 0f;
                 distanceJoint.enabled = true;
                 distanceJoint.distance = Vector2.Distance(ropeAnchorPoint , transform.position);
-                lineRenderer.enabled = true;
                 playerScript.isSwinging = true;
                 gameObject.GetComponent<Rigidbody2D>().AddForce(aimDirection * 5f, ForceMode2D.Impulse);
             }
             else
             {
+                Debug.Log("Did it");
                 ropeMiss = true;
                 DetachRope();
                 ropeAnchorPoint = (Vector2)transform.position + (aimDirection * hookShotDistance);
@@ -217,8 +232,9 @@ public class hookShot : MonoBehaviour
                 ropeAttachedTime = 0f;
             }
         }
-        else if((Input.GetKey("space") || Input.GetMouseButtonDown(0)) && ropeAttached)
+        else if((InputManager.Detach() || InputManager.ButtonADown() || Input.GetMouseButtonDown(0)) && ropeAttached)
         {
+            Debug.Log("oh");
             DetachRope();
         }
     }

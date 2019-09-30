@@ -158,7 +158,6 @@ public class Arms : MonoBehaviour
         {
             playerBoxCol.enabled = false;
             playerBoxCol.enabled = true;
-            Debug.Log("Grounded");
         }
         else if(col.gameObject.tag == "Legs")
         {

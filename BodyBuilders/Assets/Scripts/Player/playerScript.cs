@@ -56,10 +56,16 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public bool forceSlaved = false;
     [HideInInspector] public bool scalingWall = false;
     private float inputX; // get player Input value
+    Vector2 movementInput;
+    Vector2 rawMovementInput;
     [HideInInspector] public int rawInputX;
     [HideInInspector] public int facingDirection; // used to flip the character when turning
     [HideInInspector] public float reverseDirectionTimer = 0f;
     private float startingAngularDrag;
+
+    bool mouseMoved = false;
+
+    Vector2 previousMousePos;
 
     [HideInInspector] public float speed; // current movement speed
     [Tooltip("Maximum player inputted horizontal movement")] public float movementSpeed = 10f; // the max horizontal movement speed
@@ -282,7 +288,7 @@ public class playerScript : MonoBehaviour
         previousVelocity = rb.velocity;
         Vector2 targetVelocity = Vector2.zero;
 
-        if(Input.GetKeyDown(KeyCode.LeftShift))
+        if(InputManager.ToggleScout())
         {
             if(!lockController)
             {
@@ -302,8 +308,10 @@ public class playerScript : MonoBehaviour
 
         if(!lockController)
         {
-            inputX = Input.GetAxis("Horizontal"); // change to GetAxisRaw for sharper movement with less smoothing
-            rawInputX = Mathf.RoundToInt(2f * Input.GetAxisRaw("Horizontal"))/2; //get the pure integer value of horizontal input
+            movementInput = InputManager.JoystickLeft();
+            rawMovementInput = InputManager.JoystickLeftRaw();
+            inputX = movementInput.x;
+            rawInputX = Mathf.RoundToInt(2f * rawMovementInput.x)/2; //get the pure integer value of horizontal input
         }
         else
         {
@@ -434,11 +442,11 @@ public class playerScript : MonoBehaviour
 
             if(scalingWall) // Scaler Climbing and Jumping
             {
-                if(Input.GetAxisRaw("Vertical") > 0 || (spaceForJump && Input.GetKey(KeyCode.Space))) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
+                if(rawMovementInput.y > 0 || InputManager.Jump()) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
                 {
                     if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
-                        if(rawInputX == -climbDirection && !ceilingAbove) // wall leap
+                        if((rawInputX == -climbDirection && !ceilingAbove && !InputManager.gamepad) || (InputManager.ButtonA() && InputManager.gamepad)) // wall leap
                         {
                             forceSlaved = true;
                             forceSlavedTimer = 0f;
@@ -465,12 +473,12 @@ public class playerScript : MonoBehaviour
                 }
                 else
                 {
-                    if(Input.GetAxisRaw("Vertical") < 1 && wallHang)
+                    if(rawMovementInput.y < 1 && wallHang) // roll down the wall
                     {
                         inputX = facingDirection;
                         targetVelocity = new Vector2(inputX * movementSpeed, rb.velocity.y);
 
-                        if(Input.GetAxisRaw("Vertical") == 0 && inputX == climbDirection)
+                        if(rawMovementInput.y == 0 && inputX == climbDirection)
                         {
                             targetVelocity = new Vector2(inputX * movementSpeed , 0f);
                         }
@@ -523,7 +531,7 @@ public class playerScript : MonoBehaviour
 
     public void Jump()
     {
-        if((/*Input.GetButton("Jump")*/ (((spaceForJump || partConfiguration == 1) && Input.GetKey(KeyCode.Space)) || ((!spaceForJump || partConfiguration == 1) && Input.GetAxisRaw("Vertical") > 0f))) && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
+        if(InputManager.Jump() && remainingJumps > 0f && !scalingWall && jumpDisableTimer > 0.2f && !climbing && (!jumpGate || (scaler && partConfiguration == 1)) && !lockController && !isSwinging)
         // this last bit ensures the player can always jump, which is how the spiderclimb works
         {
             if(isGrounded || (coyoteTime && coyoteJump))
@@ -563,7 +571,7 @@ public class playerScript : MonoBehaviour
             cameraAdjuster = false;
         }
 
-        if(rb.velocity.y > 1f || (Input.GetAxisRaw("Vertical") < 0f && isGrounded == true) && !lockController)
+        if(rb.velocity.y > 1f || (rawMovementInput.y < 0f && isGrounded == true) && !lockController)
         {
             cameraAdjuster = true;
         }
@@ -587,7 +595,7 @@ public class playerScript : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezePositionX;
             rb.constraints = RigidbodyConstraints2D.FreezePositionY;
 
-            if(Input.GetAxis("Vertical") == 0f && !Input.GetKey(KeyCode.Space) && wallSliding == false)
+            if(rawMovementInput.y == 0f && !InputManager.ButtonB() && wallSliding == false)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 transform.rotation = Quaternion.identity;
@@ -596,7 +604,7 @@ public class playerScript : MonoBehaviour
             {
                 //rb.constraints = RigidbodyConstraints2D.FreezePositionY;
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                if(!spaceForJump) rb.velocity = new Vector2(rb.position.x , Input.GetAxis("Vertical") * climbSpeed);
+                if(!spaceForJump) rb.velocity = new Vector2(rb.position.x , movementInput.y * climbSpeed);
                 else rb.velocity = new Vector2(rb.position.x , climbSpeed);
                 transform.rotation = Quaternion.identity;
             }
@@ -609,7 +617,7 @@ public class playerScript : MonoBehaviour
                 }
             }
 
-            if((climbDirection > 0 && Input.GetAxis("Horizontal") < 0f) || (climbDirection < 0 && Input.GetAxis("Horizontal") > 0f)) // if player leaves the ladder
+            if((climbDirection > 0 && InputManager.JoystickLeftHorizontal() < 0f) || (climbDirection < 0 && InputManager.JoystickLeftHorizontal() > 0f)) // if player leaves the ladder
             {
                 rb.constraints = RigidbodyConstraints2D.None;
                 transform.rotation = Quaternion.identity;
@@ -658,7 +666,7 @@ public class playerScript : MonoBehaviour
             if(transform.position.y < afterburnerApex) afterburnerGlide = true; // if desecending, turn glide on
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (Input.GetAxisRaw("Vertical") > 0 || Input.GetKey("space")) && !lockController && !isSwinging && afterburnerGlide) // afterburner glide
+        if(rb.velocity.y < 0f && afterburner == true && (rawMovementInput.y > 0 || InputManager.ButtonB() && !lockController && !isSwinging && afterburnerGlide)) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -676,7 +684,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && Input.GetAxisRaw("Vertical") <= 0 && !Input.GetKey("space") && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.ButtonB() && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
@@ -917,7 +925,7 @@ public class playerScript : MonoBehaviour
 
 void BoxInteract()
     {
-        if(Input.GetKeyDown("f") && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
+        if(InputManager.ButtonXDown() && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
         {
             BoxAssigner(); // sort through each available box, and find the one closest to the pickup point
             {
@@ -948,7 +956,7 @@ void BoxInteract()
                 }
             }
         } 
-        else if(Input.GetKeyDown("f") && holding == true) // while the player is holding a box, and presses the f key, drop the box
+        else if(InputManager.ButtonXDown() && holding == true) // while the player is holding a box, and presses the f key, drop the box
         {
             BoxDrop();
             // if we eventually do want the box to be thrown, add some alternative code here
@@ -974,7 +982,7 @@ void BoxInteract()
 
     void DetachPart()
     {
-        if ((!spaceForJump && Input.GetKeyDown("space")) || (spaceForJump && Input.GetAxisRaw("Vertical") > 0.1f) && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
+        if (InputManager.Detach() && partConfiguration != 1) // eventually set this to create prefabs of the part, rather than a detached piece
         {
             jumpDisableTimer = 0f;
             float velX = rb.velocity.x;
@@ -1000,12 +1008,12 @@ void BoxInteract()
 
     public void DeployShield()
     {
-        if(shield && Input.GetMouseButtonDown(1) && !shieldBubble.activeSelf)
+        if(shield && InputManager.Cast() && !shieldBubble.activeSelf)
         {
             shieldBubble.SetActive(true);
             shieldActive = true;
         }
-        else if(!shield || (Input.GetMouseButtonDown(1) && shieldBubble.activeSelf))
+        else if(!shield || (InputManager.Cast() && shieldBubble.activeSelf))
         {
             shieldBubble.SetActive(false);
             shieldActive = false;
@@ -1047,8 +1055,32 @@ void BoxInteract()
 
     public void LaserCaster()
     {
+        Vector2 mousePos = (Vector2)Input.mousePosition;
+        if(previousMousePos != mousePos)
+        {
+            mouseMoved = true;
+        }
+        else mouseMoved = false;
+
+        previousMousePos = mousePos;
+
+
         Vector3 mouseDirection = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x , Input.mousePosition.y , gameObject.transform.position.z)) - transform.position;
         Vector2 laserOriginDirection = new Vector2(mouseDirection.x , mouseDirection.y);
+
+
+        if(mouseMoved != true)
+        {
+            if(InputManager.JoystickRight() != Vector2.zero) laserOriginDirection = InputManager.JoystickRight();
+        }
+        else
+        {
+            InputManager.previousJoystickRightHorizontal = 0f;
+            InputManager.previousJoystickRightVertical = 0f;
+        }
+
+
+
         laserOriginDirection.Normalize();
         Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * shieldRadius);
 

@@ -446,6 +446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10eb0163482abe54eb46e9d5ebae012c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spaceForJump: 0
   forceSlaved: 0
   scalingWall: 0
   rawInputX: 0
@@ -489,6 +490,7 @@ MonoBehaviour:
   hookShot: 0
   armString: BasicArms
   heldBox: {fileID: 0}
+  heldBoxTag: 
   shield: 0
   wallSliding: 0
   legString: BasicLegs
@@ -521,6 +523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ropeAttached: 0
+  cooldown: 0.3
   ropeClimbSpeed: 3
   maxropeLength: 8
   tetherLayer:
@@ -5968,7 +5971,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 4df6e9cd4f25ef143906583b4f236b9c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

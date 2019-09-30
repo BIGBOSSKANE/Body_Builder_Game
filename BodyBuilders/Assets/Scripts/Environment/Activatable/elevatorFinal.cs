@@ -160,7 +160,7 @@ public class elevatorFinal : activate
                     elevatorPlatform.layer = 23;
                 }
 
-                if(Input.GetAxisRaw("Vertical") > 0.5f || Input.GetKey(KeyCode.Space) && playerOnboard) // if the player jumps, let them
+                if(InputManager.JoystickRightVertical() > 0.1f || InputManager.ButtonBDown() && playerOnboard) // if the player jumps, let them
                 {
                     parentBlocker = 0f;
                     Unparent(player);
@@ -201,7 +201,8 @@ public class elevatorFinal : activate
         foreach (GameObject child in onBoard)
         {
             float slamLaunchForce = 0f;
-            if(child.tag == "Player" && ((Input.GetAxisRaw("Vertical") > 0.1f || spaceForJump && Input.GetKey(KeyCode.Space)) || (horizontal &&  Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) == Mathf.RoundToInt(slamDirection.x)))) // set jump boost force for player
+            if(child.tag == "Player" && ((InputManager.JoystickRightVertical() > 0.5f || spaceForJump && InputManager.ButtonBDown())
+               || (horizontal && Mathf.Abs(InputManager.JoystickLeftHorizontal())> 0.4f && Mathf.RoundToInt(InputManager.JoystickLeftHorizontal()) == Mathf.RoundToInt(slamDirection.x)))) // set jump boost force for player
             {
                 slamLaunchForce = jumpLaunchForce;
                 jumpBan = false;
@@ -256,7 +257,7 @@ public class elevatorFinal : activate
     /// <summary>Add the game object to the onboard list and the transform holder.</summary>
     void Parent(GameObject child)
     {
-        if(!onBoard.Contains(child) && child.tag != "Untagged" || child.tag != "PassThroughPlatform" || child.tag != "Environment")
+        if(!onBoard.Contains(child) && child.tag != "Untagged" && child.tag != "PassThroughPlatform" && child.tag != "Environment" && child.tag != "Shield")
         {
             if(child.tag == "Player") // if the player is not on board already, add them
             {
@@ -309,7 +310,7 @@ public class elevatorFinal : activate
             playerScript.jumpBan = false;
             player.transform.parent = null; // the player is no longer a child of the holder
         }
-        else // set the leg or arm full game object so that it is no longer the child of the holder
+        else if(child.tag != "Shield") // set the leg or arm full game object so that it is no longer the child of the holder
         {
             if(!slam) onBoard.Remove(child);
             child.transform.parent = null;
@@ -322,7 +323,7 @@ public class elevatorFinal : activate
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector3 collisionNormal = col.contacts[0].normal;
-        if(collisionNormal.y < 0.55f && col.transform.position.y >= holder.transform.position.y)
+        if(collisionNormal.y < 0.55f && col.transform.position.y >= holder.transform.position.y && col.gameObject.tag != "Shield")
         {
             Parent(col.gameObject);
         }
@@ -333,7 +334,7 @@ public class elevatorFinal : activate
     /// <summary>When the player leaves the trigger area.</summary>
     void OnTriggerExit2D(Collider2D col) // when exiting, execute the unparent function
     {
-        if(col.tag != "Untagged" && col.tag != "PassThroughPlatform" && col.tag != "Environment")
+        if(col.tag != "Untagged" && col.tag != "PassThroughPlatform" && col.tag != "Environment" && col.tag != "Shield")
         {
             Unparent(col.gameObject);
             if(col.tag == "Player") playerScript.jumpBan = false;
