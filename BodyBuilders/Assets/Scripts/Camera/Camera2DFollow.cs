@@ -233,7 +233,7 @@ using Random=UnityEngine.Random;
         // Update is called once per frame
         private void Update()
         {
-            if(unlockOnInput && waypointCycling && waypointCyclingTimer > 1f && (Input.GetAxisRaw("Vertical") != 0|| Input.GetAxisRaw("Horizontal") != 0))
+            if(unlockOnInput && waypointCycling && waypointCyclingTimer > 1f && (InputManager.JoystickLeftVerticalRaw() != 0|| InputManager.JoystickLeftHorizontalRaw() != 0))
             {
                 EndCycle();
                 playerScript.UpdateParts();

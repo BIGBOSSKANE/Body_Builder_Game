@@ -73,7 +73,7 @@ public class jumpPad : activate
             playerScript.forceSlaved = true;
             colRb.gravityScale = 2f;
 
-            if(Input.GetAxis("Vertical") > 0f) // if the player is holding up, provide a larger jump boost
+            if(Input.GetAxis("Vertical") > 0f || InputManager.Jump()) // if the player is holding up, provide a larger jump boost
             {
                 colRb.AddForce(bounceDirection * jumpForce * jumpForceMultiplier, ForceMode2D.Impulse);
             }

@@ -39,9 +39,9 @@ public class passThroughPlatform : MonoBehaviour
             waitTimer = 0.1f;
         }
 
-        if(playerAbove == true && InputManager.JoystickLeftVertical() < -0.8f)
+        if(playerAbove == true && InputManager.JoystickLeftVerticalUnclamped() <= -0.85f)
         {
-            Debug.Log(InputManager.JoystickLeftVertical());
+            Debug.Log(InputManager.JoystickLeftVerticalUnclamped());
             if(waitTimer <= 0f)
             {
                 effector.rotationalOffset = 180f;

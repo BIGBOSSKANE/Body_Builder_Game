@@ -32,6 +32,11 @@ public static class InputManager
         return Mathf.Clamp(Input.GetAxisRaw("Left Joystick Horizontal") + Input.GetAxisRaw("Horizontal") + Input.GetAxisRaw("D Pad Horizontal"), -1 , 1);
     }
 
+    public static float JoystickLeftVerticalUnclamped()
+    {
+        return Input.GetAxis("Left Joystick Vertical") + Input.GetAxis("Vertical") + Input.GetAxis("D Pad Vertical");
+    }
+
     public static float JoystickLeftVerticalRaw() // right joystick vertical
     {
         return Mathf.Clamp(Input.GetAxisRaw("Left Joystick Vertical") + Input.GetAxisRaw("Vertical") + Input.GetAxisRaw("D Pad Vertical"), -1 , 1);
@@ -214,6 +219,12 @@ public static class InputManager
     public static bool Cast()
     {
         if(TriggerRight() || Input.GetMouseButtonDown(1)) return true;
+        else return false;
+    }
+
+    public static bool Climb()
+    {
+        if(JoystickLeft().y > 0.2f || ButtonA()) return true;
         else return false;
     }
 }

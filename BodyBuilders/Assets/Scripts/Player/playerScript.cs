@@ -442,7 +442,7 @@ public class playerScript : MonoBehaviour
 
             if(scalingWall) // Scaler Climbing and Jumping
             {
-                if(rawMovementInput.y > 0 || InputManager.Jump()) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
+                if(rawMovementInput.y > 0 || InputManager.Climb()) // if the player is in scaler mode, and rolling up a wall, give them a jump boost when moving away from it
                 {
                     if(Mathf.Abs(rawInputX) >= 0.1f)
                     {
@@ -624,6 +624,7 @@ public class playerScript : MonoBehaviour
                 climbing = false;
             }
         }
+
         if(wasClimbing == true && climbing == false) // turnforcer bool could mean that the player has to press the away button to jump on the wall
         {
             rb.constraints = RigidbodyConstraints2D.None;
@@ -684,8 +685,9 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.ButtonB() && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
+            Debug.Log("Not");
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
             {
