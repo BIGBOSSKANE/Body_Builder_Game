@@ -36,17 +36,12 @@ public class newBladeBot : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        dD = GameObject.Find("Detect Down");
-        dU = GameObject.Find("Detect Up");
-        dL = GameObject.Find("Detect Left");
-        dR = GameObject.Find("Detect Right");
-
         RightDestination = GameObject.Find ("RightDestination").transform.position;
         LeftDestination = GameObject.Find("LeftDestination").transform.position;
         UpDestination = GameObject.Find("UpDestination").transform.position;
         DownDestination = GameObject.Find("DownDestination").transform.position;
 
-        startPos = GameObject.Find("StartPosition").transform.position;
+        startPos = Vector3.zero;
 
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
 
@@ -56,9 +51,8 @@ public class newBladeBot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(gameObject.transform.position == startPos)
+        if(gameObject.transform.localPosition == startPos)
         {
-            Debug.Log("reset");
             movingBack = false;
             dU.SetActive(true);
             dD.SetActive(true);
@@ -68,34 +62,29 @@ public class newBladeBot : MonoBehaviour
 
         else
         {
-            Debug.Log("moving");
             dU.SetActive(false);
             dD.SetActive(false);
             dL.SetActive(false);
             dR.SetActive(false);
         }
 
-                if (down)
+        if (down)
         {
-            Debug.Log("down detected");
             transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (up)
         {
-            Debug.Log("up detected");
             transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (left)
         {
-            Debug.Log("left detected");
             transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (right)
         {
-            Debug.Log("right detected");
             transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
@@ -143,7 +132,6 @@ public class newBladeBot : MonoBehaviour
 
     IEnumerator WaitASec()
     {
-        Debug.Log("waiting");
         yield return new WaitForSeconds(2);
         movingBack = true;
     }
@@ -160,7 +148,7 @@ public class newBladeBot : MonoBehaviour
             Destroy(col.gameObject);
         }
 
-        if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy")
+        if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object")
         {
             Debug.Log("colided with environment");
             rb2d.velocity = Vector2.zero;

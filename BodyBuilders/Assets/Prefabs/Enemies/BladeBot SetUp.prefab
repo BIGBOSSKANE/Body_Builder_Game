@@ -144,7 +144,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 503277293302833419}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.06, y: 0, z: 0}
+  m_LocalPosition: {x: -2.61, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 503277292905681235}
@@ -269,8 +269,8 @@ MonoBehaviour:
   dU: {fileID: 503277294627292865}
   dL: {fileID: 503277294177491021}
   dR: {fileID: 503277294473633067}
-  speedAccelerationPerSecond: 0.025
-  speed: 0.03125
+  speedAccelerationPerSecond: 0.0625
+  speed: 0.125
 --- !u!50 &503277293664358342
 Rigidbody2D:
   serializedVersion: 4
@@ -396,7 +396,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 503277293921069106}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.72, y: 0, z: 0}
+  m_LocalPosition: {x: 18.77, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 503277292905681235}
@@ -447,7 +447,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -5, y: 0}
+  m_Offset: {x: -1.3352647, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -458,7 +458,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 9.9, y: 0.1}
+  m_Size: {x: 2.570529, y: 0.1}
   m_EdgeRadius: 0
 --- !u!114 &503277294177491020
 MonoBehaviour:
@@ -472,6 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b4fb057fdcf574a8abe68c21133175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bladeBot: {fileID: 503277293664358340}
 --- !u!1 &503277294247003106
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +548,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 5, y: 0}
+  m_Offset: {x: 9.284706, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -558,7 +559,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 9.9, y: 0.1}
+  m_Size: {x: 18.469414, y: 0.1}
   m_EdgeRadius: 0
 --- !u!114 &503277294473633066
 MonoBehaviour:
@@ -572,6 +573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d8d85a4ea68258468b03356d5cb3385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bladeBot: {fileID: 503277293664358340}
 --- !u!1 &503277294599907935
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,7 +598,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 503277294599907935}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.92, z: 0}
+  m_LocalPosition: {x: 0, y: 10.93, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 503277292905681235}
@@ -647,7 +649,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 5}
+  m_Offset: {x: 0, y: 5.3857613}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -658,7 +660,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.1, y: 9.9}
+  m_Size: {x: 0.1, y: 10.671522}
   m_EdgeRadius: 0
 --- !u!114 &503277294627292864
 MonoBehaviour:
@@ -672,6 +674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71e9ed1c5d6b9934dba03490f74da545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bladeBot: {fileID: 503277293664358340}
 --- !u!1 &503277294645746750
 GameObject:
   m_ObjectHideFlags: 0
@@ -717,7 +720,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -5}
+  m_Offset: {x: 0, y: -0.49486065}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -728,7 +731,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.1, y: 9.9}
+  m_Size: {x: 0.1, y: 0.8897207}
   m_EdgeRadius: 0
 --- !u!114 &503277294645746745
 MonoBehaviour:
@@ -742,6 +745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7dffabf9e870e94a8b2445377654f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bladeBot: {fileID: 503277293664358340}
 --- !u!1 &503277294786830997
 GameObject:
   m_ObjectHideFlags: 0

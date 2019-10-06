@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class BladeBotDetectRight : MonoBehaviour
 {
+    public GameObject bladeBot;
     newBladeBot nBB;
 
     void Start()
     {
-        nBB = GameObject.Find("Bladebot").gameObject.GetComponent<newBladeBot>(); // we can swap this out for the scene manager once it has been added
-
+        nBB = bladeBot.gameObject.GetComponent<newBladeBot>(); // we can swap this out for the scene manager once it has been added
     }
 
     void OnTriggerEnter2D(Collider2D col)
