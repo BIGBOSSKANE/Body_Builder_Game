@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class newBladeBot : MonoBehaviour
 {
-    public Vector3 startPos;
+    public GameObject startPos;
 
     public bool playerDetect;
 
@@ -28,20 +28,17 @@ public class newBladeBot : MonoBehaviour
 
     public float speed;
 
-    Vector2 RightDestination;
-    Vector2 LeftDestination;
-    Vector2 UpDestination;
-    Vector2 DownDestination;
+    float resetSpeed;
+
+    public GameObject RightDestination;
+    public GameObject LeftDestination;
+    public GameObject UpDestination;
+    public GameObject DownDestination;
 
     // Start is called before the first frame update
     void Start()
     {
-        RightDestination = GameObject.Find ("RightDestination").transform.position;
-        LeftDestination = GameObject.Find("LeftDestination").transform.position;
-        UpDestination = GameObject.Find("UpDestination").transform.position;
-        DownDestination = GameObject.Find("DownDestination").transform.position;
-
-        startPos = Vector3.zero;
+        resetSpeed = speed;
 
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
 
@@ -51,7 +48,7 @@ public class newBladeBot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(gameObject.transform.localPosition == startPos)
+        if(gameObject.transform.position == startPos.transform.position)
         {
             movingBack = false;
             dU.SetActive(true);
@@ -70,27 +67,27 @@ public class newBladeBot : MonoBehaviour
 
         if (down)
         {
-            transform.position = Vector2.MoveTowards(transform.position, DownDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (up)
         {
-            transform.position = Vector2.MoveTowards(transform.position, UpDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (left)
         {
-            transform.position = Vector2.MoveTowards(transform.position, LeftDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (right)
         {
-            transform.position = Vector2.MoveTowards(transform.position, RightDestination, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
         }
 
         if (movingBack)
         {
-            transform.position = Vector2.MoveTowards(transform.position, startPos, 5 * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, startPos.transform.position, 5 * Time.deltaTime);
         }
     }
 
@@ -134,6 +131,7 @@ public class newBladeBot : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         movingBack = true;
+        speed = resetSpeed;
     }
 
     void OnCollisionEnter2D(Collision2D col)
