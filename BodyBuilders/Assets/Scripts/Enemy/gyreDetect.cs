@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class gyreDetect : MonoBehaviour
 {
-    public GameObject myGyre;
-    NewGyre nG;
-    gyreAlerted gA;
+    public GameObject patrol;
+    public GameObject alert;
 
-    [Tooltip("It ticked it's normal, if not it's alert")]
-    public bool normalOrAlert;
+    NewGyre nG;
+    gyreAlerted nA;
+
+[Tooltip("tick if it's normal, if not it's alert")]
+    public bool normalOrAlert = true; //if true, then it is set to a normal patrol Gyre, if false it is set to the alert Gyre
 
     public float time = 3.5f;
     float resetTime = 3.5f;
@@ -19,34 +21,69 @@ public class gyreDetect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(normalOrAlert)
+        if(normalOrAlert) // if true
         {
-            nG = myGyre.GetComponent<NewGyre>();
+            alert.gameObject.SetActive(false);
+            patrol.gameObject.SetActive(true);
         }
-        else
+        else //if false
         {
-            gA = myGyre.GetComponent<gyreAlerted>();
+            patrol.gameObject.SetActive(false);
+            alert.gameObject.SetActive(true);
         }
+
+        nG = patrol.gameObject.GetComponent<NewGyre>();
+        nA = alert.gameObject.GetComponent<gyreAlerted>();
     }
 
     // Update is called once per frame
     void Update()
     {
-       if(!colliding)
+        if (!normalOrAlert)
         {
-            time -= Time.deltaTime;
-            if (time < 0)
+            if (!colliding)
             {
-                time = 0;
+                time -= Time.deltaTime;
+                if (time < 0)
+                {
+                    time = 0;
+                }
+            }
+
+            if (time == 0)
+            {
+                nA.detected = false;
+                StartCoroutine(Processing());
             }
         }
+    }
 
-        if (time == 0)
+    public IEnumerator Processing()
+    {
+        if (!normalOrAlert)
         {
-            gA.detected = false;
+            nA.patrolling = false;
         }
+        else
+        {
+            nG.patrolling = false;
+        }
+        yield return new WaitForSeconds(1);
+        Transforming();
+    }
 
-
+    public void Transforming()
+    {
+        if (!normalOrAlert)
+        {
+            Debug.Log("transformed");
+            normalOrAlert = true;
+        }
+        else
+        {
+            Debug.Log("transformed");
+            normalOrAlert = false;
+        }
     }
 
     public void OnTriggerExit2D(Collider2D col)
@@ -57,33 +94,24 @@ public class gyreDetect : MonoBehaviour
             {
                 Debug.Log("Missing");
                 colliding = false;
-                time = resetTime;
             }
-
         }
     }
 
     public void OnTriggerEnter2D(Collider2D col)
     {
-        if (normalOrAlert)
+        if (col.tag == "Player")
         {
-            if (col.tag == "Player")
+            if (normalOrAlert)
             {
-                nG.detected = true;
-            }
-        }
-        if (!normalOrAlert)
-        {
-            if (col.tag == "Player")
-            {
-                Debug.Log("found again");
-                colliding = true;
-                time = resetTime;
+                Debug.Log("player detected");
+                StartCoroutine(Processing());
             }
             else
             {
-                Debug.Log("Missing");
-                colliding = false;
+                Debug.Log("player found");
+                colliding = true;
+                time = resetTime;
             }
         }
     }

@@ -18,10 +18,6 @@ public class gyreAlerted : MonoBehaviour
 
     public GameObject transformation;
 
-    public Vector3 pos;
-
-    bool playerColliding;
-
     public float time = 3.5f;
 
     public bool patrolling = true;
@@ -37,7 +33,6 @@ public class gyreAlerted : MonoBehaviour
     {
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
         rb2d = gameObject.GetComponent<Rigidbody2D>();
-        Vector2 pos = new Vector3(0f, 0.465f ,0f);
         patrolling = true;
     }
 
@@ -58,24 +53,6 @@ public class gyreAlerted : MonoBehaviour
             transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
             velocity *= -1;
         }
-
-        if (!detected)
-        {
-            StartCoroutine(Processing());
-        }
-    }
-
-    public IEnumerator Processing()
-    {
-        patrolling = false;
-        yield return new WaitForSeconds(1);
-        Transforming();
-    }
-
-    public void Transforming()
-    {
-        Destroy(gameObject);
-        Instantiate(transformation, gameObject.transform.position - pos, Quaternion.identity);
     }
 
     void OnCollisionEnter2D(Collision2D col)
