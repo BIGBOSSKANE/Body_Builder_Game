@@ -667,7 +667,7 @@ public class playerScript : MonoBehaviour
             if(transform.position.y < afterburnerApex) afterburnerGlide = true; // if desecending, turn glide on
         }
 
-        if(rb.velocity.y < 0f && afterburner == true && (rawMovementInput.y > 0 || InputManager.ButtonB() && !lockController && !isSwinging && afterburnerGlide)) // afterburner glide
+        if(rb.velocity.y < 0f && afterburner == true && (InputManager.JoystickLeftVerticalRaw() > 0 || InputManager.Jump() || InputManager.ButtonB() && !lockController && !isSwinging && afterburnerGlide)) // afterburner glide
         {
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
@@ -687,7 +687,6 @@ public class playerScript : MonoBehaviour
         }
         else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
-            Debug.Log("Not");
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
             {
