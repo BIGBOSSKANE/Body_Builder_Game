@@ -996,14 +996,14 @@ void BoxInteract()
                 legs.GetComponent<Legs>().Detached(maxHeight , groundbreakerDistance);
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = new Vector2(Mathf.Clamp(velX / 0.5f , - movementSpeed , movementSpeed), jumpForce * 8f);
+                rb.velocity = new Vector2(Mathf.Clamp(velX / 2 , - movementSpeed , movementSpeed), jumpForce * 8f);
             }
             else if(partConfiguration == 2)
             {
                 arms.GetComponent<Arms>().Detached();
                 remainingJumps --; // consumes jumps but doesn't require them to be used
                 UpdateParts();
-                rb.velocity = new Vector2(Mathf.Clamp(velX / 0.5f , - movementSpeed , movementSpeed), jumpForce * 8f);
+                rb.velocity = new Vector2(Mathf.Clamp(velX / 2 , - movementSpeed , movementSpeed), jumpForce * 8f);
             }
 
             forceSlaved = true;
