@@ -234,7 +234,6 @@ public class hookShot : MonoBehaviour
         }
         else if((InputManager.Detach() || InputManager.ButtonADown() || Input.GetMouseButtonDown(0)) && ropeAttached)
         {
-            Debug.Log("oh");
             DetachRope();
         }
     }
