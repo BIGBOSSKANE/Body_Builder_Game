@@ -12,7 +12,9 @@ using UnityEngine;
 public class passThroughPlatform : MonoBehaviour
 {
     PlatformEffector2D effector;
+    float waitTime = 0.1f;
     float waitTimer;
+    float resetTime = 0.5f;
     float resetTimer;
     bool playerAbove;
     bool shiftHeld = false;
@@ -36,29 +38,29 @@ public class passThroughPlatform : MonoBehaviour
 
         if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
         {
-            waitTimer = 0.1f;
+            waitTimer = waitTime;
         }
 
         if(playerAbove == true && InputManager.JoystickLeftVerticalUnclamped() <= -0.85f)
         {
-            Debug.Log(InputManager.JoystickLeftVerticalUnclamped());
             if(waitTimer <= 0f)
             {
                 effector.rotationalOffset = 180f;
-                AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
-                waitTimer = 0.1f;
-                resetTimer = 0.4f;
+                //AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
+                waitTimer = waitTime;
+                resetTimer = resetTime;
             }
             else
             {
                 waitTimer -= Time.deltaTime;
-            }        
+            }
         }
 
         if(!playerAbove || resetTimer <= 0f)
         {
             effector.rotationalOffset = 0f;
-            resetTimer = 0.6f;
+            resetTimer = resetTime;
+            Debug.Log("Did it");
         }
         else
         {

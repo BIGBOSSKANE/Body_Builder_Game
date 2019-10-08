@@ -100,6 +100,7 @@ public class playerScript : MonoBehaviour
     Vector2 raycastPos; // controls where groundcheckers come from
     float groundedDistance = 0.15f; // raycast distance;
     [Tooltip("What layers can the player jump on?")] public LayerMask jumpLayer; // what layers can the player jump on?
+    [Tooltip("Normal Jump Layer + Parts")] public LayerMask nonHeadJumpLayer; // what layers can the player jump on?
     [Tooltip("What layer are ladders on?")] public LayerMask ladderLayer; // what cn the player climb?
     [Tooltip("What layers can the player pick up?")] public LayerMask pickupLayer; // what things can the player pick up?
     [Tooltip("What layers does the laser hit?")] public LayerMask laserLayer; // what can the deflected laser hit?
@@ -710,12 +711,14 @@ public class playerScript : MonoBehaviour
     {
         jumpDisableTimer += Time.fixedDeltaTime; // jumpDisableTimer is applied by walljumping, preventing the grounded state from triggering interfering jumps for 0.2 seconds
 
+        LayerMask groundLayer = (partConfiguration == 1)? jumpLayer : nonHeadJumpLayer;
+
         if(jumpBan) // jump ban is applied by the elevator script to lock the player to it when slamming upwards
         {
             return false;
         }
 
-        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
+        RaycastHit2D hitC = Physics2D.Raycast(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, groundLayer);
         Debug.DrawRay(new Vector2(raycastPos.x, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
         wallSliding = false;
         wallHang = false;
@@ -740,7 +743,7 @@ public class playerScript : MonoBehaviour
             }
             else if(scaler)
             {
-                RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , jumpLayer);
+                RaycastHit2D upHit = Physics2D.Raycast(transform.position , Vector2.up , 0.6f , groundLayer);
                 Debug.DrawRay(transform.position, Vector2.up * 0.6f, Color.green);
                 if(upHit.collider != null )
                 {
@@ -753,7 +756,7 @@ public class playerScript : MonoBehaviour
                     ceilingAbove = false;
                 }
 
-                RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , jumpLayer);
+                RaycastHit2D sideHit = Physics2D.Raycast(transform.position , Vector2.right * previousFacingDirection , 0.6f , groundLayer);
                 Debug.DrawRay(transform.position, Vector2.right * 0.6f, Color.green);
                 if(sideHit.collider != null )
                 {
@@ -769,7 +772,7 @@ public class playerScript : MonoBehaviour
 
                 if(!forceSlaved)
                 {
-                    if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , jumpLayer))
+                    if(Physics2D.OverlapCircle(gameObject.transform.position, 0.4f , groundLayer))
                     {
                         if(hitC.collider != null && (hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms"))
                         {
@@ -825,8 +828,8 @@ public class playerScript : MonoBehaviour
 
         if(!jumpGate) // don't groundcheck if the player just jumped
         {
-            RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
-            RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, jumpLayer);
+            RaycastHit2D hitL = Physics2D.Raycast(new Vector2(raycastPos.x - raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, groundLayer);
+            RaycastHit2D hitR = Physics2D.Raycast(new Vector2(raycastPos.x + raycastXOffset , raycastPos.y + raycastYOffset), Vector2.down, groundedDistance, groundLayer);
             Debug.DrawRay(new Vector2(raycastPos.x - raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
             Debug.DrawRay(new Vector2(raycastPos.x + raycastXOffset, raycastPos.y + raycastYOffset), Vector2.down * groundedDistance, Color.green);
 

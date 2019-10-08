@@ -11,11 +11,12 @@ using UnityEngine;
 
 public class switchButton : MonoBehaviour
 {
-    public bool activated;
-    public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
-    public bool overcharger = false; // does the button overcharge activatable dependent objects?
-    public bool stayActivated = false;
-    public GameObject [] activates;
+    [Tooltip("Is the button currently triggered?")] public bool activated = false;
+    [Tooltip("If the button is used to rotate something, is this left/clockwise or right/anticlockwise?")] public bool right = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
+    [Tooltip("Switch rotation direction when deactivating?")] public bool switchRight = true; // if 2 buttons are used to move or rotate something, does this apply a clockwise rotation, or a force ot the right?
+    [Tooltip("Does this button overcharge the activated dependents?")] public bool overcharger = false; // does the button overcharge activatable dependent objects?
+    [Tooltip("Does the button avoid ever deactivating?")] public bool stayActivated = false;
+    [Tooltip("What does this button activate?")] public GameObject [] activates;
     int triggerCounter;
 
     void Start()
@@ -29,9 +30,11 @@ public class switchButton : MonoBehaviour
         triggerCounter ++;
         if(triggerCounter == 1)
         {
-            if(stayActivated) activated = true;
-            else activated = !activated;
-            StateChange(activated);
+            if(!(stayActivated && activated))
+            {
+                activated = !activated;
+                StateChange(activated);
+            }
         }
     }
 
@@ -49,7 +52,8 @@ public class switchButton : MonoBehaviour
             {
                 activate activateScript = activateable.GetComponent<activate>();
                 activateScript.Activate(active);
-                activateScript.ActivateDirection(right);
+                if(!activated && switchRight) activateScript.ActivateDirection(!right);
+                else activateScript.ActivateDirection(right);
                 if(overcharger)
                 {
                     activateScript.Overcharge(active); // if the button is active, overcharge the activatable dependent object

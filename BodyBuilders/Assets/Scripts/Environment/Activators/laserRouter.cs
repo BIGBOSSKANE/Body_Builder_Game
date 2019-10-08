@@ -38,6 +38,7 @@ public class laserRouter : activate
     float moveTimer = 0f; // time tracker for movement
     [Tooltip("How long does it take to move between points?")] public float moveTimeTotal = 1f; // time taken to move between points
     [Tooltip("How fast does the router rotate?")] public float rotatePatrolSpeed = 1f; // speed of rotation;
+    [Tooltip("How long does it take the router to rotate when triggered?")] public float rotateTime = 4f; // duration of switch rotation;
     protected LineRenderer laserLine; // the line renderer for the laser
     protected string laserTag; // name of the thing hit by the laser
     protected playerScript playerScript; // get a reference to the player script
@@ -93,17 +94,11 @@ public class laserRouter : activate
         }
     }
 
-    void RotateAnticlockwise()
+    void Rotate(bool right , float extraRotate)
     {
+        int direction = (right)? 1 : -1;
         targetRotation = aimSprite.transform.rotation;
-        targetRotation *= Quaternion.Euler(0f, 0f, 90f);
-        rotating = true;
-    }
-
-    void RotateClockwise()
-    {
-        targetRotation = aimSprite.transform.rotation;
-        targetRotation *= Quaternion.Euler(0f, 0f, -90f);
+        targetRotation *= Quaternion.Euler(0f, 0f, direction * 90f + extraRotate);
         rotating = true;
     }
 
@@ -114,7 +109,7 @@ public class laserRouter : activate
             aimSprite.transform.rotation = Quaternion.Slerp(aimSprite.transform.rotation, targetRotation, rotateTimer);
         }
 
-        rotateTimer += Time.deltaTime;
+        rotateTimer += Time.deltaTime / rotateTime;
         if(rotateTimer >= 1f)
         {
             rotating = false; 
@@ -560,24 +555,15 @@ public class laserRouter : activate
 
     override public void ActivateDirection(bool right)
     {
-        if(canRotate)
+        if(anticlockwise)
         {
-            if(anticlockwise)
-            {
-                right = !right;
-            }
-
-            if(right)
-            {
-                rotateTimer = 0f;
-                RotateClockwise();
-            }
-            else
-            {
-                rotateTimer = 0f;
-                RotateAnticlockwise();
-            }
+            right = !right;
         }
+
+        float currentRotation = (rotating)? (targetRotation.eulerAngles - aimSprite.transform.rotation.eulerAngles).z : 0;
+
+        rotateTimer = 0f;
+        Rotate(right , currentRotation);
     }
 
     void OnDrawGizmos() // shows the waypoints in both editor and in game

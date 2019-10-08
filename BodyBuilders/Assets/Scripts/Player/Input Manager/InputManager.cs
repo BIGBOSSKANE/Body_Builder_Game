@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿/*
+Creator: Daniel
+Created 30/09/2019
+Last Edited by: Daniel
+Last Edit 08/10/2019
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -206,7 +213,7 @@ public static class InputManager
 
     public static bool Detach()
     {
-        if(ButtonBDown() || Input.GetMouseButtonDown(0)) return true;
+        if(ButtonBDown()) return true;
         else return false;
     }
 
