@@ -19,6 +19,7 @@ public class passThroughPlatform : MonoBehaviour
     bool playerAbove;
     bool shiftHeld = false;
     playerScript playerScript;
+    bool resetting = false;
 
     void Start()
     {
@@ -32,16 +33,17 @@ public class passThroughPlatform : MonoBehaviour
     void Update()
     {
         if(playerScript.lockController) return;
-        
-        if(playerScript.isSwinging) gameObject.layer = 13;
+
+        if(playerScript.isSwinging) gameObject.layer = 13; // while swinging, disable collisions with the player
         else gameObject.layer = 14;
 
-        if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || playerAbove == false)
+        if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || !playerAbove)
         {
+            effector.rotationalOffset = 0f;
             waitTimer = waitTime;
         }
 
-        if(playerAbove == true && InputManager.JoystickLeftVerticalUnclamped() <= -0.85f)
+        if(playerAbove && Input.GetKey(KeyCode.S))//InputManager.JoystickLeftVerticalUnclamped() <= -0.85f)
         {
             if(waitTimer <= 0f)
             {
@@ -49,27 +51,28 @@ public class passThroughPlatform : MonoBehaviour
                 //AkSoundEngine.PostEvent("PassThroughPlatform" , gameObject);
                 waitTimer = waitTime;
                 resetTimer = resetTime;
+                resetting = true;
             }
             else
             {
                 waitTimer -= Time.deltaTime;
             }
-        }
 
-        if(!playerAbove || resetTimer <= 0f)
-        {
-            effector.rotationalOffset = 0f;
-            resetTimer = resetTime;
-            Debug.Log("Did it");
-        }
-        else
-        {
-            resetTimer -= Time.deltaTime;
-        }
+            if(resetting && (!playerAbove || resetTimer <= 0f))
+            {
+                effector.rotationalOffset = 0f;
+                resetTimer = resetTime;
+                resetting = false;
+            }
+            else
+            {
+                resetTimer -= Time.deltaTime;
+            }
 
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            effector.rotationalOffset = 0f;
+            if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                effector.rotationalOffset = 0f;
+            }
         }
     }
 
