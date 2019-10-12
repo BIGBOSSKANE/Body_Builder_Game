@@ -22,11 +22,13 @@ public class newBladeBot : MonoBehaviour
 
     public float speedAccelerationPerSecond = 1f;
 
+    public float maxSpeed = 1.39f;
+
     Rigidbody2D rb2d;
 
     bool movingBack = false;
 
-    public float speed;
+    public float speed = 0.1f;
 
     float resetSpeed;
 
@@ -34,6 +36,8 @@ public class newBladeBot : MonoBehaviour
     public GameObject LeftDestination;
     public GameObject UpDestination;
     public GameObject DownDestination;
+
+    bool playerDetected = false;
 
     // Start is called before the first frame update
     void Start()
@@ -48,7 +52,19 @@ public class newBladeBot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(gameObject.transform.position == startPos.transform.position)
+        if (playerDetect)
+        {
+            if (speed > maxSpeed)
+            {
+                speed = maxSpeed;
+            }
+            else if (speed < maxSpeed)
+            {
+                speed += speedAccelerationPerSecond * Time.deltaTime;
+            }
+        }
+
+        if (gameObject.transform.position == startPos.transform.position)
         {
             movingBack = false;
             dU.SetActive(true);
@@ -67,22 +83,22 @@ public class newBladeBot : MonoBehaviour
 
         if (down)
         {
-            transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed);
         }
 
         if (up)
         {
-            transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed);
         }
 
         if (left)
         {
-            transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed);
         }
 
         if (right)
         {
-            transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed += speedAccelerationPerSecond * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed);
         }
 
         if (movingBack)
@@ -98,6 +114,7 @@ public class newBladeBot : MonoBehaviour
         dL.SetActive(false);
         dR.SetActive(false);
         up = true;
+        playerDetect = true;
     }
 
     public void ChargeD()
@@ -107,6 +124,7 @@ public class newBladeBot : MonoBehaviour
         dL.SetActive(false);
         dR.SetActive(false);
         down = true;
+        playerDetect = true;
     }
 
     public void ChargeL()
@@ -116,6 +134,7 @@ public class newBladeBot : MonoBehaviour
         dL.SetActive(false);
         dR.SetActive(false);
         left = true;
+        playerDetect = true;
     }
 
     public void ChargeR()
@@ -125,6 +144,7 @@ public class newBladeBot : MonoBehaviour
         dL.SetActive(false);
         dR.SetActive(false);
         right = true;
+        playerDetect = true;
     }
 
     IEnumerator WaitASec()
@@ -146,7 +166,7 @@ public class newBladeBot : MonoBehaviour
             Destroy(col.gameObject);
         }
 
-        if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object")
+        if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object" || col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
         {
             Debug.Log("colided with environment");
             rb2d.velocity = Vector2.zero;
