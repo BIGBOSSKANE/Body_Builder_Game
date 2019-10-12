@@ -22,18 +22,20 @@ public class gyreAlerted : MonoBehaviour
 
     public bool patrolling = true;
 
-    public bool detected = true;
-
     public float distance = 5;
 
     public Transform groundDetection;
+
+    void Awake()
+    {
+        patrolling = true;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
         rb2d = gameObject.GetComponent<Rigidbody2D>();
-        patrolling = true;
     }
 
     // Update is called once per frame
