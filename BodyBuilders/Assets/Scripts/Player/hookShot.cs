@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class hookShot : MonoBehaviour
 {
-    bool shiftHeld = false;
     // Mouse Move Tracker
     bool mouseMoved;
     float mouseMovedTime = 0.1f;

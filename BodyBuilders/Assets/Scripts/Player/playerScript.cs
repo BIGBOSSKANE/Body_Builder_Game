@@ -139,7 +139,7 @@ public class playerScript : MonoBehaviour
     // Legs
     GameObject legs; // the legs component
     [HideInInspector] public string legString; // this is referenced from the name of the leg prefab
-    bool groundbreaker = false; // do you have the groundbreaker legs?
+    [HideInInspector] public bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
     GameObject boostSprites; // sprites used for rocket boots
     [Tooltip("Distance that the player must descend to activate groundbreakers")] public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
@@ -176,6 +176,7 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public bool shieldActive = false;
     bool isDeflecting = false; // is the player currently deflecting
     bool firingLaser = false;
+    bool wasFiringLaser = false;
     GameObject collisionEffect;
     GameObject burstEffect;
     Vector2 laserOrigin;
@@ -1122,7 +1123,7 @@ void BoxInteract()
             }
             else if(laser.collider.tag == "powerCell")
             {
-                if(laserTag != "powerCell")
+                if((laserTag != "powerCell" && firingLaser) || (!wasFiringLaser && firingLaser))
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
                     powerCell.activated = true;
@@ -1130,7 +1131,7 @@ void BoxInteract()
             }
             else if(laser.collider.tag == "PowerStation")
             {
-                if(laserTag != "PowerStation")
+                if((laserTag != "PowerStation" && firingLaser) || (!wasFiringLaser && firingLaser))
                 {
                     powerStation = laser.transform.gameObject.GetComponent<powerStation>();
                     powerStation.activated = true;
@@ -1173,6 +1174,8 @@ void BoxInteract()
         burstEffect.SetActive(true);
         burstEffect.transform.position = (Vector2)transform.position + (laserOriginDirection * (shieldRadius - 0.01f));
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
+
+        wasFiringLaser = firingLaser;
     }
 
 

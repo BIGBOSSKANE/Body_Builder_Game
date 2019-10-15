@@ -184,14 +184,11 @@ public class laserRouter : activate
             else if(laser.collider.tag == "HeldBox")
             {
                 collisionEffect.transform.position = laser.point;
-                if(laserTag != "HeldBox" && charged)
+                if(playerScript.heldBoxTag == "powerCell" && ((laserTag != "HeldBox" && charged) || (!wasCharged && charged)))
                 {
-                    if(playerScript.heldBoxTag == "powerCell")
-                    {
-                        powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
-                        powerCell.activated = true;
-                        if(overcharge) powerCell.overcharge = true;
-                    }
+                    powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
+                    powerCell.activated = true;
+                    if(overcharge) powerCell.overcharge = true;
                 }
             }
             else if(laser.collider.tag == "Shield")
@@ -238,7 +235,7 @@ public class laserRouter : activate
             }
             if(laser.collider.tag == "powerCell")
             {
-                if(laserTag != "powerCell")
+                if((laserTag != "powerCell" && charged) || (!wasCharged && charged))
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
                     powerCell.activated = true;
@@ -319,14 +316,11 @@ public class laserRouter : activate
             else if(laser.collider.tag == "HeldBox")
             {
                 collisionEffect.transform.position = laser.point;
-                if(laserTag != "HeldBox" && charged)
+                if(playerScript.heldBoxTag == "powerCell" && ((laserTag != "HeldBox" && charged) || (!wasCharged && charged)))
                 {
-                    if(playerScript.heldBoxTag == "powerCell")
-                    {
-                        powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
-                        powerCell.activated = true;
-                        if(overcharge) powerCell.overcharge = true;
-                    }
+                    powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
+                    powerCell.activated = true;
+                    if(overcharge) powerCell.overcharge = true;
                 }
             }
             else if(laser.collider.tag == "Shield")
@@ -373,9 +367,10 @@ public class laserRouter : activate
                 }
             }
 
+
             if(laser.collider.tag == "powerCell")
             {
-                if(laserTag != "powerCell")
+                if((laserTag != "powerCell" && charged) || (!wasCharged && charged))
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
                     powerCell.activated = true;
