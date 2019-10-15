@@ -11,6 +11,7 @@ public class powerCell : activate
 
     void Start()
     {
+        gameObject.name = "PowerCell";
         rb = gameObject.GetComponent<Rigidbody2D>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         wasActivated = false;
