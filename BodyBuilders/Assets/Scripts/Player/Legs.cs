@@ -120,7 +120,7 @@ public class Legs : MonoBehaviour
                 {
                     if(hit.collider.gameObject.tag == "Groundbreakable")
                     {
-                        hit.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                        hit.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
                     }
                 }
                 else

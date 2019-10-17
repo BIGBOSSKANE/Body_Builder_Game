@@ -838,7 +838,7 @@ public class playerScript : MonoBehaviour
             {
                 if(hitC.collider.gameObject.tag == "Groundbreakable")
                 {
-                    hitC.collider.gameObject.GetComponent<Groundbreakable_Script>().Groundbreak();
+                    hitC.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
                     return false;
                 }
                 else
