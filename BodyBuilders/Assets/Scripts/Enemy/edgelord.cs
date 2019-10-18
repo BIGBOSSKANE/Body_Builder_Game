@@ -22,7 +22,7 @@ public class edgelord : MonoBehaviour
     bool moving = true;
     float moveTime;
     float moveTimer;
-    float bounceBackTime = 3f;
+    float bounceBackTime = 2.5f;
     float bounceBackTimer;
     bool bounceBack;
     Vector2 bounceBackVector;
@@ -261,9 +261,9 @@ public class edgelord : MonoBehaviour
             {
                 if(bounceBackTimer < 1) bounceBackTimer += Time.deltaTime / bounceBackTime;
 
-                float withdrawDuration = 0.2f;
-                float centreDuration = 0.4f;
-                float expandDuration = 0.4f;
+                float withdrawDuration = 0.1f;
+                float centreDuration = 0.45f;
+                float expandDuration = 0.45f;
                 
                 if(bounceBackTimer > 1)
                 {
@@ -312,7 +312,6 @@ public class edgelord : MonoBehaviour
                             outerBlades[i].transform.localPosition = Vector2.Lerp(outerbladeStartPositions[i] , Vector2.zero , withdrawTimer);
                             outerBlades[i].transform.up = (outerBlades[i].transform.position - transform.position).normalized;
                             arms[i].localScale = Vector2.Lerp(Vector2.one , Vector2.zero, withdrawTimer);
-                            Debug.Log(arms[i].localScale);
                         }
                     }
                 }
@@ -346,7 +345,7 @@ public class edgelord : MonoBehaviour
 
                 Gizmos.color = Color.red;
 
-                Vector2 armStopPoint = Quaternion.AngleAxis(waypointCycle[i].endZRotation, Vector3.forward) * Vector2.right * (outerBladeRadius + outerBladeRadiusIndicatorOffset);
+                Vector2 armStopPoint = Quaternion.AngleAxis(waypointCycle[i].endZRotation, Vector3.forward) * Vector2.right * (outerBladeRadius * transform.localScale.x + outerBladeRadiusIndicatorOffset);
 
                 Gizmos.DrawLine(waypointCycle[i].waypointPos + armStopPoint - Vector2.up * locationIdentifier , waypointCycle[i].waypointPos + armStopPoint + Vector2.up * locationIdentifier);
                 Gizmos.DrawLine(waypointCycle[i].waypointPos + armStopPoint - Vector2.left * locationIdentifier , waypointCycle[i].waypointPos + armStopPoint + Vector2.left * locationIdentifier);
@@ -364,6 +363,7 @@ public class edgelord : MonoBehaviour
                 Gizmos.DrawLine(waypointCycle[i].waypointPos - Vector2.left * locationIdentifier , waypointCycle[i].waypointPos + Vector2.left * locationIdentifier);
 
                 Gizmos.color = Color.red;
+                
                 Gizmos.DrawLine(waypointCycle[i].stopPoint - Vector2.up * locationIdentifier , waypointCycle[i].stopPoint + Vector2.up * locationIdentifier);
                 Gizmos.DrawLine(waypointCycle[i].stopPoint - Vector2.left * locationIdentifier , waypointCycle[i].stopPoint + Vector2.left * locationIdentifier);
 
