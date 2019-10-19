@@ -35,8 +35,6 @@ public class edgelord : MonoBehaviour
     bool horizontal;
     float distanceOffset;
     float radialDivisions;
-    int negative;
-    int outerBladeToLose;
     int currentRotations;
     Vector2 targetPosition;
     Vector2 startPosition;
@@ -80,30 +78,14 @@ public class edgelord : MonoBehaviour
         startUp = false;
     }
 
-    void UpdateWaypoint(int newWaypoint)
+    void DetachOuterBlade(int indexToRemove)
     {
-        startPosition = transform.position;
-        moveTime = waypointCycle[newWaypoint].waypointMoveTime;
-        pauseTime = waypointCycle[newWaypoint].waypointPauseTime;
-        targetPosition = waypointCycle[newWaypoint].waypointPos;
-        accelerate = waypointCycle[newWaypoint].accelerate;
-        accelerateRotation = waypointCycle[newWaypoint].accelerateRotation;
-        losePart = waypointCycle[newWaypoint].losePart;
-        destroyArmPos = waypointCycle[newWaypoint].stopPoint;
-
-        velocity = 2 * (Vector2.Distance(targetPosition , startPosition) / moveTime);
-        moveDirection = (targetPosition - startPosition).normalized;
-        horizontal = (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.y))? true : false;
-        distanceOffset = (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.y))? moveDirection.x : moveDirection.y;
-        distanceOffset += -Mathf.Sign(distanceOffset) * 0.05f;
-        if(Mathf.Sign(distanceOffset) > 0) negative = 0;
-        else negative = 1;
-
-        rotationAmount = (outerBlades.Count > 0)? waypointCycle[newWaypoint].endZRotation + transform.rotation.z + (waypointCycle[newWaypoint].numberOfRotations * radialDivisions) : 0;
-        endRotation = Quaternion.Euler(0 , 0 , rotationAmount);
-        rotationalVelocity = 2 * rotationAmount / moveTime;
-
-        currentRotations += outerBladeToLose;
+        outerBlades[indexToRemove].parent = null;
+        arms.RemoveAt(indexToRemove);
+        outerBlades.RemoveAt(indexToRemove);
+        bladePositions.RemoveAt(indexToRemove);
+        blades.RemoveAt(indexToRemove);
+        UpdateOuterBlades();
     }
 
     void UpdateOuterBlades()
@@ -112,7 +94,7 @@ public class edgelord : MonoBehaviour
 
         radialDivisions = (outerBlades.Count > 0)? (360 / outerBlades.Count) : 0;
 
-        transform.rotation = Quaternion.identity;
+        // transform.rotation = Quaternion.identity;
         
         if(!startUp)
         {
@@ -127,26 +109,40 @@ public class edgelord : MonoBehaviour
         bladePositions.Clear();
         for (int i = 0; i < outerBlades.Count; i++)
         {
-            Vector2 direction = ((Vector2)(Quaternion.Euler(0 , 0 , i * radialDivisions) * transform.right)).normalized;
+            Vector2 direction = ((Vector2)(Quaternion.Euler(0 , 0 , i * radialDivisions) * Vector2.right)).normalized;
             arms.Add(outerBlades[i].Find("arm").transform);
             bladePositions.Add(direction * outerBladeRadius);
         }
+    }
+
+    void UpdateWaypoint(int newWaypoint)
+    {
+        transform.rotation = endRotation;
+
+        startPosition = transform.position;
+        moveTime = waypointCycle[newWaypoint].waypointMoveTime;
+        pauseTime = waypointCycle[newWaypoint].waypointPauseTime;
+        targetPosition = waypointCycle[newWaypoint].waypointPos;
+        accelerate = waypointCycle[newWaypoint].accelerate;
+        accelerateRotation = waypointCycle[newWaypoint].accelerateRotation;
+        losePart = waypointCycle[newWaypoint].losePart;
+        destroyArmPos = waypointCycle[newWaypoint].stopPoint;
+
+        velocity = 2 * (Vector2.Distance(targetPosition , startPosition) / moveTime);
+        moveDirection = (targetPosition - startPosition).normalized;
+        horizontal = (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.y))? true : false;
+        distanceOffset = (Mathf.Abs(moveDirection.x) > Mathf.Abs(moveDirection.y))? moveDirection.x : moveDirection.y;
+        distanceOffset += -Mathf.Sign(distanceOffset) * 0.05f;
+
+        rotationAmount = (outerBlades.Count > 0)? waypointCycle[newWaypoint].endZRotation + transform.rotation.z + (waypointCycle[newWaypoint].numberOfRotations * radialDivisions) : 0;
+        endRotation = Quaternion.Euler(0 , 0 , rotationAmount);
+        rotationalVelocity = 2 * rotationAmount / moveTime;
     }
 
     void Update()
     {
         Spin();
         Move();
-    }
-
-    void DetachOuterBlade(int indexToRemove)
-    {
-        outerBlades[indexToRemove].parent = null;
-        arms.RemoveAt(indexToRemove);
-        outerBlades.RemoveAt(indexToRemove);
-        bladePositions.RemoveAt(indexToRemove);
-        blades.RemoveAt(indexToRemove);
-        UpdateOuterBlades();
     }
 
     void Spin()
@@ -165,7 +161,7 @@ public class edgelord : MonoBehaviour
         }
         else
         {
-            transform.rotation = endRotation;
+            //transform.rotation = endRotation;
         }
 
         core.transform.up = Vector2.up; // make sure the centre doesn't rotate
@@ -226,7 +222,7 @@ public class edgelord : MonoBehaviour
                 }
             }
         }
-        else
+        else // if not moving
         {
             if(!bounceBack) // wait before windup or don't lose a part
             {
