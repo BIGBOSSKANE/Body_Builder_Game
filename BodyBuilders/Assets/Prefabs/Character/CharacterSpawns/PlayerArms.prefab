@@ -10816,8 +10816,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5228040172060826624}
-  - component: {fileID: 1328233579727035120}
+  - component: {fileID: 6733530076607558567}
+  - component: {fileID: 4821813678982300537}
   - component: {fileID: 8042938968412244943}
+  - component: {fileID: 1328233579727035120}
   - component: {fileID: 466965948264862379}
   - component: {fileID: 5843161140975020103}
   - component: {fileID: 4358825160977754061}
@@ -10825,7 +10827,6 @@ GameObject:
   - component: {fileID: 7951145554700682632}
   - component: {fileID: 8398276959063701261}
   - component: {fileID: 6451330784360711575}
-  - component: {fileID: 7179494534740303323}
   - component: {fileID: 5059649440186591607}
   m_Layer: 8
   m_Name: PlayerArms
@@ -10855,7 +10856,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1328233579727035120
+--- !u!114 &6733530076607558567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10864,10 +10865,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 7135904791305683921}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Script: {fileID: 11500000, guid: 36d6971015895b14eb83285049c2216d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preventSave: 1
+--- !u!114 &4821813678982300537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7135904791305683921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4736a65f8a9f0b4a9a981ef9a5469c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerList: f7e1664c
+  useOtherObject: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 607ef0fd112f03741ba2c68b4086ced2,
+      type: 2}
+  decodeBank: 0
+  loadAsynchronous: 0
+  saveDecodedBank: 0
+  unloadTriggerList: 
+  bankNameInternal: 
+  valueGuidInternal: 
 --- !u!114 &8042938968412244943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10931,6 +10956,7 @@ MonoBehaviour:
   shield: 1
   wallSliding: 0
   legString: None
+  groundbreaker: 0
   groundbreakerDistance: 4
   shieldActive: 0
   ropeDirection: {x: 0, y: 0}
@@ -10947,6 +10973,19 @@ MonoBehaviour:
   augmentScalerIdentifier: 0
   augmentHookshotIdentifier: 0
   currentVelocity: {x: 0, y: 0}
+--- !u!114 &1328233579727035120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7135904791305683921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preventSave: 1
 --- !u!114 &466965948264862379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11163,28 +11202,6 @@ CircleCollider2D:
   m_Offset: {x: 0.83, y: 0.36}
   serializedVersion: 2
   m_Radius: 0.44
---- !u!114 &7179494534740303323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7135904791305683921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f69eb96a70ec4f46a0d04f207face79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_listeners:
-    initialListenerList: []
-    useDefaultListeners: 1
-  isEnvironmentAware: 1
-  isStaticObject: 0
-  m_positionOffsetData:
-    KeepMe: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-  m_posOffsetData: {fileID: 0}
-  listenerMask: 1
 --- !u!61 &5059649440186591607
 BoxCollider2D:
   m_ObjectHideFlags: 0

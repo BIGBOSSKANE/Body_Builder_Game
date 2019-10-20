@@ -37,6 +37,7 @@ public class hookShot : MonoBehaviour
     Rigidbody2D rb;
     [Tooltip("What layers can the player tether to?")] public LayerMask tetherLayer;
     private Vector2 playerPosition;
+    playerSound playerSound;
 
     void Start()
     {
@@ -51,6 +52,7 @@ public class hookShot : MonoBehaviour
         lineRenderer.enabled = false;
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();        
         hookShotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
+        playerSound = GetComponent<playerSound>();
     }
 
     void Update()
@@ -181,6 +183,7 @@ public class hookShot : MonoBehaviour
     {
         if(InputManager.Cast() && !playerScript.lockController && cooldownTimer > cooldown)
         {
+            playerSound.ShootPlay();
             cooldownTimer = 0f;
             RaycastHit2D hit = Physics2D.Raycast(transform.position, aimDirection, hookShotDistance, tetherLayer);
             if(hit.collider != null && !(playerScript.isGrounded && hit.collider.gameObject.transform.position.y < transform.position.y) && hit.collider.gameObject.layer != 11)

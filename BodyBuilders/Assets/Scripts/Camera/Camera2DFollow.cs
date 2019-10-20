@@ -75,6 +75,7 @@ using Random=UnityEngine.Random;
         int waypointCounter = 0;
         float waypointCyclingTimer = 0f;
         bool lockView = false;
+        playerSound playerSound;
 
 
         private void Awake() // OnEnable is called after awake if that needs to be used instead
@@ -105,6 +106,7 @@ using Random=UnityEngine.Random;
         {
             target = GameObject.Find("Player").GetComponent<Transform>();
             playerScript = target.gameObject.GetComponent<playerScript>();
+            playerSound = target.gameObject.GetComponent<playerSound>();
             transform.position = new Vector3(target.position.x , target.position.y , transform.position.z);
         }
 
@@ -174,7 +176,7 @@ using Random=UnityEngine.Random;
             {
                 shakePartModifier = 8f;
             }
-            else if (partConfig == 2 && partConfig == 3)
+            else if (partConfig == 2 || partConfig == 3)
             {
                 shakePartModifier = 6f;
             }
@@ -186,6 +188,7 @@ using Random=UnityEngine.Random;
             if(groundBreakDistance)
             {
                 groundBreakShakeAmplifier = 1.5f;
+                playerSound.HeavyLandingPlay();
             }
             else
             {

@@ -149,9 +149,7 @@ public class playerScript : MonoBehaviour
     float boxDetectorOffsetX = 0.68f;
     float boxDetectorOffsetY = 0.05f;
     Vector2 boxDetectorCentre;
-    float boxDetectorHeight = 1.96f;
-    float boxDetectorWidth = 1.93f;
-    Vector2 boxDetectorSize;
+    Vector2 boxDetectorSize = new Vector2(0.8f , 0.8f);
     Rigidbody2D rb; // this object's rigidbody
     BoxCollider2D boxCol; // this object's capsule collider - potentially swap out for box collider if edge slips are undesireable
     GameObject head; // the head component
@@ -209,13 +207,14 @@ public class playerScript : MonoBehaviour
     float afterburnerApex;
     bool afterburnerGlide = false;
     checkpointData checkpointData;
-    gameManager gameManager;
 
     [HideInInspector] public int armIdentifier = 0;
     [HideInInspector] public int legIdentifier = 0;
     [HideInInspector] public int augmentScalerIdentifier = 0;
     [HideInInspector] public int augmentHookshotIdentifier = 0;
     [HideInInspector] public Vector2 currentVelocity;
+    playerSound playerSound;
+    bool wasDying = false;
 
     void Awake()
     {
@@ -271,18 +270,23 @@ public class playerScript : MonoBehaviour
         checkpointData = gameObject.GetComponent<checkpointData>();
         camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
         rb.sharedMaterial = frictionMaterial;
+        playerSound = GetComponent<playerSound>();
     }
 
     void FixedUpdate()
     {
         if(dying) // hold the death frame of death for a short while to let the player know what killed them
         {
+            if(!wasDying)
+            {
+                playerSound.DeathPlay();
+                wasDying = true;
+            }
             deathTimer -= Time.fixedDeltaTime;
             rb.velocity = Vector2.zero;
             if(deathTimer <= 0 )
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                //GameObject.Find("GameManager").GetComponent<gameManager>().RestartLevel();
+                GameObject.Find("GameManager").GetComponent<gameManager>().RestartLevel();
             }
             return; // stop the player from doing anything, we could later replace this with a time slow effect
         }
@@ -357,7 +361,7 @@ public class playerScript : MonoBehaviour
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
-                AkSoundEngine.PostEvent("Land" , gameObject);
+                playerSound.LandingPlay();
             }
 
             maxHeight = transform.position.y; // reset maxHeight
@@ -539,14 +543,13 @@ public class playerScript : MonoBehaviour
             if(isGrounded || (coyoteTime && coyoteJump))
             {
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
+                playerSound.JumpPlay();
             }
             else if(afterburner == true && !climbing && remainingJumps == 1)
             {
                 boostSprites.SetActive(true);
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
                 afterburnerApex = transform.position.y;
-                //AkSoundEngine.PostEvent("Jump" , gameObject);
             }
             remainingJumps --;
             jumpGateTimer = 0f;
@@ -579,7 +582,6 @@ public class playerScript : MonoBehaviour
         }
 
         boxDetectorCentre = new Vector2(boxDetectorOffsetX * facingDirection + transform.position.x , boxDetectorOffsetY + transform.position.y);
-        boxDetectorSize = new Vector2(boxDetectorWidth , boxDetectorHeight);
 
         raycastPos = transform.position; // this can be altered later if you would like it to change
 
@@ -928,7 +930,7 @@ public class playerScript : MonoBehaviour
         }
     }
 
-void BoxInteract()
+    void BoxInteract()
     {
         if(InputManager.ButtonXDown() && (partConfiguration == 2 || partConfiguration == 4) && holding == false) // pick up and drop box while you have arms and press "f"
         {
@@ -972,7 +974,6 @@ void BoxInteract()
     {
         if(closestBox != null)
         {
-            AkSoundEngine.PostEvent("PutDownBox" , gameObject);
             closestBox.transform.parent = null;
             heldBoxCol.enabled = false;
             heldPowerCellCol.enabled = false;
@@ -1017,11 +1018,13 @@ void BoxInteract()
         {
             shieldBubble.SetActive(true);
             shieldActive = true;
+            playerSound.ShieldPlay();
         }
         else if(!shield || (InputManager.Cast() && shieldBubble.activeSelf))
         {
-            shieldBubble.SetActive(false);
+            if(shield) playerSound.ShieldStop();
             shieldActive = false;
+            playerSound.ShieldStop();
         }
     }
 
@@ -1337,6 +1340,7 @@ void BoxInteract()
                 }
                 else
                 {
+                    if(shield) playerSound.ShieldStop();
                     shield = false;
                     shieldBubble.SetActive(false);
                 }
@@ -1478,6 +1482,7 @@ void BoxInteract()
                 }
                 else
                 {
+                    if(shield) playerSound.ShieldStop();
                     shield = false;
                     shieldBubble.SetActive(false);
                 }

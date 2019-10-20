@@ -13,12 +13,13 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID ATTACHBASICARMS = 969059497U;
-        static const AkUniqueID ATTACHLEGS = 2342183205U;
+        static const AkUniqueID ATTACH = 180661998U;
         static const AkUniqueID BUTTONPRESS = 317641954U;
-        static const AkUniqueID DETACHARMS = 2021986457U;
-        static const AkUniqueID DETACHLEGS = 495096351U;
+        static const AkUniqueID CRUMBLINGLEDGE = 3268819721U;
+        static const AkUniqueID DEATH = 779278001U;
+        static const AkUniqueID DETACH = 1695175984U;
         static const AkUniqueID DOORMOVES = 3612883293U;
+        static const AkUniqueID DROPBOX = 255253217U;
         static const AkUniqueID ENTERFAN = 230734316U;
         static const AkUniqueID ENTERFANAREA = 2406234679U;
         static const AkUniqueID EXITFAN = 1587122176U;
@@ -26,13 +27,13 @@ namespace AK
         static const AkUniqueID GYREDEACTIVATE = 1571093136U;
         static const AkUniqueID GYREDETECTION = 3261812143U;
         static const AkUniqueID GYRESLICE = 4149978840U;
+        static const AkUniqueID HEAVYLANDING = 1962910015U;
         static const AkUniqueID JUMP = 3833651337U;
-        static const AkUniqueID LAND = 674522502U;
+        static const AkUniqueID LANDING = 2548270042U;
         static const AkUniqueID PASSTHROUGHPLATFORM = 107258764U;
         static const AkUniqueID PICKUPBOX = 4186279120U;
-        static const AkUniqueID PLAYERDEATH = 1656947812U;
-        static const AkUniqueID PUTDOWNBOX = 3562242595U;
         static const AkUniqueID ROLLING = 4227290872U;
+        static const AkUniqueID SHOOT = 3038207054U;
         static const AkUniqueID STARTMUSIC = 3827058668U;
         static const AkUniqueID STOPMUSIC = 1917263390U;
     } // namespace EVENTS
@@ -46,7 +47,6 @@ namespace AK
             namespace STATE
             {
                 static const AkUniqueID GRASS = 4248645337U;
-                static const AkUniqueID GYREJUMP = 2734781550U;
                 static const AkUniqueID METAL = 2473969246U;
                 static const AkUniqueID ROCK = 2144363834U;
             } // namespace STATE
@@ -143,6 +143,10 @@ namespace AK
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
+        static const AkUniqueID CHARACTER = 436743010U;
+        static const AkUniqueID ENEMIES = 2242381963U;
+        static const AkUniqueID ENVIRONMENT = 1229948536U;
+        static const AkUniqueID MUSIC = 3991942870U;
         static const AkUniqueID PROJECTSOUNDBANK = 2110248291U;
     } // namespace BANKS
 
