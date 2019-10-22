@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Groundbreakable_Script : MonoBehaviour
+public class groundbreakable : MonoBehaviour
 {
     public void Groundbreak()
     {

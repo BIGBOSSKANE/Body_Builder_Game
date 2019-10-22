@@ -60,6 +60,11 @@ public class gameManager : MonoBehaviour
         }
     }
 
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     public void Initialise()
     {
         if(GameObject.Find("PlayerSpawner").gameObject != null) /// CULL PARTS AND AUGMENTS ON THE MAP THAT THE PLAYER CURRENTLY HAS EQUIPPED //

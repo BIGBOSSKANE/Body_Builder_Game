@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 354b55013169f644faacee018a2900c6, type: 3}
+  m_Script: {fileID: 0}
   m_Name: AkWwiseProjectData
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::AkWwiseProjectData
   AcousticTextureWwu:
   - PhysicalPath: Virtual Acoustics\Default Work Unit.wwu
     ParentPhysicalPath: 
@@ -191,8 +191,44 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a3b0c194a4ed8f448357d044dfb880c3
     GuidInternal: 
-    m_lastTime: -8586341561733985819
+    m_lastTime: -8586300449726882305
     List:
+    - name: Character
+      guid: 55ea0ef8e4ed0241be99fb2df6b9f267
+      id: 436743010
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Character
+        ObjectType: 7
+      Path: Default Work Unit\Character
+    - name: Enemies
+      guid: 9da5369aa9cda94b94a538ca483d5e4b
+      id: 2242381963
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Enemies
+        ObjectType: 7
+      Path: Default Work Unit\Enemies
+    - name: Environment
+      guid: 2e6c40c704bc444382fcfcb94450c1b1
+      id: 1229948536
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Environment
+        ObjectType: 7
+      Path: Default Work Unit\Environment
+    - name: Music
+      guid: cf1d3fac63ca8846b42fa20708ef82b6
+      id: 3991942870
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 7
+      Path: Default Work Unit\Music
     - name: ProjectSoundbank
       guid: 4693a8d3800faf43b5aaefb045d65eb1
       id: 2110248291
@@ -207,7 +243,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 1b16332c908874488ead1fde7cecd217
     GuidInternal: 
-    m_lastTime: -8586341591583611388
+    m_lastTime: -8586300375458963912
     List:
     - name: Ambience
       guid: 3babaf65c50af14a9068ea9cf07fa74a
@@ -221,41 +257,9 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
-    - name: AttachBasicArms
-      guid: 67c8c4d0ea912e43b65801bf40e7426a
-      id: 969059497
-      PathAndIcons:
-      - ElementName: Default Work Unit
-        ObjectType: 12
-      - ElementName: Player
-        ObjectType: 4
-      - ElementName: ChangePartConfiguration
-        ObjectType: 4
-      - ElementName: AttachBasicArms
-        ObjectType: 3
-      Path: Default Work Unit\Player\ChangePartConfiguration\AttachBasicArms
-      maxAttenuation: 0
-      maxDuration: 1.177646
-      minDuration: 0.619745
-    - name: AttachCannonArms
-      guid: 004e6f25a674aa4297f6ed0ca3cf7658
-      id: 734344352
-      PathAndIcons:
-      - ElementName: Default Work Unit
-        ObjectType: 12
-      - ElementName: Player
-        ObjectType: 4
-      - ElementName: ChangePartConfiguration
-        ObjectType: 4
-      - ElementName: AttachCannonArms
-        ObjectType: 3
-      Path: Default Work Unit\Player\ChangePartConfiguration\AttachCannonArms
-      maxAttenuation: 0
-      maxDuration: 1.177646
-      minDuration: 0.619745
-    - name: AttachLegs
+    - name: Attach
       guid: aa6594aaae61be468aaddaa392f1f4b3
-      id: 2342183205
+      id: 180661998
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
@@ -263,9 +267,9 @@ MonoBehaviour:
         ObjectType: 4
       - ElementName: ChangePartConfiguration
         ObjectType: 4
-      - ElementName: AttachLegs
+      - ElementName: Attach
         ObjectType: 3
-      Path: Default Work Unit\Player\ChangePartConfiguration\AttachLegs
+      Path: Default Work Unit\Player\ChangePartConfiguration\Attach
       maxAttenuation: 0
       maxDuration: 1.177646
       minDuration: 0.619745
@@ -297,25 +301,23 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.989083
       minDuration: 2.90399
-    - name: DetachArms
-      guid: 7d22b9bc93d9f44e88e801a4b8e6ab6f
-      id: 2021986457
+    - name: Death
+      guid: 8ccdc49531469741b7b37973c582c996
+      id: 779278001
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
       - ElementName: Player
         ObjectType: 4
-      - ElementName: ChangePartConfiguration
-        ObjectType: 4
-      - ElementName: DetachArms
+      - ElementName: Death
         ObjectType: 3
-      Path: Default Work Unit\Player\ChangePartConfiguration\DetachArms
+      Path: Default Work Unit\Player\Death
       maxAttenuation: 0
-      maxDuration: 2.477415
-      minDuration: 1.550129
-    - name: DetachLegs
+      maxDuration: 1.48029
+      minDuration: 0.892473
+    - name: Detach
       guid: 921074d14f540a43a6aeb0f77e52b210
-      id: 495096351
+      id: 1695175984
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
@@ -323,9 +325,9 @@ MonoBehaviour:
         ObjectType: 4
       - ElementName: ChangePartConfiguration
         ObjectType: 4
-      - ElementName: DetachLegs
+      - ElementName: Detach
         ObjectType: 3
-      Path: Default Work Unit\Player\ChangePartConfiguration\DetachLegs
+      Path: Default Work Unit\Player\ChangePartConfiguration\Detach
       maxAttenuation: 0
       maxDuration: 2.477415
       minDuration: 1.550129
@@ -343,6 +345,20 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 5.36975
       minDuration: 5.36975
+    - name: DropBox
+      guid: a644840d367d204a9681df87264d2708
+      id: 255253217
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Player
+        ObjectType: 4
+      - ElementName: DropBox
+        ObjectType: 3
+      Path: Default Work Unit\Player\DropBox
+      maxAttenuation: 0
+      maxDuration: 0.373509
+      minDuration: 0.351734
     - name: EnterFan
       guid: 7739c9134401e14eb7d09e2da2fe25d4
       id: 230734316
@@ -445,6 +461,22 @@ MonoBehaviour:
       maxAttenuation: 40
       maxDuration: 0.948209
       minDuration: 0.625792
+    - name: HeavyLanding
+      guid: 949fb5de7701bc489131a775014757f3
+      id: 1962910015
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Player
+        ObjectType: 4
+      - ElementName: Movement
+        ObjectType: 4
+      - ElementName: HeavyLanding
+        ObjectType: 3
+      Path: Default Work Unit\Player\Movement\HeavyLanding
+      maxAttenuation: 0
+      maxDuration: 1.101767
+      minDuration: 1.001767
     - name: Jump
       guid: 3323a37dd5dd584e91f65f589032636d
       id: 3833651337
@@ -461,9 +493,9 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
-    - name: Land
+    - name: Landing
       guid: 7c766d921c316042bdc006b673b56c88
-      id: 674522502
+      id: 2548270042
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
@@ -471,9 +503,9 @@ MonoBehaviour:
         ObjectType: 4
       - ElementName: Movement
         ObjectType: 4
-      - ElementName: Land
+      - ElementName: Landing
         ObjectType: 3
-      Path: Default Work Unit\Player\Movement\Land
+      Path: Default Work Unit\Player\Movement\Landing
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -499,44 +531,12 @@ MonoBehaviour:
         ObjectType: 12
       - ElementName: Player
         ObjectType: 4
-      - ElementName: Movement
-        ObjectType: 4
       - ElementName: PickUpBox
         ObjectType: 3
-      Path: Default Work Unit\Player\Movement\PickUpBox
+      Path: Default Work Unit\Player\PickUpBox
       maxAttenuation: 0
-      maxDuration: 0.693378
-      minDuration: 0.653706
-    - name: PlayerDeath
-      guid: 8ccdc49531469741b7b37973c582c996
-      id: 1656947812
-      PathAndIcons:
-      - ElementName: Default Work Unit
-        ObjectType: 12
-      - ElementName: Player
-        ObjectType: 4
-      - ElementName: PlayerDeath
-        ObjectType: 3
-      Path: Default Work Unit\Player\PlayerDeath
-      maxAttenuation: 0
-      maxDuration: 1.48029
-      minDuration: 1.201523
-    - name: PutDownBox
-      guid: a644840d367d204a9681df87264d2708
-      id: 3562242595
-      PathAndIcons:
-      - ElementName: Default Work Unit
-        ObjectType: 12
-      - ElementName: Player
-        ObjectType: 4
-      - ElementName: Movement
-        ObjectType: 4
-      - ElementName: PutDownBox
-        ObjectType: 3
-      Path: Default Work Unit\Player\Movement\PutDownBox
-      maxAttenuation: 0
-      maxDuration: 0.373509
-      minDuration: 0.351734
+      maxDuration: 0.573043
+      minDuration: 0.540256
     - name: Rolling
       guid: f5ad28484e93b1459202876846edd3ba
       id: 4227290872
@@ -561,11 +561,9 @@ MonoBehaviour:
         ObjectType: 12
       - ElementName: Player
         ObjectType: 4
-      - ElementName: Movement
-        ObjectType: 4
       - ElementName: Shoot
         ObjectType: 3
-      Path: Default Work Unit\Player\Movement\Shoot
+      Path: Default Work Unit\Player\Shoot
       maxAttenuation: 0
       maxDuration: 0.782301
       minDuration: 0.646533
@@ -758,7 +756,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a33f6c5f0d850f459d5aa195e0db09e8
     GuidInternal: 
-    m_lastTime: -8586341672117843355
+    m_lastTime: -8586300425047309792
     List:
     - name: GroundMaterial
       guid: d313b4215dc1bd468aff16d89dccbd1c
@@ -775,12 +773,6 @@ MonoBehaviour:
         id: 4248645337
         PathAndIcons:
         - ElementName: Grass
-          ObjectType: 8
-      - name: GyreJump
-        guid: 72396e93276ece428d8476205f318f6d
-        id: 2734781550
-        PathAndIcons:
-        - ElementName: GyreJump
           ObjectType: 8
       - name: Metal
         guid: 7d5e4433b21ede41b3dcb8da6a0ab6be
@@ -997,21 +989,6 @@ MonoBehaviour:
     m_lastTime: -8586341672113315151
     List: []
   ExpandedItems:
-  - /SOU375 Wwise Final Project
-  - /SOU375 Wwise Final Project/Events
-  - /SOU375 Wwise Final Project/Events/Default Work Unit
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Environmental Mechanics
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Environmental Mechanics/EndEnvironmentalEffect
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Gyre - Sawbot
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Player
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Player/ChangePartConfiguration
-  - /SOU375 Wwise Final Project/Events/Default Work Unit/Player/Movement
-  - /SOU375 Wwise Final Project/Events/Music
-  - /SOU375 Wwise Final Project/States
-  - /SOU375 Wwise Final Project/States/Default Work Unit
-  - /SOU375 Wwise Final Project/States/Default Work Unit/GroundMaterial
-  - /SOU375 Wwise Final Project/Switches
-  - /SOU375 Wwise Final Project/Switches/Default Work Unit
-  - /SOU375 Wwise Final Project/Switches/Default Work Unit/MusicIntensity
+  - /Bodybuilders Wwise
   autoPopulateEnabled: 1
   CurrentPluginConfig: 

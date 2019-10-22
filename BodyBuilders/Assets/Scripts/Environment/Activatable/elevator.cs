@@ -248,7 +248,7 @@ public class elevator : activate
     /// <summary>Add the game object to the onboard list and the transform holder.</summary>
     void Parent(GameObject child)
     {
-        if(!onBoard.Contains(child) && child.tag != "Untagged" && child.tag != "PassThroughPlatform" && child.tag != "Environment" && child.tag != "Shield")
+        if(!onBoard.Contains(child) && child.tag != "Untagged" && child.tag != "PassThroughPlatform" && child.tag != "Environment" && child.tag != "Shield" && child.tag != "HeldBox")
         {
             if(child.tag == "Player") // if the player is not on board already, add them
             {

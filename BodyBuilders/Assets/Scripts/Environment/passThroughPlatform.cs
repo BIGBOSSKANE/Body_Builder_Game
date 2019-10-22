@@ -17,7 +17,6 @@ public class passThroughPlatform : MonoBehaviour
     float resetTime = 0.5f;
     float resetTimer;
     bool playerAbove;
-    bool shiftHeld = false;
     playerScript playerScript;
     bool resetting = false;
 

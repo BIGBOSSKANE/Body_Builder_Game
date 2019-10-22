@@ -134,7 +134,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.2692318
+        value: 0.751379
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -176,7 +176,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 2
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
@@ -381,8 +381,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2898310175358203803}
-  - component: {fileID: 5566241624575854295}
+  - component: {fileID: 2201376726228841515}
+  - component: {fileID: 4284600449558722932}
   - component: {fileID: 4678593050687297790}
+  - component: {fileID: 5566241624575854295}
   - component: {fileID: 6143352459277211138}
   - component: {fileID: 7269343856687695347}
   - component: {fileID: 4685320292345416287}
@@ -390,7 +392,6 @@ GameObject:
   - component: {fileID: 3773345322796488242}
   - component: {fileID: 6973462210271886834}
   - component: {fileID: 3581536395992741730}
-  - component: {fileID: 928598465998816545}
   - component: {fileID: 1770740899971250080}
   m_Layer: 8
   m_Name: PlayerFullbody
@@ -421,7 +422,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5566241624575854295
+--- !u!114 &2201376726228841515
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -430,10 +431,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 2952321944478750386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Script: {fileID: 11500000, guid: 36d6971015895b14eb83285049c2216d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preventSave: 1
+--- !u!114 &4284600449558722932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952321944478750386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4736a65f8a9f0b4a9a981ef9a5469c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerList: f7e1664c
+  useOtherObject: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 607ef0fd112f03741ba2c68b4086ced2,
+      type: 2}
+  decodeBank: 0
+  loadAsynchronous: 0
+  saveDecodedBank: 0
+  unloadTriggerList: 
+  bankNameInternal: 
+  valueGuidInternal: 
 --- !u!114 &4678593050687297790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +522,7 @@ MonoBehaviour:
   shield: 0
   wallSliding: 0
   legString: BasicLegs
+  groundbreaker: 0
   groundbreakerDistance: 4
   shieldActive: 0
   ropeDirection: {x: 0, y: 0}
@@ -513,6 +539,19 @@ MonoBehaviour:
   augmentScalerIdentifier: 0
   augmentHookshotIdentifier: 0
   currentVelocity: {x: 0, y: 0}
+--- !u!114 &5566241624575854295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952321944478750386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preventSave: 1
 --- !u!114 &6143352459277211138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -668,7 +707,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
@@ -729,28 +768,6 @@ CircleCollider2D:
   m_Offset: {x: 0.83, y: 0.36}
   serializedVersion: 2
   m_Radius: 0.44
---- !u!114 &928598465998816545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2952321944478750386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f69eb96a70ec4f46a0d04f207face79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_listeners:
-    initialListenerList: []
-    useDefaultListeners: 1
-  isEnvironmentAware: 1
-  isStaticObject: 0
-  m_positionOffsetData:
-    KeepMe: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-  m_posOffsetData: {fileID: 0}
-  listenerMask: 1
 --- !u!61 &1770740899971250080
 BoxCollider2D:
   m_ObjectHideFlags: 0

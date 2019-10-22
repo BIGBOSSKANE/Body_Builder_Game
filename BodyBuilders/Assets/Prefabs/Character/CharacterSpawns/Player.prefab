@@ -5023,13 +5023,13 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 0.75
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.2692318
+        value: 0.75
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -5071,7 +5071,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 2
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
@@ -10204,8 +10204,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7386829409325065421}
-  - component: {fileID: 8033497711057274954}
+  - component: {fileID: 2194446389434609019}
+  - component: {fileID: 7863219057247035958}
   - component: {fileID: 5744412106282342318}
+  - component: {fileID: 8033497711057274954}
   - component: {fileID: 5744412106282342316}
   - component: {fileID: 4946934706992893225}
   - component: {fileID: 6102379021821488068}
@@ -10241,7 +10243,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8033497711057274954
+--- !u!114 &2194446389434609019
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10250,10 +10252,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 5744412106282342317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Script: {fileID: 11500000, guid: 36d6971015895b14eb83285049c2216d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preventSave: 1
+--- !u!114 &7863219057247035958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5744412106282342317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4736a65f8a9f0b4a9a981ef9a5469c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerList: f7e1664c
+  useOtherObject: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 607ef0fd112f03741ba2c68b4086ced2,
+      type: 2}
+  decodeBank: 0
+  loadAsynchronous: 0
+  saveDecodedBank: 0
+  unloadTriggerList: 
+  bankNameInternal: 
+  valueGuidInternal: 
 --- !u!114 &5744412106282342318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10317,6 +10343,7 @@ MonoBehaviour:
   shield: 0
   wallSliding: 0
   legString: 
+  groundbreaker: 0
   groundbreakerDistance: 4
   shieldActive: 0
   ropeDirection: {x: 0, y: 0}
@@ -10333,6 +10360,19 @@ MonoBehaviour:
   augmentScalerIdentifier: 0
   augmentHookshotIdentifier: 0
   currentVelocity: {x: 0, y: 0}
+--- !u!114 &8033497711057274954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5744412106282342317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d61757bc43b719409d77f226f793682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preventSave: 1
 --- !u!114 &5744412106282342316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10488,7 +10528,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
+    textureMode: 1
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1

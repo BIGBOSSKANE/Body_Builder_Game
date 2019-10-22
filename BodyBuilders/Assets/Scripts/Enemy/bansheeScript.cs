@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class bansheeScript : MonoBehaviour
 {
+    public float range = 15f;
     GameObject target;
     GameObject collisionEffect;
     GameObject burstEffect;
@@ -23,6 +24,7 @@ public class bansheeScript : MonoBehaviour
     [Tooltip("How long does the laser fire for?")] public float laserFireTime = 3f;
     float laserFireTimer = 0f;
     bool isFiring = false;
+    bool wasFiring = false;
     [Tooltip("What does the laser collide with?")] public LayerMask laserLayer;
     [Tooltip("Detect the player")] public LayerMask playerLayer;
     LineRenderer laserLine;
@@ -67,7 +69,7 @@ public class bansheeScript : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(Physics2D.OverlapCircle(gameObject.transform.position, 15f , playerLayer))
+        if(Physics2D.OverlapCircle(gameObject.transform.position, range , playerLayer))
         {
             collisionEffect.SetActive(true);
             laserLine.enabled = true;
@@ -135,7 +137,7 @@ public class bansheeScript : MonoBehaviour
                 }
                 else if(laser.collider.tag == "powerCell")
                 {
-                    if(laserTag != "powerCell" && isFiring)
+                    if(laserTag != "powerCell" && isFiring || (isFiring && !wasFiring))
                     {
                         powerCell = laser.transform.gameObject.GetComponent<powerCell>();
                         powerCell.activated = true;
@@ -144,7 +146,7 @@ public class bansheeScript : MonoBehaviour
                 else if(laser.collider.tag == "HeldBox")
                 {
                     collisionEffect.transform.position = laser.point;
-                    if(laserTag != "HeldBox" && isFiring)
+                    if(laserTag != "HeldBox" && isFiring || (isFiring && !wasFiring))
                     {
                         if(playerScript.heldBoxTag == "powerCell")
                         {
@@ -253,6 +255,10 @@ public class bansheeScript : MonoBehaviour
             if(laserChargeTimer > 0) laserChargeTimer -= 2f * Time.deltaTime;
             if(laserChargeTimer <= 0) laserChargeTimer = 0f;
         }
+
+
+        wasFiring = isFiring;
+
 
         if(isCharging)
         {
