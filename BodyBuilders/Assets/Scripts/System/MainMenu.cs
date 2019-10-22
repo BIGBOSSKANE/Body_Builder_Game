@@ -9,43 +9,18 @@ using UnityEngine.SceneManagement; // this is allows you to use certain classes 
 
 public class MainMenu : MonoBehaviour
 {
-    public GameObject Main; // put a panel for the Main Menu here
+    public GameObject mainMenu; // put a panel for the main Menu here
     public GameObject levelSelect; // put a panel for the Level Selection Menu here
     public GameObject settings;
 
     bool islvlslct = false; // a private(cannot be changed outside the script) on off switch called isLvlSlct
     bool isSettings = false; // a private(cannot be changed outside the script) on off switch called isLvlSlct
 
-
-    void Update()
+    void Start()
     {
-        if (islvlslct) // and the bool islvlslct is set to true
-        {
-           // Main.gameObject.transform.position(0,0,0); // disable the Main Menu panel
-            levelSelect.gameObject.transform.Translate(0, 0, 0); // activate the Level Select menu panel
-            settings.gameObject.transform.Translate(-800, 0, 0);
-        }
-
-        else // else ( the opposite of the previous if statement), if the bool islvlslct is set to false
-        {
-            Main.gameObject.transform.Translate(0, 0, 0); // disable the Main Menu panel
-            levelSelect.gameObject.transform.Translate(800, 0, 0); // activate the Level Select menu panel
-            settings.gameObject.transform.Translate(-800, 0, 0);
-        }
-
-        if (isSettings) // and the bool islvlslct is set to true
-        {
-            Main.gameObject.transform.Translate(800, 0, 0); // disable the Main Menu panel
-            levelSelect.gameObject.transform.Translate(800, 0, 0); // activate the Level Select menu panel
-            settings.gameObject.transform.Translate(0, 0, 0);
-        }
-
-        else // else ( the opposite of the previous if statement), if the bool islvlslct is set to false
-        {
-            Main.gameObject.transform.Translate(0, 0, 0); // disable the Main Menu panel
-            levelSelect.gameObject.transform.Translate(800, 0, 0); // activate the Level Select menu panel
-            settings.gameObject.transform.Translate(-800, 0, 0);
-        }
+        mainMenu.gameObject.SetActive(true); 
+        levelSelect.gameObject.SetActive(false);
+        settings.gameObject.SetActive(false);
     }
 
     // used for the New Game Button
@@ -58,20 +33,24 @@ public class MainMenu : MonoBehaviour
     // used for the Level Selection button
     public void LevelSelectionButton() // a selectable(public) function called LevelSelectionButton
     {
-        islvlslct = true; // set the bool islvlslct is set to true
+        mainMenu.gameObject.SetActive(true);
+        levelSelect.gameObject.SetActive(false);
+        settings.gameObject.SetActive(false);
     }
 
     // used for the Return Button
     public void ReturnButton() // a selectable(public) function called ReturnButton
     {
-        islvlslct = false; // set the bool islvlslct is set to false
-        isSettings = false;
+        mainMenu.gameObject.SetActive(true);
+        levelSelect.gameObject.SetActive(false);
+        settings.gameObject.SetActive(false);
     }
 
     public void SettingsButton() // a selectable(public) function called SettingsButton
     {
-        isSettings = true; // set the bool isSettings is set to true
-        islvlslct = false;
+        mainMenu.gameObject.SetActive(false);
+        levelSelect.gameObject.SetActive(false);
+        settings.gameObject.SetActive(true);
     }
     // used for the buttons to select levels
     public void LevelButton(int level) // a selectable(public) function called LevelButton, when setting up the button write the number of that scenes index
