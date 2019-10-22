@@ -134,7 +134,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fbab0e2eb92fe948862c0048abf70f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parent: {fileID: 0}
   bounceStrength: 15
+  station: {fileID: 0}
 --- !u!61 &4429156299385154972
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -318,6 +320,5 @@ MonoBehaviour:
   range: 10
   pos: {x: 0, y: 0, z: 0}
   patrolling: 0
-  detected: 0
   distance: 0
   groundDetection: {fileID: 900808875}

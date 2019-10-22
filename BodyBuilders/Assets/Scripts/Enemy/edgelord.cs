@@ -44,10 +44,11 @@ public class edgelord : MonoBehaviour
     float previousdistanceFromCollisionPoint;
     float rotationAmount;
     bool startUp = true;
+    public bool waitingForPlayer;
     [Tooltip("To create a new waypoint, increase the size of this array, then adjust the parameters of each waypoint.")] public SubClass[] waypointCycle;
 
 
-    void Start()
+    void OnEnable()
     {
         outerBladeRadius *= transform.localScale.x;
 
@@ -127,6 +128,7 @@ public class edgelord : MonoBehaviour
         accelerateRotation = waypointCycle[newWaypoint].accelerateRotation;
         losePart = waypointCycle[newWaypoint].losePart;
         destroyArmPos = waypointCycle[newWaypoint].stopPoint;
+        waitingForPlayer = waypointCycle[newWaypoint].waitForPlayer;
 
         velocity = 2 * (Vector2.Distance(targetPosition , startPosition) / moveTime);
         moveDirection = (targetPosition - startPosition).normalized;
@@ -141,8 +143,11 @@ public class edgelord : MonoBehaviour
 
     void Update()
     {
-        Spin();
-        Move();
+        if(!waitingForPlayer)
+        {
+            Spin();
+            Move();
+        }
     }
 
     void Spin()
@@ -170,7 +175,7 @@ public class edgelord : MonoBehaviour
         foreach (Transform blade in blades)
         {
             blade.Rotate(0f , 0f , -outerBladeSpinSpeed * Time.deltaTime); // spin outer blades
-        }        
+        } 
     }
 
     void Move()
@@ -386,6 +391,7 @@ public class edgelord : MonoBehaviour
         [Tooltip("This is divided by the number of blades")] public int numberOfRotations;
         [Range(0 , 360)] public float endZRotation;
         public bool losePart = false;
+        public bool waitForPlayer = false;
         [HideInInspector] public Vector2 stopPoint;
     }
 }

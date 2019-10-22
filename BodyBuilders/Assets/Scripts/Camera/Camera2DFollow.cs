@@ -172,7 +172,6 @@ using Random=UnityEngine.Random;
 
         public void TriggerShake(float fallDistance , bool groundBreakDistance , int partConfig)
         {
-            Debug.Log("Shake");
             if(partConfig == 1)
             {
                 shakePartModifier = 8f;

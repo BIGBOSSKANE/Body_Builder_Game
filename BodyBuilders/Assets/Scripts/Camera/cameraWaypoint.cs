@@ -60,7 +60,7 @@ public class cameraWaypoint : MonoBehaviour
             unlockOnInput = false;
             playerLock = false;
         }
-        lockAxisPos = waypointCycle[0].waypointPos;
+        if(waypointCount != 0) lockAxisPos = waypointCycle[0].waypointPos;
         //lockAxisPos += (Vector2)transform.position;
     }
 
