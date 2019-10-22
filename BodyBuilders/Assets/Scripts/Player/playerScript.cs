@@ -843,6 +843,14 @@ public class playerScript : MonoBehaviour
                     hitC.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
                     return false;
                 }
+                /*
+                else if(hitC.collider.tag == "Gyre")
+                {
+                    Debug.Log("Hit");
+                    hitC.collider.gameObject.GetComponent<Gyre_WeakSpot>().Destruct();
+                    return false;
+                }
+                */
                 else
                 {
                     groundBreakerReset = false;

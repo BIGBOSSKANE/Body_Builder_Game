@@ -220,7 +220,6 @@ public class hookShot : MonoBehaviour
             }
             else
             {
-                Debug.Log("Did it");
                 ropeMiss = true;
                 DetachRope();
                 ropeAnchorPoint = (Vector2)transform.position + (aimDirection * hookShotDistance);

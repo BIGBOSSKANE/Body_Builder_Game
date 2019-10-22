@@ -30,17 +30,21 @@ public class Gyre_WeakSpot : MonoBehaviour
 
         if (col.gameObject.tag == "Player")
         {
-            Rigidbody2D rb2d = col.gameObject.GetComponent<Rigidbody2D>();
+            Rigidbody2D rb2d = col.attachedRigidbody;
             Vector2 velocity = rb2d.velocity;
             velocity.y = bounceStrength;
             rb2d.velocity = velocity;
-
-            if (isStationed)
-            {
-                station.GetComponent<Gyre_StationScript>().isGyreAlive = false;
-            }
-
-            Destroy(parent);
         }
+    }
+
+    public void Destruct()
+    {
+        Debug.Log("Destruct");
+        if (isStationed)
+        {
+            station.GetComponent<Gyre_StationScript>().isGyreAlive = false;
+        }
+
+        Destroy(parent);
     }
 }
