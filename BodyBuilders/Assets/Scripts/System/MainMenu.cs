@@ -13,9 +13,6 @@ public class MainMenu : MonoBehaviour
     public GameObject levelSelect; // put a panel for the Level Selection Menu here
     public GameObject settings;
 
-    bool islvlslct = false; // a private(cannot be changed outside the script) on off switch called isLvlSlct
-    bool isSettings = false; // a private(cannot be changed outside the script) on off switch called isLvlSlct
-
     void Start()
     {
         mainMenu.gameObject.SetActive(true); 
