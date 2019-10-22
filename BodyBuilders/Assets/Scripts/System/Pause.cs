@@ -12,12 +12,16 @@ public class Pause : MonoBehaviour
     private bool isPaused = false; // a private(cannot be changed outside the script) on off switch called isPaused
     public GameObject pausePanel; // put a panel for the pause menu here
     public GameObject exitPanel; // put a panel for the exit clarification menu here
+    public GameObject settingsPanel; // put a panel for the exit clarification menu here
     float pausedTimeScale;
     timeSlow timeSlow;
 
     void Start()
     {
         timeSlow = GameObject.Find("Player").GetComponent<timeSlow>();
+        pausePanel.SetActive(false); // disable the Exit menu
+        exitPanel.SetActive(false); // disable the Exit menu
+        settingsPanel.SetActive(false); // disable the settings menu
     }
 
     void Update() //on everyframe..
@@ -59,9 +63,15 @@ public class Pause : MonoBehaviour
         exitPanel.SetActive(true); // activate the Exit menu
     }
 
-    public void CancelExit() // a selectable(public) function called CancelExit
+    public void Settings() // a selectable(public) function called MainMenu
+    {
+        settingsPanel.SetActive(true); // activate the Exit menu
+    }
+
+    public void Return() // a selectable(public) function called Return
     {
         exitPanel.SetActive(false); // disable the Exit menu
+        settingsPanel.SetActive(false); // disable the settings menu
     }
 
     public void Exit() // a selectable(public) function called Exit
