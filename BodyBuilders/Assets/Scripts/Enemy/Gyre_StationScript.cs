@@ -39,7 +39,7 @@ public class Gyre_StationScript : MonoBehaviour
 
     void spawnGyre()
     {
-        Vector2 position1 = spwnPnt.transform.position;
-        Instantiate(gyrePrefab, position1, Quaternion.identity);
+        Vector2 spwnPos = spwnPnt.transform.position;
+        Instantiate(gyrePrefab, spwnPos, Quaternion.identity);
     }
 }

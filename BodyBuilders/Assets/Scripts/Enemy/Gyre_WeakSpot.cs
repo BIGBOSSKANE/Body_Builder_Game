@@ -34,7 +34,9 @@ public class Gyre_WeakSpot : MonoBehaviour
             Vector2 velocity = rb2d.velocity;
             velocity.y = bounceStrength;
             rb2d.velocity = velocity;
+            Destruct();
         }
+        
     }
 
     public void Destruct()
