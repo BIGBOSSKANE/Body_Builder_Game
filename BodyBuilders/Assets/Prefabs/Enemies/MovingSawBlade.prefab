@@ -50,8 +50,9 @@ MonoBehaviour:
   bladeDistance: 5
   spinSpeed: 200
   smoothMove: 1
-  startPos: {x: -5, y: -0.4}
-  endPos: {x: 5, y: -0.4}
+  movementLength: 0
+  movingSaw: {fileID: 0}
+  groove: {fileID: 0}
 --- !u!1 &3850240099914346287
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,12 +295,12 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.0989013
       objectReference: {fileID: 0}
-    - target: {fileID: 5376747114972588562, guid: 7b45d76a827164c439e98ae2ec276adb,
+    - target: {fileID: 5376747114916768570, guid: 7b45d76a827164c439e98ae2ec276adb,
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5376747114916768570, guid: 7b45d76a827164c439e98ae2ec276adb,
+    - target: {fileID: 5376747114972588562, guid: 7b45d76a827164c439e98ae2ec276adb,
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1

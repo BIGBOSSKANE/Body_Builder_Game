@@ -11,13 +11,19 @@ public class sawbladeTranslate : MonoBehaviour
     public bool smoothMove = true;
     float moveTimer;
     bool forwards = true;
-    public Vector2 startPos;
-    public Vector2 endPos;
-    Transform movingSaw;
+    public float movementLength;
+    float previousMovementLength;
+    Vector2 startPos;
+    Vector2 endPos;
+    [HideInInspector] public Transform movingSaw;
+    [HideInInspector] public Transform groove; // assigned from a hidden public insert
 
     void Start()
     {
-        movingSaw = transform.Find("MovingSawBlade");
+        float grooveLength = (groove.localScale.x / 2) - (movingSaw.GetComponent<SpriteRenderer>().bounds.extents.x);
+
+        startPos = new Vector2(-grooveLength, -0.4f);
+        endPos= new Vector2(grooveLength, -0.4f);
     }
 
     void Update()
@@ -42,21 +48,12 @@ public class sawbladeTranslate : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
-        Gizmos.color = Color.blue;
-        float locationIdentifier = 0.3f;
-
-        Vector2 sPos = startPos * transform.localScale.x + (Vector2)transform.position;
-        Vector2 ePos = endPos * transform.localScale.x + (Vector2)transform.position;
-
-        if(!Application.isPlaying)
+        if(previousMovementLength != movementLength)
         {
-            Gizmos.DrawLine(sPos - Vector2.up * locationIdentifier , sPos + Vector2.up * locationIdentifier);
-            Gizmos.DrawLine(sPos - Vector2.left * locationIdentifier , sPos + Vector2.left * locationIdentifier);
-            Gizmos.DrawLine(ePos - Vector2.up * locationIdentifier , ePos + Vector2.up * locationIdentifier);
-            Gizmos.DrawLine(ePos - Vector2.left * locationIdentifier , ePos + Vector2.left * locationIdentifier);
-            Gizmos.DrawLine(sPos, ePos);
+            groove.localScale = new Vector3(movementLength * transform.localScale.x , groove.localScale.y , groove.localScale.z);
+            previousMovementLength = movementLength;
         }
     }
 }
