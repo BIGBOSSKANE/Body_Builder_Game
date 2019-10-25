@@ -28,9 +28,9 @@ Transform:
   m_GameObject: {fileID: 3143115472234194388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.36400002, y: 0.36400002, z: 0.91}
+  m_LocalScale: {x: 0.36400002, y: 0.36400002, z: 1}
   m_Children:
-  - {fileID: 3143115471816067073}
+  - {fileID: 1697577208320425867}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -100,7 +100,6 @@ MonoBehaviour:
   startRotation: 0
   bladeDistance: 10
   spinSpeed: 200
-  centrePoint: {x: 0, y: 0.44}
 --- !u!120 &3143115472234194392
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -278,12 +277,12 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.0989013
       objectReference: {fileID: 0}
-    - target: {fileID: 5376747114972588562, guid: 7b45d76a827164c439e98ae2ec276adb,
+    - target: {fileID: 5376747114916768570, guid: 7b45d76a827164c439e98ae2ec276adb,
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5376747114916768570, guid: 7b45d76a827164c439e98ae2ec276adb,
+    - target: {fileID: 5376747114972588562, guid: 7b45d76a827164c439e98ae2ec276adb,
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
@@ -305,9 +304,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b45d76a827164c439e98ae2ec276adb, type: 3}
---- !u!4 &3143115471816067073 stripped
+--- !u!4 &1697577208320425867 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5376747116523823161, guid: 7b45d76a827164c439e98ae2ec276adb,
+  m_CorrespondingSourceObject: {fileID: 8543219261745616819, guid: 7b45d76a827164c439e98ae2ec276adb,
     type: 3}
   m_PrefabInstance: {fileID: 6989760196442826808}
   m_PrefabAsset: {fileID: 0}

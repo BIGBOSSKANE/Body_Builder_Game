@@ -1639,14 +1639,17 @@ public class playerScript : MonoBehaviour
 
     public void Die(float time) // this should eventually be moved to the scene manager
     {
-        AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
-        deathTimer = time;
-        isGrounded = false;
-        cameraScript.TriggerShake(15f , true , 4);
-        dying = true;
-        if(partConfiguration == 1 && hookshotScript.enabled)
+        if(!dying)
         {
-            hookshotScript.DetachRope();
+            AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
+            deathTimer = time;
+            isGrounded = false;
+            cameraScript.TriggerShake(15f , true , 4);
+            dying = true;
+            if(partConfiguration == 1 && hookshotScript.enabled)
+            {
+                hookshotScript.DetachRope();
+            }
         }
     }
 }
