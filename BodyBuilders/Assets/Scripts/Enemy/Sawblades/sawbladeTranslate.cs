@@ -20,10 +20,10 @@ public class sawbladeTranslate : MonoBehaviour
 
     void Start()
     {
+        groove.localScale = new Vector3(movementLength * transform.localScale.x , groove.localScale.y , groove.localScale.z);
         float grooveLength = (groove.localScale.x / 2) - (movingSaw.GetComponent<SpriteRenderer>().bounds.extents.x);
-
-        startPos = new Vector2(-grooveLength, -0.4f);
-        endPos= new Vector2(grooveLength, -0.4f);
+        startPos = new Vector2(-grooveLength, -0.44f);
+        endPos= new Vector2(grooveLength, -0.44f);
     }
 
     void Update()
@@ -50,7 +50,7 @@ public class sawbladeTranslate : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if(previousMovementLength != movementLength)
+        if(!Application.isPlaying && previousMovementLength != movementLength)
         {
             groove.localScale = new Vector3(movementLength * transform.localScale.x , groove.localScale.y , groove.localScale.z);
             previousMovementLength = movementLength;

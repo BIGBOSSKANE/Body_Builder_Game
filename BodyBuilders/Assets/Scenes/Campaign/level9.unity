@@ -1296,7 +1296,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 77.67, y: -2.2}
     waypointPauseTime: 1
@@ -5847,7 +5846,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 129.6, y: -8.57}
     waypointPauseTime: 1
@@ -7800,6 +7798,11 @@ PrefabInstance:
       propertyPath: moveTimeTotal
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7430382189106502756, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7430382189578474540, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -7814,11 +7817,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.5266904
-      objectReference: {fileID: 0}
-    - target: {fileID: 7430382189106502756, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7430382189578474547, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
         type: 3}
@@ -11144,7 +11142,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 70.9, y: -2.5}
     waypointPauseTime: 1
@@ -11850,7 +11847,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 82.33, y: -5.5}
     waypointPauseTime: 1
@@ -14352,7 +14348,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 11.86, y: 2.25}
     waypointPauseTime: 0.6
@@ -28585,8 +28580,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -129.97243, y: -1.6839447, z: 6.924862}
   m_LocalScale: {x: 1.9529399, y: 0.82949054, z: 2.3672}
-  m_Children:
-  - {fileID: 8542471599807017787}
+  m_Children: []
   m_Father: {fileID: 1433043803}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -28684,7 +28678,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 1
   unlockOnInput: 1
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 11.07, y: -1.67}
     waypointPauseTime: 0.6
@@ -28722,7 +28715,6 @@ MonoBehaviour:
   lockY: 0
   playerLock: 0
   unlockOnInput: 0
-  waypointResizeDuration: 2
   waypointCycle:
   - waypointPos: {x: 53.02, y: -2.5}
     waypointPauseTime: 1
@@ -28836,33 +28828,3 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &8542471599807017786
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8542471599807017787}
-  m_Layer: 25
-  m_Name: waypoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8542471599807017787
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8542471599807017786}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.06, y: 2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8542471598101886837}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

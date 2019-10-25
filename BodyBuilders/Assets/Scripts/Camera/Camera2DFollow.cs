@@ -66,7 +66,6 @@ using Random=UnityEngine.Random;
         [HideInInspector] public bool unlockOnInput = false;
         [HideInInspector] public float waypointMoveTime = 1f;
         float waypointMoveTimer = 0f;
-        [HideInInspector] public float wayPointResizeDuration;
         [HideInInspector] public Vector3 previousWaypointPos;
         float waypointPauseTimer = 0f;
         float waypointPauseTime = 1f;
@@ -360,7 +359,7 @@ using Random=UnityEngine.Random;
                         waypointPauseTimer += Time.deltaTime; // track stay time at each position - if lockView is on, it will stay here, so the timer stops
                     }
 
-                    if(waypointPauseTimer > waypointMoveTime)
+                    if(waypointPauseTimer > waypointPauseTime)
                     {
                         waypointPauseTimer = waypointPauseTime;
                         waypointCounter++;
@@ -416,6 +415,7 @@ using Random=UnityEngine.Random;
                 previousWaypointPos = new Vector3(prevPos.x , prevPos.y , transform.position.z); // the previous waypoint position
             }
             waypointPauseTimer = 0f;
+            waypointPauseTime = pauseTime;
             wayPointPos = new Vector3(waypoint.x , waypoint.y , transform.position.z); // location of the next waypoint
             wayPointDistance = Vector2.Distance(previousWaypointPos , wayPointPos); // distance between waypoints
             playerLocked = locked; // if the player is locked, they can't move. Otherwise the screen is locked an they can move.
@@ -458,36 +458,39 @@ using Random=UnityEngine.Random;
             initialCameraSize = camera.orthographicSize;
             sizeConfiguration = configuration;
 
-            if(sizeConfiguration == 1 && !lockView && !lockAxis) // just a head
+            if(!waypointCycling || sizeConfiguration == 6)
             {
-                targetCameraSize = headSize;
-            }
-            else if(sizeConfiguration == 2 && !lockView && !lockAxis) // head and arms
-            {
-                targetCameraSize = torsoSize;
-            }
-            else if (sizeConfiguration == 3 && !lockView && !lockAxis) // head and legs
-            {
-                targetCameraSize = legSize;
-            }
-            else if(sizeConfiguration == 4 && !lockView && !lockAxis) // full body
-            {
-                targetCameraSize = completeSize;
-            }
-            else if(sizeConfiguration == 5) // this one is just parsed from the shift controls
-            {
-                targetCameraSize = scoutSize;
-            }
-            else if(sizeConfiguration == 6) // this one allows for waypoint control
-            {
-                targetCameraSize = size;
-            }
+                if(sizeConfiguration == 1 && !lockView && !lockAxis) // just a head
+                {
+                    targetCameraSize = headSize;
+                }
+                else if(sizeConfiguration == 2 && !lockView && !lockAxis) // head and arms
+                {
+                    targetCameraSize = torsoSize;
+                }
+                else if (sizeConfiguration == 3 && !lockView && !lockAxis) // head and legs
+                {
+                    targetCameraSize = legSize;
+                }
+                else if(sizeConfiguration == 4 && !lockView && !lockAxis) // full body
+                {
+                    targetCameraSize = completeSize;
+                }
+                else if(sizeConfiguration == 5) // this one is just parsed from the scout controls
+                {
+                    targetCameraSize = scoutSize;
+                }
+                else if(sizeConfiguration == 6) // this one allows for waypoint control
+                {
+                    targetCameraSize = size;
+                }
 
-            resize = true;
-            resizeTimer = 0f;
-            if(resizeTime > 0.1f)
-            {
-                resizeDuration = resizeTime;
+                resize = true;
+                resizeTimer = 0f;
+                if(resizeTime > 0.1f)
+                {
+                    resizeDuration = resizeTime;
+                }
             }
         }
     }

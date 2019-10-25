@@ -69,7 +69,7 @@ public class jumpPad : activate
         if(col.gameObject.tag == "Player")
         {
             colRb = col.rigidbody;
-            colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y);
+            colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y); // reduce horizontal velocity slightly
             playerScript.forceSlaved = true;
             colRb.gravityScale = 2f;
 
