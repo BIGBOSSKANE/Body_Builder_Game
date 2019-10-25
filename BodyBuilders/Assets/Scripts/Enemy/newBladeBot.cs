@@ -15,6 +15,8 @@ public class newBladeBot : MonoBehaviour
     public GameObject dL; //detect left
     public GameObject dR; //detect right
 
+    public GameObject blade;
+
     bool up = false;
     bool down = false;
     bool left = false;
@@ -24,11 +26,9 @@ public class newBladeBot : MonoBehaviour
 
     public float maxSpeed = 1.39f;
 
-    Rigidbody2D rb2d;
-
     bool movingBack = false;
 
-    public float speed = 0.1f;
+    public float speed = 0.07f;
 
     float resetSpeed;
 
@@ -44,8 +44,6 @@ public class newBladeBot : MonoBehaviour
         resetSpeed = speed;
 
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>(); // we can swap this out for the scene manager once it has been added
-
-        rb2d = gameObject.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -62,6 +60,8 @@ public class newBladeBot : MonoBehaviour
                 speed += speedAccelerationPerSecond * Time.deltaTime;
             }
         }
+
+        blade.gameObject.transform.Rotate(Vector3.forward , 10 * speed);
 
         if (gameObject.transform.position == startPos.transform.position)
         {
@@ -83,26 +83,31 @@ public class newBladeBot : MonoBehaviour
         if (down)
         {
             transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed);
+            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (up)
         {
             transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed);
+            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (left)
         {
             transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed);
+            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (right)
         {
             transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed);
+            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (movingBack)
         {
             transform.position = Vector2.MoveTowards(transform.position, startPos.transform.position, 5 * Time.deltaTime);
+            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed);
         }
     }
 
@@ -168,7 +173,7 @@ public class newBladeBot : MonoBehaviour
         if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object" || col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
         {
             Debug.Log("colided with environment");
-            rb2d.velocity = Vector2.zero;
+            speed = 0;
             up = false;
             down = false;
             left = false;
