@@ -12,16 +12,18 @@ public class Pause : MonoBehaviour
     private bool isPaused = false; // a private(cannot be changed outside the script) on off switch called isPaused
     public GameObject pausePanel; // put a panel for the pause menu here
     public GameObject exitPanel; // put a panel for the exit clarification menu here
-    public GameObject settingsPanel; // put a panel for the exit clarification menu here
+    public GameObject settingsPanel; // put a panel for the settings panel here
+    public GameObject restartPanel; // put a panel for the restart clarification menu here
     float pausedTimeScale;
     timeSlow timeSlow;
 
-    void Start()
+    void Start() // on start..
     {
-        timeSlow = GameObject.Find("Player").GetComponent<timeSlow>();
-        pausePanel.SetActive(false); // disable the Exit menu
+        timeSlow = GameObject.Find("Player").GetComponent<timeSlow>(); // set timeSlow to be the timeSlow component on the player
+        pausePanel.SetActive(false); // disable the pause screen
         exitPanel.SetActive(false); // disable the Exit menu
         settingsPanel.SetActive(false); // disable the settings menu
+        restartPanel.SetActive(false); // disable the restart panel menu
     }
 
     void Update() //on everyframe..
@@ -39,7 +41,7 @@ public class Pause : MonoBehaviour
             }
         }
     }
-    // just like setting up the field up top, you can have to write 'private' before 'void Paused() instead "private void Paused ()"
+    
     void Paused () // a hidden(private) function called pause
     { 
         pausePanel.SetActive(true); // activate the Pause menu
@@ -61,23 +63,38 @@ public class Pause : MonoBehaviour
     public void MainMenu() // a selectable(public) function called MainMenu
     {
         exitPanel.SetActive(true); // activate the Exit menu
+        pausePanel.SetActive(false); // disables the Pause menu
     }
 
     public void Settings() // a selectable(public) function called MainMenu
     {
         settingsPanel.SetActive(true); // activate the Exit menu
+        pausePanel.SetActive(false); // disables the Pause menu
+    }
+
+    public void RestartLevel() // a selectable(public) function called MainMenu
+    {
+        restartPanel.SetActive(true); // activate the restart menu
+        pausePanel.SetActive(false); // disables the Pause menu
     }
 
     public void Return() // a selectable(public) function called Return
     {
+        pausePanel.SetActive(true); // activate the Pause menu
         exitPanel.SetActive(false); // disable the Exit menu
         settingsPanel.SetActive(false); // disable the settings menu
+        restartPanel.SetActive(false); // disable the restart panel menu
     }
 
     public void Exit() // a selectable(public) function called Exit
     {
         SceneManager.LoadScene(0); // in the SceneManager (build settings) load the scene numbered 0 in the index
     } // you can have it use the name of the scene instaed of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
+
+    public void Restart() // a selectable(public) function called Exit
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // In the SceneManager, load the active scene (restart) 
+    }
 
     void TimeMaster(float pausedTimeScale) // references other time-adjusting scripts and takes complete control of time
     {
