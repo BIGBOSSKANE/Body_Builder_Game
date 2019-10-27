@@ -184,14 +184,14 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 2201572b3ba6594ba3871aad11366252
     GuidInternal: 
-    m_lastTime: -8586341672116027969
+    m_lastTime: -8586300223694092043
     List: []
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     ParentPhysicalPath: 
     guid: a3b0c194a4ed8f448357d044dfb880c3
     GuidInternal: 
-    m_lastTime: -8586300449726882305
+    m_lastTime: -8586294225849006148
     List:
     - name: Character
       guid: 55ea0ef8e4ed0241be99fb2df6b9f267
@@ -229,21 +229,12 @@ MonoBehaviour:
       - ElementName: Music
         ObjectType: 7
       Path: Default Work Unit\Music
-    - name: ProjectSoundbank
-      guid: 4693a8d3800faf43b5aaefb045d65eb1
-      id: 2110248291
-      PathAndIcons:
-      - ElementName: Default Work Unit
-        ObjectType: 12
-      - ElementName: ProjectSoundbank
-        ObjectType: 7
-      Path: Default Work Unit\ProjectSoundbank
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     ParentPhysicalPath: 
     guid: 1b16332c908874488ead1fde7cecd217
     GuidInternal: 
-    m_lastTime: -8586300375458963912
+    m_lastTime: -8586295771334044171
     List:
     - name: Ambience
       guid: 3babaf65c50af14a9068ea9cf07fa74a
@@ -273,6 +264,18 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 1.177646
       minDuration: 0.619745
+    - name: BanseeScream
+      guid: 55f2ad1afe27fb4486058cd9de17eae8
+      id: 1313228014
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: BanseeScream
+        ObjectType: 3
+      Path: Default Work Unit\BanseeScream
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: ButtonPress
       guid: 9b15c5b248754144817830be42f52661
       id: 317641954
@@ -571,29 +574,41 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: db3a536319b7bb4e9b3a630e8bb2adbe
     GuidInternal: 
-    m_lastTime: -8586341672116955726
+    m_lastTime: -8586294226092751096
     List:
-    - name: StartMusic
-      guid: 46a87a4de2c1e94fba13cb6ebb03319a
-      id: 3827058668
+    - name: PlayGameMusic
+      guid: 2a9949cec035244b89573cb62b73878f
+      id: 1422657174
       PathAndIcons:
       - ElementName: Music
         ObjectType: 12
-      - ElementName: StartMusic
+      - ElementName: PlayGameMusic
         ObjectType: 3
-      Path: Music\StartMusic
+      Path: Music\PlayGameMusic
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
-    - name: StopMusic
-      guid: a1f23dbd92e45542a949695e7964427a
-      id: 1917263390
+    - name: PlayMenuMusic
+      guid: 717cb61b788ae64ca822fb83d9309b48
+      id: 413545259
       PathAndIcons:
       - ElementName: Music
         ObjectType: 12
-      - ElementName: StopMusic
+      - ElementName: PlayMenuMusic
         ObjectType: 3
-      Path: Music\StopMusic
+      Path: Music\PlayMenuMusic
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: StopAllMusic
+      guid: b883af891405724b88ec6daf0139e750
+      id: 2907867019
+      PathAndIcons:
+      - ElementName: Music
+        ObjectType: 12
+      - ElementName: StopAllMusic
+        ObjectType: 3
+      Path: Music\StopAllMusic
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
@@ -602,17 +617,28 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 28f1e18fbe21c74880e833a7cfb1ead4
     GuidInternal: 
-    m_lastTime: -8586341561733865845
+    m_lastTime: -8586300212415889907
     List:
-    - name: CorruptionProximity
-      guid: fa6f6c28afc65b4787ae7ce774ce4086
-      id: 3858031969
+    - name: AmbienceFader
+      guid: 3238739353ad47448f7fd3f5e692007b
+      id: 4241310391
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
-      - ElementName: CorruptionProximity
+      - ElementName: VolumeControls
+        ObjectType: 4
+      - ElementName: AmbienceFader
         ObjectType: 13
-      Path: Default Work Unit\CorruptionProximity
+      Path: Default Work Unit\VolumeControls\AmbienceFader
+    - name: DarkAmbience
+      guid: fa6f6c28afc65b4787ae7ce774ce4086
+      id: 3247454721
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: DarkAmbience
+        ObjectType: 13
+      Path: Default Work Unit\DarkAmbience
     - name: Location
       guid: da9177da2d95c5489eb281b5394d2de4
       id: 1176052424
@@ -622,6 +648,39 @@ MonoBehaviour:
       - ElementName: Location
         ObjectType: 13
       Path: Default Work Unit\Location
+    - name: MasterFader
+      guid: 93895a17648a1b459ddbf746812b7524
+      id: 782305697
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: VolumeControls
+        ObjectType: 4
+      - ElementName: MasterFader
+        ObjectType: 13
+      Path: Default Work Unit\VolumeControls\MasterFader
+    - name: MusicFader
+      guid: ddd66474ea488444a77b34da982c9fcf
+      id: 2738936886
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: VolumeControls
+        ObjectType: 4
+      - ElementName: MusicFader
+        ObjectType: 13
+      Path: Default Work Unit\VolumeControls\MusicFader
+    - name: SFXFader
+      guid: 0b92d077bb8e2c4aa74a9526020d8c39
+      id: 1664711118
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: VolumeControls
+        ObjectType: 4
+      - ElementName: SFXFader
+        ObjectType: 13
+      Path: Default Work Unit\VolumeControls\SFXFader
     - name: SpeechSideChaining
       guid: 8b9ecf6cd4c6f74fa58fa354ec045d22
       id: 1380407587
@@ -631,11 +690,22 @@ MonoBehaviour:
       - ElementName: SpeechSideChaining
         ObjectType: 13
       Path: Default Work Unit\SpeechSideChaining
+    - name: VoicesFader
+      guid: 2e373347ffe020409f62ee066d09d674
+      id: 3646812212
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: VolumeControls
+        ObjectType: 4
+      - ElementName: VoicesFader
+        ObjectType: 13
+      Path: Default Work Unit\VolumeControls\VoicesFader
   - PhysicalPath: Game Parameters\Factory Motion.wwu
     ParentPhysicalPath: 
     guid: 225213d7dbd1d042adc0930743567776
     GuidInternal: 
-    m_lastTime: -8586341672115649217
+    m_lastTime: -8586300287148013901
     List:
     - name: Playback_Rate
       guid: e37e38283ac11643b9c3db5c521624af
@@ -756,8 +826,41 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a33f6c5f0d850f459d5aa195e0db09e8
     GuidInternal: 
-    m_lastTime: -8586300425047309792
+    m_lastTime: -8586295793250503077
     List:
+    - name: Alive
+      guid: cf1d1d07818d4e4493327b1c788020b4
+      id: 655265632
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Alive
+        ObjectType: 9
+      Path: Default Work Unit\Music\Alive
+      values:
+      - name: Alive
+        guid: 2d692db90531024ca5628c2cbd49de14
+        id: 655265632
+        PathAndIcons:
+        - ElementName: Alive
+          ObjectType: 8
+      - name: Dead
+        guid: 21f4f01cfff09a45affe1c3758e2fa4c
+        id: 2044049779
+        PathAndIcons:
+        - ElementName: Dead
+          ObjectType: 8
+      - name: None
+        guid: 53129f6d2b4a7942a81cbddd27116e41
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
     - name: GroundMaterial
       guid: d313b4215dc1bd468aff16d89dccbd1c
       id: 3072116243
@@ -795,30 +898,38 @@ MonoBehaviour:
       ValueGuids: []
       ValueIcons: []
       valuesInternal: []
-    - name: SpecialArmPart
-      guid: 94e160694319f34bbcccba12b3bc2360
-      id: 876059847
+    - name: Threat
+      guid: eb336c1dd8373843ab8ed31ecf18fb0e
+      id: 1959898597
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
-      - ElementName: SpecialArmPart
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Threat
         ObjectType: 9
-      Path: Default Work Unit\SpecialArmPart
+      Path: Default Work Unit\Music\Threat
       values:
-      - name: Basic
-        guid: 3139110ca81549409038a2f4d9be2966
-        id: 3340296461
+      - name: Boss
+        guid: 814432552ed785428cbefc0ae5a24f88
+        id: 1560169506
         PathAndIcons:
-        - ElementName: Basic
+        - ElementName: Boss
           ObjectType: 8
-      - name: Cannon
-        guid: e02f3682b2686c49a5245a2c693f09ee
-        id: 2393348022
+      - name: EnemiesNearby
+        guid: 7428fc2453182447b0d17c475839af00
+        id: 1542416594
         PathAndIcons:
-        - ElementName: Cannon
+        - ElementName: EnemiesNearby
+          ObjectType: 8
+      - name: Low
+        guid: a814270292408f41876d415720de8ef7
+        id: 545371365
+        PathAndIcons:
+        - ElementName: Low
           ObjectType: 8
       - name: None
-        guid: 6d293d715effba49b9b54ba81d1e0a81
+        guid: 5e3ed6e98218334b95e23b230b60e43b
         id: 748895195
         PathAndIcons:
         - ElementName: None
@@ -831,7 +942,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a1a44da9d872fd4588ba58da632fe32d
     GuidInternal: 
-    m_lastTime: -8586341672116187534
+    m_lastTime: -8586295771333954276
     List:
     - name: CorruptionPresence
       guid: 1489d0603cb4a548961b459f020d2470
@@ -931,6 +1042,43 @@ MonoBehaviour:
       ValueGuids: []
       ValueIcons: []
       valuesInternal: []
+    - name: PartConfiguration
+      guid: 433b04c80764ba48a18af359cb5d1fb5
+      id: 3636146320
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: PartConfiguration
+        ObjectType: 11
+      Path: Default Work Unit\PartConfiguration
+      values:
+      - name: FullBody
+        guid: 4a2f76b3559fc74d86093264e1493557
+        id: 3820665738
+        PathAndIcons:
+        - ElementName: FullBody
+          ObjectType: 10
+      - name: Head
+        guid: bf9de1f7c9f49a4f810232efed87bbbc
+        id: 3448274439
+        PathAndIcons:
+        - ElementName: Head
+          ObjectType: 10
+      - name: HeadAndArms
+        guid: 89ab749c3e89e64e847b18f9939c1789
+        id: 1986598363
+        PathAndIcons:
+        - ElementName: HeadAndArms
+          ObjectType: 10
+      - name: HeadAndLegs
+        guid: a0cf55b946c0884681b343a58bcf4b08
+        id: 2521468321
+        PathAndIcons:
+        - ElementName: HeadAndLegs
+          ObjectType: 10
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
     - name: TerminalInArea
       guid: c3e11e4d5d940f4bb4d518e0b7b0ea6c
       id: 2886848227
@@ -988,7 +1136,24 @@ MonoBehaviour:
     GuidInternal: 
     m_lastTime: -8586341672113315151
     List: []
+  - PhysicalPath: Triggers\Music.wwu
+    ParentPhysicalPath: 
+    guid: cd2ae456aac08e47ae8eb57a3af17920
+    GuidInternal: 
+    m_lastTime: -8586295766559687114
+    List:
+    - name: BansheeScream
+      guid: e0eaa38fb3047043a115fb1125038cb1
+      id: 693759888
+      PathAndIcons:
+      - ElementName: Music
+        ObjectType: 12
+      - ElementName: BansheeScream
+        ObjectType: 14
+      Path: Music\BansheeScream
   ExpandedItems:
   - /Bodybuilders Wwise
+  - /Bodybuilders Wwise/Events
+  - /Bodybuilders Wwise/Events/Music
   autoPopulateEnabled: 1
   CurrentPluginConfig: 

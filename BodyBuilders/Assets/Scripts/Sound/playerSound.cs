@@ -6,6 +6,7 @@ public class playerSound : MonoBehaviour
 {
     Animator animator;
     int partConfiguration; // 1 is head, 2 is arms, 3 is legs, 4 is all
+    bool playingMusic;
 
     void Start()
     {
@@ -92,5 +93,13 @@ public class playerSound : MonoBehaviour
     public void ShieldStop()
     {
         AkSoundEngine.PostEvent("ShieldStop" , gameObject);
+    }
+
+
+    public void MusicPlay()
+    {
+        Debug.Log("received");
+        AkSoundEngine.PostEvent("StopAllMusic" , gameObject);
+        AkSoundEngine.PostEvent("PlayGameMusic" , gameObject);
     }
 }
