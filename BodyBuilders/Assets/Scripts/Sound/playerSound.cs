@@ -57,7 +57,7 @@ public class playerSound : MonoBehaviour
 
     public void DeathPlay()
     {
-        AkSoundEngine.PostEvent("Death" , gameObject);
+        AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
     }
 
     public void RollPlay()
@@ -93,13 +93,5 @@ public class playerSound : MonoBehaviour
     public void ShieldStop()
     {
         AkSoundEngine.PostEvent("ShieldStop" , gameObject);
-    }
-
-
-    public void MusicPlay()
-    {
-        Debug.Log("received");
-        AkSoundEngine.PostEvent("StopAllMusic" , gameObject);
-        AkSoundEngine.PostEvent("PlayGameMusic" , gameObject);
     }
 }

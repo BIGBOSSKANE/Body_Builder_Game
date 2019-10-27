@@ -174,6 +174,7 @@ namespace AK
     namespace TRIGGERS
     {
         static const AkUniqueID BANSHEESCREAM = 693759888U;
+        static const AkUniqueID DEATH = 779278001U;
     } // namespace TRIGGERS
 
     namespace BANKS
