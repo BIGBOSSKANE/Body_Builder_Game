@@ -1028,10 +1028,10 @@ public class playerScript : MonoBehaviour
             shieldActive = true;
             playerSound.ShieldPlay();
         }
-        else if(!shield || (InputManager.Cast() && shieldBubble.activeSelf))
+        else if(InputManager.Cast() && shieldBubble.activeSelf)
         {
-            if(shield) playerSound.ShieldStop();
             shieldActive = false;
+            shieldBubble.SetActive(false);
             playerSound.ShieldStop();
         }
     }
