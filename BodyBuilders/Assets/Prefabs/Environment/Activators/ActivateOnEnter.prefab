@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8542471598044946526}
+  - component: {fileID: -9045707692348835591}
   - component: {fileID: 8542471598044946525}
   - component: {fileID: 8542471598044946524}
-  - component: {fileID: 8508280452545763148}
   m_Layer: 25
-  m_Name: EdgelordCue
+  m_Name: ActivateOnEnter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,6 +33,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-9045707692348835591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8542471598044946527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1097cd779771bf4a819ddab9d6a1539, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overcharge: 0
+  activates: []
 --- !u!212 &8542471598044946525
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -107,16 +121,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &8508280452545763148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8542471598044946527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc57920b5c2aecb4b9bba00c56a053ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  edgelord: {fileID: 0}

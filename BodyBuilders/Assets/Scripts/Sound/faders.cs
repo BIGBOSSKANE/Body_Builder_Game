@@ -18,7 +18,6 @@ public class faders : MonoBehaviour
 
     public void UpdateMasterVolume(float volume)
     {
-        Debug.Log("Received " + volume);
         Master = volume;
         AkSoundEngine.SetRTPCValue("MasterFader" , volume);
     }
