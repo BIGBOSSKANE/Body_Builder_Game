@@ -28,8 +28,7 @@ public class sawbladeTranslate : MonoBehaviour
 
     void Update()
     {
-        moveTimer += Time.fixedDeltaTime / moveTime;
-        moveTimer = Mathf.Clamp(moveTimer , 0 , 1);
+        moveTimer += Time.deltaTime / moveTime;
         if(forwards)
         {
             if(smoothMove) movingSaw.localPosition = new Vector2(Mathf.SmoothStep(startPos.x , endPos.x , moveTimer) , Mathf.SmoothStep(startPos.y , endPos.y , moveTimer));
