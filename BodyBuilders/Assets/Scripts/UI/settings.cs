@@ -9,6 +9,7 @@ public class settings : MonoBehaviour
     public AudioMixer audioMixer;
 
     public Dropdown resolutionDD;
+    faders faders;
 
     Resolution[] resolutions;
 
@@ -36,6 +37,8 @@ public class settings : MonoBehaviour
         resolutionDD.AddOptions(options);
         resolutionDD.value = currentResolutionIndex;
         resolutionDD.RefreshShownValue();
+
+        faders = GameObject.Find("WwiseGlobal").gameObject.GetComponent<faders>();
     }
 
     public void SetResolution (int resolutionIndex)
@@ -47,19 +50,19 @@ public class settings : MonoBehaviour
     //Master Volume
     public void SetMasterVolume (float volume)
     {
-        audioMixer.SetFloat("volume", volume);
+        faders.UpdateMasterVolume(volume);
     }
 
     //Music Volume
     public void SetMusicVolume(float volume)
     {
-        audioMixer.SetFloat("music", volume);
+        faders.UpdateMusicVolume(volume);
     }
 
     //Effects Volume
     public void SetEffectsVolume(float volume)
     {
-        audioMixer.SetFloat("effects", volume);
+        faders.UpdateSFXVolume(volume);
     }
 
     //Quality Dropdown Selector

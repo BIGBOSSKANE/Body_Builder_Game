@@ -6,6 +6,7 @@ public class sawbladeTranslate : MonoBehaviour
 {
     public bool activated = true;
     public float moveTime = 4f;
+    public float currentMoveTime = 0f;
     public float bladeDistance = 5f;
     public float spinSpeed = 200f;
     public bool smoothMove = true;
@@ -20,6 +21,11 @@ public class sawbladeTranslate : MonoBehaviour
 
     void Start()
     {
+        if(currentMoveTime <0)
+        {
+            forwards = false;
+            currentMoveTime = Mathf.Clamp(Mathf.Abs(currentMoveTime) , 0 , 1);
+        }
         groove.localScale = new Vector3(movementLength * transform.localScale.x , groove.localScale.y , groove.localScale.z);
         float grooveLength = (groove.localScale.x / 2) - (movingSaw.GetComponent<SpriteRenderer>().bounds.extents.x);
         startPos = new Vector2(-grooveLength, -0.44f);

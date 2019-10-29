@@ -54,4 +54,33 @@ public class editorFaders : MonoBehaviour
             }
         }
     }
+
+    public void UpdateMasterVolume(float volume)
+    {
+        Master = volume;
+        faders.UpdateMasterVolume(Master);
+    }
+    
+    public void UpdateAmbienceVolume(float volume)
+    {
+        Ambience = volume;
+        faders.UpdateAmbienceVolume(Ambience);
+    }
+
+    public void UpdateMusicVolume(float volume)
+    {
+        faders.UpdateMusicVolume(Music);
+        Music = volume;
+    }
+    
+    public void UpdateSFXVolume(float volume)
+    {
+        faders.UpdateVoicesVolume(Voice);
+        SFX = volume;
+    }
+    
+    public void UpdateVoicesVolume(float volume)
+    {
+        Voice = volume;
+    }
 }
