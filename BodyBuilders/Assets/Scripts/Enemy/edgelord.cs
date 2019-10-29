@@ -5,10 +5,10 @@ using UnityEngine;
 public class edgelord : MonoBehaviour
 {
     public float outerBladeRadius = 3f;
-    float outerBladeRadiusIndicatorOffset = 2f;
     public float spinSpeed = 3f;
     public float innerBladeSpinSpeed = 6f;
     public float outerBladeSpinSpeed = 3f;
+    public bool waitingForPlayer;
     public List<Transform> outerBlades;
     [HideInInspector] public List<Transform> blades;
     [HideInInspector] public List<Vector2> bladePositions;
@@ -22,6 +22,7 @@ public class edgelord : MonoBehaviour
     bool moving = true;
     float moveTime;
     float moveTimer;
+    bool die;
     float bounceBackTime = 2.5f;
     float bounceBackTimer;
     bool bounceBack;
@@ -47,7 +48,7 @@ public class edgelord : MonoBehaviour
     [Tooltip("To create a new waypoint, increase the size of this array, then adjust the parameters of each waypoint.")] public SubClass[] waypointCycle;
 
 
-    void Start()
+    void OnEnable()
     {
         outerBladeRadius *= transform.localScale.x;
 
@@ -127,6 +128,8 @@ public class edgelord : MonoBehaviour
         accelerateRotation = waypointCycle[newWaypoint].accelerateRotation;
         losePart = waypointCycle[newWaypoint].losePart;
         destroyArmPos = waypointCycle[newWaypoint].stopPoint;
+        waitingForPlayer = waypointCycle[newWaypoint].waitForPlayer;
+        die = waypointCycle[newWaypoint].destroyAtEnd;
 
         velocity = 2 * (Vector2.Distance(targetPosition , startPosition) / moveTime);
         moveDirection = (targetPosition - startPosition).normalized;
@@ -141,8 +144,11 @@ public class edgelord : MonoBehaviour
 
     void Update()
     {
-        Spin();
-        Move();
+        if(!waitingForPlayer)
+        {
+            Spin();
+            Move();
+        }
     }
 
     void Spin()
@@ -170,7 +176,7 @@ public class edgelord : MonoBehaviour
         foreach (Transform blade in blades)
         {
             blade.Rotate(0f , 0f , -outerBladeSpinSpeed * Time.deltaTime); // spin outer blades
-        }        
+        } 
     }
 
     void Move()
@@ -219,6 +225,10 @@ public class edgelord : MonoBehaviour
                         }
                     }
                     DetachOuterBlade(indexToDetach); // this needs to go during bounceback
+                }
+                if(die)
+                {
+                    Destruct();
                 }
             }
         }
@@ -326,6 +336,11 @@ public class edgelord : MonoBehaviour
     // To lose a part, find which one is closest to the stop point in waypointCycle
 
 
+    void Destruct()
+    {
+        Destroy(gameObject);
+    }
+
     void OnDrawGizmosSelected() // show all of the camera waypoints
     {
         float locationIdentifier = 0.3f;
@@ -341,7 +356,7 @@ public class edgelord : MonoBehaviour
 
                 Gizmos.color = Color.red;
 
-                Vector2 armStopPoint = Quaternion.AngleAxis(waypointCycle[i].endZRotation, Vector3.forward) * Vector2.right * (outerBladeRadius * transform.localScale.x + outerBladeRadiusIndicatorOffset);
+                Vector2 armStopPoint = Quaternion.AngleAxis(waypointCycle[i].endZRotation, Vector3.forward) * Vector2.right * (outerBladeRadius * transform.localScale.x);
 
                 Gizmos.DrawLine(waypointCycle[i].waypointPos + armStopPoint - Vector2.up * locationIdentifier , waypointCycle[i].waypointPos + armStopPoint + Vector2.up * locationIdentifier);
                 Gizmos.DrawLine(waypointCycle[i].waypointPos + armStopPoint - Vector2.left * locationIdentifier , waypointCycle[i].waypointPos + armStopPoint + Vector2.left * locationIdentifier);
@@ -386,6 +401,8 @@ public class edgelord : MonoBehaviour
         [Tooltip("This is divided by the number of blades")] public int numberOfRotations;
         [Range(0 , 360)] public float endZRotation;
         public bool losePart = false;
+        public bool waitForPlayer = false;
+        public bool destroyAtEnd = false;
         [HideInInspector] public Vector2 stopPoint;
     }
 }

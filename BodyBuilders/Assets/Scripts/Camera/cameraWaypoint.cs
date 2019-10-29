@@ -29,7 +29,6 @@ public class cameraWaypoint : MonoBehaviour
     [Header("Cycle Through Waypoints:")]
     [Tooltip("Locks the player while looping between waypoints")] public bool playerLock; // does the waypoint lock the player (don't use if the camera is supposed to zoom out and stay locked on an area)
     [Tooltip("Unlocks the player if they apply input after a short duration while moving between waypoints")] public bool unlockOnInput = false; // does the waypoint disable when the player moves vertically or horizontally
-    [Tooltip("Duration taken to resize between waypoints")] public float waypointResizeDuration = 2f; // time for camera zoom out
     bool alreadyDone = false;
     int waypointCount; // number of waypoints
     int currentWaypoint = 0; // current waypoint
@@ -60,7 +59,7 @@ public class cameraWaypoint : MonoBehaviour
             unlockOnInput = false;
             playerLock = false;
         }
-        lockAxisPos = waypointCycle[0].waypointPos;
+        if(waypointCount != 0) lockAxisPos = waypointCycle[0].waypointPos;
         //lockAxisPos += (Vector2)transform.position;
     }
 
@@ -124,7 +123,6 @@ public class cameraWaypoint : MonoBehaviour
             else
             {
                 cameraScript.unlockOnInput = unlockOnInput;
-                cameraScript.wayPointResizeDuration = waypointResizeDuration;
                 playerPos = col.gameObject.transform.position;
                 NextCoordinate();
             }

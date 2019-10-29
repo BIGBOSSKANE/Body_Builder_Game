@@ -6,6 +6,7 @@ public class playerSound : MonoBehaviour
 {
     Animator animator;
     int partConfiguration; // 1 is head, 2 is arms, 3 is legs, 4 is all
+    bool playingMusic;
 
     void Start()
     {
@@ -56,7 +57,7 @@ public class playerSound : MonoBehaviour
 
     public void DeathPlay()
     {
-        AkSoundEngine.PostEvent("Death" , gameObject);
+        AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
     }
 
     public void RollPlay()

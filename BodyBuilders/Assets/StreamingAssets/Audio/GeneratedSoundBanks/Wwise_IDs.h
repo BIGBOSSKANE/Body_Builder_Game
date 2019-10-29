@@ -32,14 +32,26 @@ namespace AK
         static const AkUniqueID LANDING = 2548270042U;
         static const AkUniqueID PASSTHROUGHPLATFORM = 107258764U;
         static const AkUniqueID PICKUPBOX = 4186279120U;
+        static const AkUniqueID PLAYGAMEMUSIC = 1422657174U;
+        static const AkUniqueID PLAYMENUMUSIC = 413545259U;
         static const AkUniqueID ROLLING = 4227290872U;
         static const AkUniqueID SHOOT = 3038207054U;
-        static const AkUniqueID STARTMUSIC = 3827058668U;
-        static const AkUniqueID STOPMUSIC = 1917263390U;
+        static const AkUniqueID STOPALLMUSIC = 2907867019U;
     } // namespace EVENTS
 
     namespace STATES
     {
+        namespace ALIVE
+        {
+            static const AkUniqueID GROUP = 655265632U;
+
+            namespace STATE
+            {
+                static const AkUniqueID ALIVE = 655265632U;
+                static const AkUniqueID DEAD = 2044049779U;
+            } // namespace STATE
+        } // namespace ALIVE
+
         namespace GROUNDMATERIAL
         {
             static const AkUniqueID GROUP = 3072116243U;
@@ -52,16 +64,17 @@ namespace AK
             } // namespace STATE
         } // namespace GROUNDMATERIAL
 
-        namespace SPECIALARMPART
+        namespace THREAT
         {
-            static const AkUniqueID GROUP = 876059847U;
+            static const AkUniqueID GROUP = 1959898597U;
 
             namespace STATE
             {
-                static const AkUniqueID BASIC = 3340296461U;
-                static const AkUniqueID CANNON = 2393348022U;
+                static const AkUniqueID BOSS = 1560169506U;
+                static const AkUniqueID ENEMIESNEARBY = 1542416594U;
+                static const AkUniqueID LOW = 545371365U;
             } // namespace STATE
-        } // namespace SPECIALARMPART
+        } // namespace THREAT
 
     } // namespace STATES
 
@@ -96,6 +109,19 @@ namespace AK
                 static const AkUniqueID UPBEATMEDIUM = 1872095099U;
             } // namespace SWITCH
         } // namespace MUSICINTENSITY
+
+        namespace PARTCONFIGURATION
+        {
+            static const AkUniqueID GROUP = 3636146320U;
+
+            namespace SWITCH
+            {
+                static const AkUniqueID FULLBODY = 3820665738U;
+                static const AkUniqueID HEAD = 3448274439U;
+                static const AkUniqueID HEADANDARMS = 1986598363U;
+                static const AkUniqueID HEADANDLEGS = 2521468321U;
+            } // namespace SWITCH
+        } // namespace PARTCONFIGURATION
 
         namespace TERMINALINAREA
         {
@@ -145,6 +171,12 @@ namespace AK
         static const AkUniqueID VOICESFADER = 3646812212U;
     } // namespace GAME_PARAMETERS
 
+    namespace TRIGGERS
+    {
+        static const AkUniqueID BANSHEESCREAM = 693759888U;
+        static const AkUniqueID DEATH = 779278001U;
+    } // namespace TRIGGERS
+
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
@@ -152,7 +184,6 @@ namespace AK
         static const AkUniqueID ENEMIES = 2242381963U;
         static const AkUniqueID ENVIRONMENT = 1229948536U;
         static const AkUniqueID MUSIC = 3991942870U;
-        static const AkUniqueID PROJECTSOUNDBANK = 2110248291U;
     } // namespace BANKS
 
     namespace BUSSES
