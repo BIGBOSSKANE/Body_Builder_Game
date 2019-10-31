@@ -89,11 +89,13 @@ public class Pause : MonoBehaviour
     public void ExitButton() // a selectable(public) function called Exit
     {
         SceneManager.LoadScene(0); // in the SceneManager (build settings) load the scene numbered 0 in the index
-    } // you can have it use the name of the scene instaed of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
+        timeSlow.TimeSlave(pausedTimeScale, !isPaused);
+    } // you can have it use the name of the scene instead of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
 
     public void RestartButton() // a selectable(public) function called Exit
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // In the SceneManager, load the active scene (restart) 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // In the SceneManager, load the active scene (restart)
+        timeSlow.TimeSlave(pausedTimeScale, !isPaused);
     }
 
     void TimeMaster(float pausedTimeScale) // references other time-adjusting scripts and takes complete control of time
