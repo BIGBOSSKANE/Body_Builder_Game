@@ -13,7 +13,7 @@ public class gyreDetect : MonoBehaviour
     public Vector2 patrolPos;
     public Vector2 alertPos;
 
-[Tooltip("tick if it's patroling, if not it's alerted")]
+    [Tooltip("tick if it's patroling, if not it's alerted")]
     public bool isPatroling; //if true, then it is set to a normal patrol Gyre, if false it is set to the alert Gyre
 
     public float time = 3.5f;
@@ -90,7 +90,6 @@ public class gyreDetect : MonoBehaviour
     {
         if (isPatroling) // if patroling
         {
-            Debug.Log("transformed");
             alert.gameObject.SetActive(true); // alert gameobject is set to active
             patrol.gameObject.SetActive(false); // patrol gameobject is set to unactive
             gameObject.transform.parent = alert.transform;
@@ -105,7 +104,6 @@ public class gyreDetect : MonoBehaviour
     {
         if (!isPatroling) // if alert
         {
-            Debug.Log("transformed");
             alert.gameObject.SetActive(false); // alert gameobject is set to unactive
             patrol.gameObject.SetActive(true); // patrol gameobject is set to active
             gameObject.transform.parent = patrol.transform;
@@ -120,7 +118,6 @@ public class gyreDetect : MonoBehaviour
     {
          if (col.tag == "Player") // and if the gameobject is tagged as Player,
          {
-             Debug.Log("player Missing");
              colliding = false; // the player is no longer colliding 
          }
     }
@@ -130,12 +127,10 @@ public class gyreDetect : MonoBehaviour
         if (col.tag == "Player") // the gameobject is tagged as Player,
         {
             colliding = true; // the player is colliding 
-            Debug.Log("player found");
             time = resetTime; // set the time to the same number as reset time
 
             if (isPatroling) // the gyre is patroling
             {
-                Debug.Log("player detected");
                 StartCoroutine(Processing()); // start the IEnumerator Processing function
             }
         }

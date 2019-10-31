@@ -12,6 +12,7 @@ public class NewGyre : MonoBehaviour
     public LayerMask DetectWhat;
 
     public bool colliding;
+    bool collided = false;
 
     Rigidbody2D rb2d;
     playerScript playerScript;
@@ -27,7 +28,6 @@ public class NewGyre : MonoBehaviour
     public float distance;
 
     public Transform groundDetection;
-
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +54,13 @@ public class NewGyre : MonoBehaviour
             transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
             velocity *= -1;
         }
+
+        if (collided)
+        {
+            transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
+            velocity *= -1;
+            collided = false;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -61,6 +68,11 @@ public class NewGyre : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             playerScript.Die(0.2f);
+        }
+
+        if (col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
+        {
+            collided = true;
         }
     }
 }

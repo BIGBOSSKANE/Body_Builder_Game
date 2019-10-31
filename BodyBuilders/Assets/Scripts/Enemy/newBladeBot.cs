@@ -172,7 +172,6 @@ public class newBladeBot : MonoBehaviour
 
         if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object" || col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
         {
-            Debug.Log("colided with environment");
             speed = 0;
             up = false;
             down = false;

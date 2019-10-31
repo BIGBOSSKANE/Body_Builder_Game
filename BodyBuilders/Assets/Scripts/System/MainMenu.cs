@@ -23,7 +23,6 @@ public class MainMenu : MonoBehaviour
     // used for the New Game Button
     public void NewGameButton() // a selectabel(public) function called NewGameButton
     {
-        Debug.Log("Start game"); // in the console type Start game
         SceneManager.LoadScene(1); // in the SceneManager (build settings) load the scene numbered 1 in the index
     }
 
@@ -57,7 +56,6 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGameButton() // a selectable(public) function called QuitGameButton
     {
-        Debug.Log("Quited the game"); // in the console type Quited the game
         Application.Quit(); // close the game
     }
 }

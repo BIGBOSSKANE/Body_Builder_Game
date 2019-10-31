@@ -41,7 +41,6 @@ public class KillBot : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            Debug.Log("Hit");
             playerScript.Die(0.2f);
         }
     }

@@ -17,7 +17,6 @@ public class KillBot_AreaDetect : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            Debug.Log("Player entered area");
             nKB.chasePlayer = true;
         }
     }
@@ -26,7 +25,6 @@ public class KillBot_AreaDetect : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            Debug.Log("Player entered area");
             nKB.chasePlayer = false;
         }
     }

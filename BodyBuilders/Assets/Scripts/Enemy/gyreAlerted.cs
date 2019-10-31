@@ -21,6 +21,7 @@ public class gyreAlerted : MonoBehaviour
     public float time = 3.5f;
 
     public bool patrolling = true;
+    bool collided = false;
 
     public float distance = 5;
 
@@ -55,6 +56,13 @@ public class gyreAlerted : MonoBehaviour
             transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
             velocity *= -1;
         }
+
+        if (collided)
+        {
+            transform.localScale = new Vector2(transform.localScale.x * -1, transform.localScale.y);
+            velocity *= -1;
+            collided = false;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -62,6 +70,11 @@ public class gyreAlerted : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             playerScript.Die(0.2f);
+        }
+
+        if (col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
+        {
+            collided = true;
         }
     }
 }
