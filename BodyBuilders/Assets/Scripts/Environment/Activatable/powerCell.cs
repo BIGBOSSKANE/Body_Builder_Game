@@ -29,7 +29,7 @@ public class powerCell : activate
             {
                 if (overcharge)
                 {
-                    spriteRenderer.sprite = unchargedSprite;
+                    spriteRenderer.sprite = overchargedSprite;
                 }
                 else
                 {
@@ -49,5 +49,7 @@ public class powerCell : activate
                 wasActivated = false;
             }
         }
+
+        wasActivated = activated;
     }
 }
