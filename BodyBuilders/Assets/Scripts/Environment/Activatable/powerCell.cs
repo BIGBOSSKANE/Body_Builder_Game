@@ -8,6 +8,10 @@ public class powerCell : activate
     SpriteRenderer spriteRenderer;
     bool wasActivated;
     public int identifier;
+    public Sprite unchargedSprite;
+    public Sprite chargedSprite;
+    public Sprite overchargedSprite;
+
 
     void Start()
     {
@@ -15,33 +19,33 @@ public class powerCell : activate
         rb = gameObject.GetComponent<Rigidbody2D>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         wasActivated = false;
-        spriteRenderer.color = Color.grey;
     }
 
     void Update()
     {
-        if(activated != wasActivated) // if the power cell is charged
+        if (activated != wasActivated) // on the next frame after the power cell changes charge
         {
-            if(activated)
+            if (activated)
             {
-                if(overcharge)
+                if (overcharge)
                 {
-                    spriteRenderer.color = Color.green;
+                    spriteRenderer.sprite = unchargedSprite;
                 }
                 else
                 {
-                    spriteRenderer.color = Color.yellow;
+                    spriteRenderer.sprite = chargedSprite;
                 }
-                if(gameObject.transform.parent != null && gameObject.transform.parent.gameObject.tag == "PowerStation")
+
+                if (gameObject.transform.parent != null && gameObject.transform.parent.gameObject.tag == "PowerStation")
                 {
-                    transform.parent.gameObject.GetComponent<powerStation>().UpdateCharge(activated , overcharge);
+                    transform.parent.gameObject.GetComponent<powerStation>().UpdateCharge(activated, overcharge);
                 }
                 wasActivated = true;
             }
             else
             {
                 gameObject.name = "unchargedPowerCell";
-                spriteRenderer.color = Color.grey;
+                spriteRenderer.sprite = unchargedSprite;
                 wasActivated = false;
             }
         }
