@@ -29,8 +29,8 @@ public class MainMenu : MonoBehaviour
     // used for the Level Selection button
     public void LevelSelectionButton() // a selectable(public) function called LevelSelectionButton
     {
-        mainMenu.gameObject.SetActive(true);
-        levelSelect.gameObject.SetActive(false);
+        mainMenu.gameObject.SetActive(false);
+        levelSelect.gameObject.SetActive(true);
         settings.gameObject.SetActive(false);
     }
 
