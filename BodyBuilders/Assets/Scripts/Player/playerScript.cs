@@ -1245,6 +1245,8 @@ public class playerScript : MonoBehaviour
 
         Vector2 snapOffsetPos = gameObject.transform.position; // changing offset to cater for original sprites provided - may need to be re-scaled later
 
+       
+
         if(!hasArms && !hasLegs)
         {
             if(previousPartConfiguration == 2)
@@ -1607,6 +1609,13 @@ public class playerScript : MonoBehaviour
             headConfiguration = 4;
         }
 
+        // ANIMS: Set animation states
+        if (anims != null)
+        {
+            //Update the animation state with arms/legs
+            anims.SetParts(hasLegs ? legs : null, hasArms ? arms : null, head);
+            anims.HandleOffset(snapOffsetPos);
+        }
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
 

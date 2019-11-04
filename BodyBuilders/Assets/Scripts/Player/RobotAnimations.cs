@@ -16,10 +16,15 @@ public class RobotAnimations : MonoBehaviour
     bool hasLegs = false;
     bool hasArms = false;
 
+    GameObject lastArms;
+    GameObject lastLegs;
+    GameObject lastHead;
+
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
+        SetParts(null, null, null);
     }
 
     // Update is called once per frame
@@ -49,31 +54,81 @@ public class RobotAnimations : MonoBehaviour
     {
 
     }
-    
-    public void SetParts(bool legs, bool arms)
+
+    public void HandleOffset(Vector2 offset)
     {
+        transform.localPosition = new Vector2(0, -1.1f);
+    }
+    
+    public void ShowPart(GameObject part, bool shouldShow = true)
+    {
+        if (!part)
+            return;
+        part.GetComponent<SpriteRenderer>().enabled = shouldShow;
+    }
+
+    public void SetParts(GameObject legs, GameObject arms, GameObject head)
+    {
+        string animstate = "Base Layer.";
+        lastHead = head;
         if (legs && arms)
         {
             Debug.Log("Full Body");
-            gameObject.SetActive(true);
-            anim.Play("Base Layer/" + animFullbody);
+            lastLegs = legs;
+            lastArms = arms;
+            gameObject.SetActive(true); //Show ourselves
+            ShowPart(lastLegs, false); //turn old legs off
+            ShowPart(lastArms, false); //turn old arms off
+            ShowPart(lastHead, false);
+            animstate += animFullbody;
         }
         else if (legs) //legs only
         {
             Debug.Log("Legs Only");
-            gameObject.SetActive(true);
-            anim.Play("Base Layer/" + animLegs);
+            lastLegs = legs;
+            gameObject.SetActive(true); //show ourselves
+            ShowPart(lastLegs, false); //turn old legs off
+            ShowPart(lastHead, false);
+            if (lastArms) //we must have dumped our old arms
+            {
+                ShowPart(lastArms, true);
+                lastArms = null; //forget them
+            }
+
+            animstate += animLegs;
         }
         else if (arms) //arms only
         {
             Debug.Log("Arms Only");
-            gameObject.SetActive(true);
-            anim.Play("Base Layer/" + animArms);
+            lastArms = arms;
+            gameObject.SetActive(true); //show ourselves
+            ShowPart(lastArms, false); //hide old arms
+            ShowPart(lastHead, false);
+            if (lastLegs) //must have dumped old legs
+            {
+                ShowPart(lastLegs, true); //show old legs
+                lastLegs = null; //forget them
+            }
+            animstate += animArms;
         }
         else //head only
         {
             Debug.Log("Head Only");
             gameObject.SetActive(false);
+            if (lastArms) //we must have dumped our old arms
+            {
+                ShowPart(lastArms, true);
+                lastArms = null; //forget them
+            }
+            if (lastLegs) //must have dumped old legs
+            {
+                ShowPart(lastLegs, true); //show old legs
+                lastLegs = null; //forget them
+            }
+            ShowPart(lastHead, true);
+            return; //don't play any additional anim state
         }
+        Debug.Log("Playing " + animstate);
+        anim.Play(animstate);
     }
 }
