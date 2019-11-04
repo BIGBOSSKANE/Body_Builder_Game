@@ -214,6 +214,8 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public int augmentHookshotIdentifier = 0;
     [HideInInspector] public Vector2 currentVelocity;
     playerSound playerSound;
+
+    [Tooltip("Animation Functions Sub-Object")] public RobotAnimations anims;
     bool wasDying = false;
 
     void Awake()
@@ -372,6 +374,12 @@ public class playerScript : MonoBehaviour
             {
                 boostSprites.SetActive(false);
             }
+            
+            //ANIMATION CODE - LAND
+            if (!wasGrounded)
+            {
+                anims.Land();
+            }
         }
         else // if not grounded
         {
@@ -392,6 +400,7 @@ public class playerScript : MonoBehaviour
             }
 
             isGrounded = false;
+            
         }
     
     // Controls
@@ -544,6 +553,9 @@ public class playerScript : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
                 playerSound.JumpPlay();
+                //ANIMATION CODE - JUMP
+                anims.Jump();
+            
             }
             else if(afterburner == true && !climbing && remainingJumps == 1)
             {
