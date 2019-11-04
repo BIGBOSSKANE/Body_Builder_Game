@@ -47,12 +47,26 @@ public class RobotAnimations : MonoBehaviour
 
     public void Idle()
     {
-
+        anim.SetTrigger("isIdle");
+        anim.ResetTrigger("isRun");
     }
 
     public void Run()
     {
+        anim.SetTrigger("isRun");
+        anim.ResetTrigger("isIdle");
+    }
 
+    public void HandleMovement(Vector2 movement)
+    {
+        if (Mathf.Abs(movement.x) < 0.05f)
+        {
+            Idle();
+        }
+        else
+        {
+            Run();
+        }
     }
 
     public void HandleOffset(Vector2 offset)

@@ -376,7 +376,7 @@ public class playerScript : MonoBehaviour
             }
             
             //ANIMATION CODE - LAND
-            if (!wasGrounded)
+            if (!wasGrounded && anims != null)
             {
                 anims.Land();
             }
@@ -533,6 +533,13 @@ public class playerScript : MonoBehaviour
                 rb.velocity = targetVelocity;
             }
 
+            //ANIMATION CODE, MOVEMENT
+            if (anims != null)
+            {
+                anims.HandleMovement(rb.velocity);
+            }
+
+
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
             if(!jumpBan) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
 
@@ -554,7 +561,8 @@ public class playerScript : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
                 playerSound.JumpPlay();
                 //ANIMATION CODE - JUMP
-                anims.Jump();
+                if (anims!= null)
+                    anims.Jump();
             
             }
             else if(afterburner == true && !climbing && remainingJumps == 1)
