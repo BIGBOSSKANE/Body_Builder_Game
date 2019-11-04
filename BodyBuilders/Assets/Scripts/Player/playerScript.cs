@@ -1040,12 +1040,17 @@ public class playerScript : MonoBehaviour
             shieldActive = true;
             playerSound.ShieldPlay();
         }
-        else if(!shield || (InputManager.Cast() && shieldBubble.activeSelf))
+        else if((InputManager.Cast() && shieldBubble.activeSelf))
         {
-            if(shield) playerSound.ShieldStop();
-            shieldActive = false;
-            playerSound.ShieldStop();
+            DeactivateShield();
         }
+    }
+
+    void DeactivateShield()
+    {
+        shieldActive = false;
+        shieldBubble.SetActive(false);
+        playerSound.ShieldStop();
     }
 
     public void InitiateDeflect()
@@ -1264,6 +1269,7 @@ public class playerScript : MonoBehaviour
             afterburner = false;
             lifter = false;
             shield = false;
+            DeactivateShield();
             if(boostSprites != null)
             {
                 boostSprites.SetActive(false);
@@ -1360,9 +1366,7 @@ public class playerScript : MonoBehaviour
                 }
                 else
                 {
-                    if(shield) playerSound.ShieldStop();
-                    shield = false;
-                    shieldBubble.SetActive(false);
+                    DeactivateShield();
                 }
             }
             else
@@ -1422,6 +1426,7 @@ public class playerScript : MonoBehaviour
             armString = "None"; // no arms
             lifter = false;
             shield = false;
+            DeactivateShield();
 
             if(legString == "AfterburnerLegs" || legString == "GroundbreakerLegs")
             {
@@ -1502,9 +1507,7 @@ public class playerScript : MonoBehaviour
                 }
                 else
                 {
-                    if(shield) playerSound.ShieldStop();
-                    shield = false;
-                    shieldBubble.SetActive(false);
+                    DeactivateShield();
                 }
             }
             else

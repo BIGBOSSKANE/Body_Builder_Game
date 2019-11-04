@@ -60,25 +60,25 @@ public class Pause : MonoBehaviour
         TimeMaster(pausedTimeScale);
     }
 
-    public void MainMenu() // a selectable(public) function called MainMenu
+    public void MainMenuPanel() // a selectable(public) function called MainMenu
     {
         exitPanel.SetActive(true); // activate the Exit menu
         pausePanel.SetActive(false); // disables the Pause menu
     }
 
-    public void Settings() // a selectable(public) function called MainMenu
+    public void SettingsPanel() // a selectable(public) function called MainMenu
     {
         settingsPanel.SetActive(true); // activate the Exit menu
         pausePanel.SetActive(false); // disables the Pause menu
     }
 
-    public void RestartLevel() // a selectable(public) function called MainMenu
+    public void RestartPanel() // a selectable(public) function called MainMenu
     {
         restartPanel.SetActive(true); // activate the restart menu
         pausePanel.SetActive(false); // disables the Pause menu
     }
 
-    public void Return() // a selectable(public) function called Return
+    public void ReturnButton() // a selectable(public) function called Return
     {
         pausePanel.SetActive(true); // activate the Pause menu
         exitPanel.SetActive(false); // disable the Exit menu
@@ -86,14 +86,16 @@ public class Pause : MonoBehaviour
         restartPanel.SetActive(false); // disable the restart panel menu
     }
 
-    public void Exit() // a selectable(public) function called Exit
+    public void ExitButton() // a selectable(public) function called Exit
     {
         SceneManager.LoadScene(0); // in the SceneManager (build settings) load the scene numbered 0 in the index
-    } // you can have it use the name of the scene instaed of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
+        timeSlow.TimeSlave(pausedTimeScale, !isPaused);
+    } // you can have it use the name of the scene instead of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting
 
-    public void Restart() // a selectable(public) function called Exit
+    public void RestartButton() // a selectable(public) function called Exit
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // In the SceneManager, load the active scene (restart) 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // In the SceneManager, load the active scene (restart)
+        timeSlow.TimeSlave(pausedTimeScale, !isPaused);
     }
 
     void TimeMaster(float pausedTimeScale) // references other time-adjusting scripts and takes complete control of time

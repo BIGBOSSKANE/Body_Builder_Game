@@ -23,15 +23,14 @@ public class MainMenu : MonoBehaviour
     // used for the New Game Button
     public void NewGameButton() // a selectabel(public) function called NewGameButton
     {
-        Debug.Log("Start game"); // in the console type Start game
         SceneManager.LoadScene(1); // in the SceneManager (build settings) load the scene numbered 1 in the index
     }
 
     // used for the Level Selection button
     public void LevelSelectionButton() // a selectable(public) function called LevelSelectionButton
     {
-        mainMenu.gameObject.SetActive(true);
-        levelSelect.gameObject.SetActive(false);
+        mainMenu.gameObject.SetActive(false);
+        levelSelect.gameObject.SetActive(true);
         settings.gameObject.SetActive(false);
     }
 
@@ -57,7 +56,6 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGameButton() // a selectable(public) function called QuitGameButton
     {
-        Debug.Log("Quited the game"); // in the console type Quited the game
         Application.Quit(); // close the game
     }
 }

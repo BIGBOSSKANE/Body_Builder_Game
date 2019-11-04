@@ -34,11 +34,11 @@ public class powerStation : activate
         if(activated)
         {
             if(overcharge) spriteRenderer.color = new Color32(166 , 254 , 0 , 255);
-            else spriteRenderer.color = new Color32(254 , 161 , 0 , 255);
+            else spriteRenderer.color = new Color32(255, 255, 150, 255);
         }
         else
         {
-            spriteRenderer.color = Color.black;
+            spriteRenderer.color = Color.white;
         }
     }
 
@@ -85,9 +85,9 @@ public class powerStation : activate
         if(activated)
         {    
             if(overcharge) spriteRenderer.color = new Color32(166 , 254 , 0 , 255);
-            else spriteRenderer.color = new Color32(254 , 165 , 0 , 255);
+            else spriteRenderer.color = new Color32(255, 255, 150, 255);
         }
-        else spriteRenderer.color = Color.black;
+        else spriteRenderer.color = Color.white;
        
        if(wasActivated != activated) StateChange(activated);
     }
@@ -112,7 +112,7 @@ public class powerStation : activate
         {
             activated = false;
             overcharge = false;
-            spriteRenderer.color = Color.black;
+            spriteRenderer.color = Color.white;
             if(wasActivated != activated) StateChange(activated);
         }
     }
