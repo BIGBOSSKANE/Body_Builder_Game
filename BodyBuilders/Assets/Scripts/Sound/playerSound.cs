@@ -8,6 +8,13 @@ public class playerSound : MonoBehaviour
     int partConfiguration; // 1 is head, 2 is arms, 3 is legs, 4 is all
     bool playingMusic;
 
+
+    // Jumping
+
+    bool jumpSoundUnavailable;
+    float timeLimitSinceLastJump = 1f;
+    float timerSinceLastJump = 0f;
+
     void Start()
     {
         //animator = GetComponent<Animator>();
@@ -23,6 +30,17 @@ public class playerSound : MonoBehaviour
             AkSoundEngine.SetState();
 
         */
+
+
+        if(jumpSoundUnavailable)
+        {
+            timerSinceLastJump += Time.deltaTime / timeLimitSinceLastJump;
+            if(timerSinceLastJump >= 1)
+            {
+                timerSinceLastJump = 0;
+                jumpSoundUnavailable = false;
+            }
+        }
     }
 
     void FoostepPlay()
@@ -32,7 +50,11 @@ public class playerSound : MonoBehaviour
 
     public void JumpPlay()
     {
-        AkSoundEngine.PostEvent("Jump" , gameObject);
+        if(!jumpSoundUnavailable)
+        {
+            AkSoundEngine.PostEvent("Jump" , gameObject);
+            jumpSoundUnavailable = true;
+        }
     }
 
     public void AttachPlay()

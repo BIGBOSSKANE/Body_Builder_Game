@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6784262537209438192}
   - component: {fileID: 6784262537209438196}
   - component: {fileID: 6784262537209438193}
-  - component: {fileID: 6784262537209438198}
+  - component: {fileID: 1967349803}
   m_Layer: 25
   m_Name: JumpPad
   m_TagString: Untagged
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 6784262537209438199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 9, y: -10.772, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6251062, y: 0.8877126, z: 0.6251062}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -49,10 +49,10 @@ MonoBehaviour:
   overcharge: 0
   overchargeable: 1
   antiSync: 1
-  jumpBooster: 1
-  normalBounceForce: 8
-  overchargeBounceForce: 12
-  jumpForceMultiplier: 1.1
+  jumpBooster: 0
+  normalBounceForce: 18
+  overchargeBounceForce: 16
+  jumpForceMultiplier: 1
 --- !u!212 &6784262537209438193
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -101,8 +101,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &6784262537209438198
-BoxCollider2D:
+--- !u!70 &1967349803
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -110,20 +110,10 @@ BoxCollider2D:
   m_GameObject: {fileID: 6784262537209438199}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 0f5303f772e7cc243b81792864822f20, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.029495716, y: 0.20914125}
-  m_SpriteTilingProperty:
-    border: {x: 0.089999996, y: 0.11, z: 0.089999996, w: 0.14999999}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.33, y: 0.64}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.9082975, y: 0.17564678}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0.0047452385, y: -0.065173425}
+  m_Size: {x: 3.168688, y: 0.48551315}
+  m_Direction: 1
