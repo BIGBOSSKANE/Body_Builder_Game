@@ -11,11 +11,11 @@ public class lineAnimator : MonoBehaviour
      Vector2 size; // size of each sprite
      
      [Tooltip("Framerate of animation")] [Range (0 , 200)]public int framesPerSecond = 100; // speed through which frames cycle
-     LineRenderer lineRenderer; // the renderer we are changing the material for
+     LineRenderer render; // the spriteer we are changing the material for
      
     void Start()
     {
-        lineRenderer = gameObject.GetComponent<LineRenderer>();
+        render = gameObject.GetComponent<LineRenderer>();
         size = new Vector2(1.0f / spriteSheetColumns , 1.0f / spriteSheetRows);
     }
 
@@ -28,7 +28,7 @@ public class lineAnimator : MonoBehaviour
 
         Vector2 offset = new Vector2(uIndex * size.x, 1.0f - size.y - vIndex * size.y);
      
-        lineRenderer.material.SetTextureOffset("_MainTex", offset);
-        lineRenderer.material.SetTextureScale("_MainTex", size);
+        render.material.SetTextureOffset("_MainTex", offset);
+        render.material.SetTextureScale("_MainTex", size);
     }
 }
