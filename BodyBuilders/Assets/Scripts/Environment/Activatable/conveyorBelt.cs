@@ -6,14 +6,24 @@ public class conveyorBelt : activate
 {
     GameObject belt;
     AreaEffector2D effector;
-    public float standardSpeed = 60f;
-    public float overloadSpeed = 100f;
+    [Tooltip("Setting this to negative reverses the conveyor belt")] public float standardSpeed = 60f;
+    [Tooltip("Setting this to negative reverses the conveyor belt")] public float overchargeSpeed = 100f;
+    [Tooltip("Adjust this to control the visual speed of the conveyor belt")] public float spriteAnimatorSpeedRatio = 1;
     float speed;
+    bool wasOvercharged;
+    spriteAnimator spriteAnimator;
 
     void Start()
     {
+        wasOvercharged = overcharge;
         belt = gameObject.transform.Find("Effector").gameObject;
         effector = belt.GetComponent<AreaEffector2D>();
+        spriteAnimator = GetComponent<spriteAnimator>();
+
+        if(overcharge) speed = overchargeSpeed;
+        else speed = standardSpeed;
+        if(speed < 0) spriteAnimator.reverse = true;
+        spriteAnimator.framesPerSecond = Mathf.Abs(speed * spriteAnimatorSpeedRatio);
     }
 
     void Update()
@@ -24,15 +34,25 @@ public class conveyorBelt : activate
             return;
         }
 
-        if(overcharge)
-        {
-            speed = overloadSpeed;
-        }
-        else
-        {
-            speed = standardSpeed;
-        }
+        UpdateSpeed();
 
         effector.forceMagnitude = speed;
+        wasOvercharged = overcharge;
+    }
+
+    void UpdateSpeed()
+    {
+        if(!wasOvercharged && overcharge)
+        {
+            if(speed < 0) spriteAnimator.reverse = true;
+            speed = overchargeSpeed;
+            spriteAnimator.framesPerSecond = Mathf.Abs(speed * spriteAnimatorSpeedRatio);
+        }
+        else if(wasOvercharged && !overcharge)
+        {
+            if(speed < 0) spriteAnimator.reverse = true;
+            speed = standardSpeed;
+            spriteAnimator.framesPerSecond = Mathf.Abs(speed * spriteAnimatorSpeedRatio);
+        }
     }
 }
