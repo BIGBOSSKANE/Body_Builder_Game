@@ -1,19 +1,46 @@
 fileFormatVersion: 2
-guid: 31059ad8f84c47c4ea58e03ce9659115
+guid: 29b5aa2b89a0dd34480e5e1f2b6330ae
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
+      213: -4401265245626647432
     second: Banshee_Turret_Closed
   - first:
-      213: 21300002
+      213: -819648857732829075
+    second: Banshee2_1
+  - first:
+      213: -1196861868192398866
+    second: Banshee_Turret_Opened
+  - first:
+      213: -8812952549206055831
+    second: Banshee2_3
+  - first:
+      213: 7071569863807955594
     second: Banshee_Lazer
   - first:
-      213: 21300004
+      213: 6840486113051773056
     second: Banshee_Stand
   - first:
-      213: 21300006
-    second: Banshee_Turret_Opened
+      213: 7378776093427096379
+    second: Banshee2_6
+  - first:
+      213: 4099862024982210211
+    second: Banshee2_7
+  - first:
+      213: 4709844871717338112
+    second: Banshee2_8
+  - first:
+      213: 6285591060780326203
+    second: Banshee2_9
+  - first:
+      213: 3782660002192387076
+    second: Banshee2_10
+  - first:
+      213: 835726264820880818
+    second: Banshee2_11
+  - first:
+      213: -598029653154427700
+    second: Banshee2_12
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -115,17 +142,6 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
-    buildTarget: Windows Store Apps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-  - serializedVersion: 2
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -143,10 +159,10 @@ TextureImporter:
       name: Banshee_Turret_Closed
       rect:
         serializedVersion: 2
-        x: 194
-        y: 636
-        width: 388
-        height: 254
+        x: 192
+        y: 616
+        width: 387
+        height: 287
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +170,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 20cb3513a6e38e4429c19256d4b37164
-      internalID: 21300000
+      spriteID: aaa5e41bf14b5a845bb05b95faccd224
+      internalID: -4401265245626647432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Banshee_Turret_Opened
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 601
+        width: 416
+        height: 287
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b6cfc590fd8ec04f85ab7a603b7061c
+      internalID: -1196861868192398866
       vertices: []
       indices: 
       edges: []
@@ -165,18 +202,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 187
-        y: 92
-        width: 681
-        height: 301
-      alignment: 5
-      pivot: {x: 1, y: 0.5}
+        y: 30
+        width: 688
+        height: 365
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6e8cb4e497925ae4eb8407ff6e0d95b3
-      internalID: 21300002
+      spriteID: c5f6d7e7088c7154983d4c1abec36b50
+      internalID: 7071569863807955594
       vertices: []
       indices: 
       edges: []
@@ -185,10 +222,10 @@ TextureImporter:
       name: Banshee_Stand
       rect:
         serializedVersion: 2
-        x: 1289
-        y: 122
-        width: 361
-        height: 318
+        x: 1301
+        y: 125
+        width: 339
+        height: 311
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,29 +233,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63627c9bd01364744b96637537c3455c
-      internalID: 21300004
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Banshee_Turret_Opened
-      rect:
-        serializedVersion: 2
-        x: 1412
-        y: 620
-        width: 417
-        height: 254
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 170d4034b85d5354da3a470ae8da61e3
-      internalID: 21300006
+      spriteID: c11f5226fdb280648861e8b11d678480
+      internalID: 6840486113051773056
       vertices: []
       indices: 
       edges: []
@@ -226,7 +242,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 32d125daf03c36d41940241bccb36ee4
+    spriteID: 7a4dee5b9f2a75d40b5b8f36e2d237cf
     internalID: 0
     vertices: []
     indices: 
