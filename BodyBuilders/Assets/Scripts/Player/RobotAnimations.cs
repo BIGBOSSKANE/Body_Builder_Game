@@ -20,16 +20,44 @@ public class RobotAnimations : MonoBehaviour
     GameObject lastLegs;
     GameObject lastHead;
 
+    Dictionary<SpriteRenderer, Sprite> allSprites;
+
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
+        allSprites = new Dictionary<SpriteRenderer, Sprite>();
+        SpriteRenderer[] srs = GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer sr in srs)
+        {
+            allSprites[sr] = sr.sprite;
+            //Debug.Log("" + sr + ", " + sr.sprite);
+        }
         SetParts(null, null, null);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            RestoreSprites();
+        }
+    }
+
+    void RestoreSprites()
+    {
+        anim.Play(animFullbody);
+        return;
+        anim.enabled = false;
+        
+        Debug.Log("Restoring sprites");
+        foreach (SpriteRenderer sr in allSprites.Keys)
+        {
+            sr.sprite = allSprites[sr];
+            //Debug.Log("Set sprite for " + sr + " to " + sr.sprite);
+        }
+        anim.enabled = true;
         
     }
 
@@ -143,6 +171,11 @@ public class RobotAnimations : MonoBehaviour
             return; //don't play any additional anim state
         }
         Debug.Log("Playing " + animstate);
+        
+        
+        //RestoreSprites();
         anim.Play(animstate);
+        //RestoreSprites();
+        
     }
 }
