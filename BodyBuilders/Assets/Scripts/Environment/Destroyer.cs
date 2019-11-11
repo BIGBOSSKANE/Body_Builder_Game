@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-public class destroyer : MonoBehaviour
+public class Destroyer : MonoBehaviour
 {
     void OnCollisionEnter2D(Collision2D col)
     {

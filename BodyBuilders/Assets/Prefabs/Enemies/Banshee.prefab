@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 5687784320580263307}
   - component: {fileID: 1862287067}
   m_Layer: 11
-  m_Name: Banshee_Stand
+  m_Name: Banshee
   m_TagString: Banshee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,7 +211,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300004, guid: 31059ad8f84c47c4ea58e03ce9659115, type: 3}
+  m_Sprite: {fileID: 6840486113051773056, guid: 29b5aa2b89a0dd34480e5e1f2b6330ae,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -239,7 +240,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 1.444, y: 1.272}
+    oldSize: {x: 1.356, y: 1.244}
     newSize: {x: 1.444, y: 1.272}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -329,7 +330,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 31059ad8f84c47c4ea58e03ce9659115, type: 3}
+  m_Sprite: {fileID: -4401265245626647432, guid: 29b5aa2b89a0dd34480e5e1f2b6330ae,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -365,7 +367,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ef6fd30c175bf418418dd2124784f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  range: 15
   laserChargeTime: 2.5
+  laserChargeTimer: 0
   laserPauseTime: 0.5
   laserFireTime: 2
   laserLayer:
@@ -394,7 +398,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.552, y: 1.016}
+    oldSize: {x: 1.548, y: 1.148}
     newSize: {x: 1.552, y: 1.016}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

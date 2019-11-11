@@ -20,10 +20,9 @@ public class StageExit : MonoBehaviour
     {        
         if (other.gameObject.tag == "Player") // If an other object that has the tag Player collides with this objects 2D Collider
         {
-            Debug.Log("Win! load next level");
             if (PlayerPrefs.GetInt("levelReached") < SceneNumber)
             {
-                PlayerPrefs.SetInt("levelReached", (SceneNumber));
+                PlayerPrefs.SetInt("levelReached", SceneNumber);
             }
             SceneManager.LoadScene(SceneNumber); //In scene manager, Load scene number equalled to SceneName
         }

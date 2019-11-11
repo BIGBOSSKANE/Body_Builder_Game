@@ -26,7 +26,7 @@ public class jumpPad : activate
         player = GameObject.Find("Player").gameObject;
         playerScript = player.GetComponent<playerScript>();
 
-        /* if(!forceReflection) */ gameObject.GetComponent<BoxCollider2D>().sharedMaterial = null;
+        /* if(!forceReflection) */ gameObject.GetComponent<CapsuleCollider2D>().sharedMaterial = null;
 
         if(!jumpBooster)
         {

@@ -70,7 +70,7 @@ public class NewGyre : MonoBehaviour
             playerScript.Die(0.2f);
         }
 
-        if (col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
+        if (col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms" || col.gameObject.tag == "Box")
         {
             collided = true;
         }

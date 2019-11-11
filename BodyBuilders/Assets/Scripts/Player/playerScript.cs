@@ -218,6 +218,13 @@ public class playerScript : MonoBehaviour
     [Tooltip("Animation Functions Sub-Object")] public RobotAnimations anims;
     bool wasDying = false;
 
+
+    // Jump Sounds
+    bool justJumped;
+    // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
+
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -383,6 +390,11 @@ public class playerScript : MonoBehaviour
         }
         else // if not grounded
         {
+            if(justJumped)
+            {
+                justJumped = false;
+                playerSound.JumpPlay();
+            }
             leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
 
             if(leftGroundTimer > coyoteTimeLimit && coyoteJump)
@@ -562,8 +574,7 @@ public class playerScript : MonoBehaviour
                 playerSound.JumpPlay();
                 //ANIMATION CODE - JUMP
                 if (anims!= null)
-                    anims.Jump();
-            
+                    anims.Jump();            
             }
             else if(afterburner == true && !climbing && remainingJumps == 1)
             {
@@ -574,6 +585,7 @@ public class playerScript : MonoBehaviour
             remainingJumps --;
             jumpGateTimer = 0f;
             jumpGate = true;
+            justJumped = true;
         }
     }
 

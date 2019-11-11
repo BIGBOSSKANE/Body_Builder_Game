@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class sawbladeRotate : MonoBehaviour
+public class sawbladeRotate : activate
 {
-    public bool activated = true;
     public float rotateTime = 4f;
     public float startRotation = 0f;
     public float bladeDistance = 5f;
