@@ -1622,7 +1622,6 @@ public class playerScript : MonoBehaviour
         {
             //Update the animation state with arms/legs
             anims.SetParts(hasLegs ? legs : null, hasArms ? arms : null, head);
-            anims.HandleOffset(snapOffsetPos);
         }
         camera.GetComponent<Camera2DFollow>().Resize(partConfiguration , cameraScript.standardResizeDuration , 1f);
     }
