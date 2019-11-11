@@ -21,6 +21,10 @@ public class RobotAnimations : MonoBehaviour
     GameObject lastHead;
 
     Dictionary<SpriteRenderer, Sprite> allSprites;
+    bool shouldRestore;
+    bool shouldTransition;
+    bool shouldBecomeActive;
+    string nextAnimationState;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +37,9 @@ public class RobotAnimations : MonoBehaviour
             allSprites[sr] = sr.sprite;
             //Debug.Log("" + sr + ", " + sr.sprite);
         }
+        Debug.Log("Catalogued " + srs.Length + " sprites");
+        shouldRestore = false;
+        shouldBecomeActive = false;
         SetParts(null, null, null);
     }
 
@@ -41,17 +48,79 @@ public class RobotAnimations : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            RestoreSprites();
+            shouldTransition = true;
         }
     }
 
-    void RestoreSprites()
+    
+    void LateUpdate()
     {
-        anim.Play(animFullbody);
+        //if (shouldRestore)
+        //{
+        //    RestoreSprites();
+        //    shouldRestore = false;
+        //} 
+
+        if (shouldBecomeActive && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+            //return for now. Next lateupdate we will transition
+            Debug.Log("Made Game Object Active. Transition next update");
+            return;
+        }
+        /* 
+        if (shouldTransition && !shouldBecomeActive && gameObject.isActiveSelf)
+        {
+            //don't switch off yet. play enable all.
+            anim.Play("Base Layer.EnableAll");
+        }
+        */
+        if (shouldTransition)
+        {
+            Debug.Log("Transition");
+            anim.Play("Base Layer.EnableAll");
+            //if (nextAnimationState != "")
+            //{
+                //anim.Play(nextAnimationState);
+                //nextAnimationState = "";
+            //    shouldTransition = false;
+            //}
+        }
+    }
+
+    void CompleteTransition()
+    {
+        Debug.Log("Complete Transition here");
+        //Code for turning off.
+        if (shouldTransition && !shouldBecomeActive && gameObject.activeSelf)
+        {
+            gameObject.SetActive(false);
+        }
+        shouldTransition = false;
+        //anim.Play(nextAnimationState);
+        //shouldTransition = true;
+    }
+
+    void TransitionTo(string nextState)
+    {
+        Debug.Log("Setting transition to " + nextState);
+        nextAnimationState = nextState;
+        //shouldTransition = true;
+        anim.Play("Base Layer.EnableAll");
+        //anim.enabled = false;
+        //anim.enabled = true;
+        return;
+        //anim.Play(animFullbody);
+        
+        foreach (SpriteRenderer sr in allSprites.Keys)
+        {
+            sr.enabled = true;
+        }
+        
         return;
         anim.enabled = false;
         
-        Debug.Log("Restoring sprites");
+        
         foreach (SpriteRenderer sr in allSprites.Keys)
         {
             sr.sprite = allSprites[sr];
@@ -118,7 +187,8 @@ public class RobotAnimations : MonoBehaviour
             Debug.Log("Full Body");
             lastLegs = legs;
             lastArms = arms;
-            gameObject.SetActive(true); //Show ourselves
+            //gameObject.SetActive(true); //Show ourselves
+            shouldBecomeActive = true;
             ShowPart(lastLegs, false); //turn old legs off
             ShowPart(lastArms, false); //turn old arms off
             ShowPart(lastHead, false);
@@ -128,7 +198,8 @@ public class RobotAnimations : MonoBehaviour
         {
             Debug.Log("Legs Only");
             lastLegs = legs;
-            gameObject.SetActive(true); //show ourselves
+            //gameObject.SetActive(true); //show ourselves
+            shouldBecomeActive = true;
             ShowPart(lastLegs, false); //turn old legs off
             ShowPart(lastHead, false);
             if (lastArms) //we must have dumped our old arms
@@ -143,7 +214,8 @@ public class RobotAnimations : MonoBehaviour
         {
             Debug.Log("Arms Only");
             lastArms = arms;
-            gameObject.SetActive(true); //show ourselves
+            //gameObject.SetActive(true); //show ourselves
+            shouldBecomeActive = true;
             ShowPart(lastArms, false); //hide old arms
             ShowPart(lastHead, false);
             if (lastLegs) //must have dumped old legs
@@ -156,7 +228,8 @@ public class RobotAnimations : MonoBehaviour
         else //head only
         {
             Debug.Log("Head Only");
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
+            shouldBecomeActive = false;
             if (lastArms) //we must have dumped our old arms
             {
                 ShowPart(lastArms, true);
@@ -168,14 +241,23 @@ public class RobotAnimations : MonoBehaviour
                 lastLegs = null; //forget them
             }
             ShowPart(lastHead, true);
-            return; //don't play any additional anim state
+            //return; //don't play any additional anim state
         }
-        Debug.Log("Playing " + animstate);
         
         
         //RestoreSprites();
-        anim.Play(animstate);
-        //RestoreSprites();
+        //shouldRestore = true;
         
+        //anim.Play("Base Layer.EnableAll");
+        //anim.Play(animstate);
+        //RestoreSprites();
+        if (shouldBecomeActive && !gameObject.activeSelf)
+            gameObject.SetActive(true);
+        
+        anim.SetBool("hasArms", arms);
+        anim.SetBool("hasLegs", legs);
+        //TransitionTo(animstate);
+        shouldTransition = true;
+        //anim.Play("Base Layer.EnableAll");
     }
 }
