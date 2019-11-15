@@ -865,7 +865,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -9859,11 +9859,6 @@ PrefabInstance:
       propertyPath: moveTimeTotal
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 7430382189106502756, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7430382189578474540, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -9878,6 +9873,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.5266904
+      objectReference: {fileID: 0}
+    - target: {fileID: 7430382189106502756, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7430382189578474547, guid: 0f4a62b6fe1daaa479975d0abafd22f8,
         type: 3}
@@ -17224,17 +17224,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 815994233867971977, guid: 8d02c0b86e1612a4daf1bb735941bcc7,
-        type: 3}
-      propertyPath: armType
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 815994233867971989, guid: 8d02c0b86e1612a4daf1bb735941bcc7,
         type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: e76535bf45b533e46841e35b249dd768,
         type: 3}
+    - target: {fileID: 815994233867971977, guid: 8d02c0b86e1612a4daf1bb735941bcc7,
+        type: 3}
+      propertyPath: armType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6954643340144395724, guid: 8d02c0b86e1612a4daf1bb735941bcc7,
         type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.y
