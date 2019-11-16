@@ -41,6 +41,8 @@ public class bansheeScript : MonoBehaviour
     Vector2 laserEndpoint;
     powerCell powerCell;
     powerStation powerStation;
+    laserBurstColour burstColour;
+    laserBurstColour collisionColour;
 
     [Tooltip("Laser material while charging")] public Material materialCharge;
     [Tooltip("Laser material while pausing")] public Material materialPause;
@@ -55,6 +57,8 @@ public class bansheeScript : MonoBehaviour
         laserOriginPoint = gameObject.transform.Find("laserOrigin").gameObject;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
+        collisionColour = collisionEffect.GetComponent<laserBurstColour>();
+        burstColour = burstEffect.GetComponent<laserBurstColour>();
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
         circleCol = gameObject.GetComponent<CircleCollider2D>();
@@ -63,7 +67,6 @@ public class bansheeScript : MonoBehaviour
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
         laserLine.material = materialCharge;
-
     }
 
     // Update is called once per frame
@@ -74,9 +77,10 @@ public class bansheeScript : MonoBehaviour
             collisionEffect.SetActive(true);
             laserLine.enabled = true;
 
+            targetPosition = target.transform.position;
+
             if(!isFiring && !isPaused) // aim
             {
-                targetPosition = target.transform.position;
                 laserOrigin = laserOriginPoint.transform.position;
                 laserOriginDirection = new Vector2(targetPosition.x - laserOrigin.x , targetPosition.y - laserOrigin.y);
                 laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x);
@@ -224,8 +228,8 @@ public class bansheeScript : MonoBehaviour
                 {
                     if(laserTag == "Shield")
                     {
-                        playerScript.EndDeflect();
                         playerScript.DeathRay(false);
+                        playerScript.EndDeflect();
                     }
                 }
                 laserTag = laser.collider.tag;
@@ -234,8 +238,8 @@ public class bansheeScript : MonoBehaviour
             {
                 if(laserTag == "Shield")
                 {
-                    playerScript.EndDeflect();
                     playerScript.DeathRay(false);
+                    playerScript.EndDeflect();
                 }
                 laserTag = "null";
                 collisionEffect.SetActive(false);
@@ -245,8 +249,8 @@ public class bansheeScript : MonoBehaviour
         {
             if(laserTag == "Shield")
             {
-                playerScript.EndDeflect();
                 playerScript.DeathRay(false);
+                playerScript.EndDeflect();
                 laserTag = "null";
             }
             isCharging = false;
@@ -264,6 +268,10 @@ public class bansheeScript : MonoBehaviour
         {
             laserLine.material = materialCharge;
             laserChargeTimer += Time.deltaTime;
+
+            burstColour.ColourChange("blue");
+            collisionColour.ColourChange("blue");
+
             if(laserChargeTimer >= laserChargeTime)
             {
                 laserTag = "null";
@@ -271,6 +279,8 @@ public class bansheeScript : MonoBehaviour
                 laserPauseTimer = 0f;
                 isPaused = true;
                 isCharging = false;
+                burstColour.ColourChange("purple");
+                collisionColour.ColourChange("purple");
             }
         }
 
@@ -292,6 +302,7 @@ public class bansheeScript : MonoBehaviour
             isPaused = false;
             laserChargeTimer = 0f;
             laserFireTimer += Time.deltaTime;
+
             if(laserFireTimer > laserFireTime)
             {
                 laserTag = "null";
@@ -308,12 +319,16 @@ public class bansheeScript : MonoBehaviour
             }
                 
             burstEffect.SetActive(true);
+            burstColour.ColourChange("red");
+            collisionColour.ColourChange("red");
+            collisionEffect.transform.localScale = Vector3.one;
             burstEffect.transform.position = laserOrigin;
             burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
         }
         else
         {
             burstEffect.SetActive(false);
+            collisionEffect.transform.localScale = new Vector3(0.6f , 0.6f , 1f);
         }
     }
 }

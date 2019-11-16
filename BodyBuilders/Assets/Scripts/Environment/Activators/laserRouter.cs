@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class laserRouter : activate
 {
+    [Tooltip("Does this collide physically with the player?)")] public bool physicalCollider = false;
     [Tooltip("Use a secondary laser (indicated by the other aim sprite)")] public bool laserSplitter; // does the laser router fire 2 lasers? (the second is projected from the laser aim splitter sprite)
     [Tooltip("Is it firing a laser?")] public bool charged = false; // is the laser router charged?
     bool wasCharged; // was the laser router charged in the last frame? - this is used to send an activate signal to doors/fanse/etc that use the laser router as a switch
@@ -41,6 +42,7 @@ public class laserRouter : activate
     [Tooltip("How long does it take the router to rotate when triggered?")] public float rotateTime = 4f; // duration of switch rotation;
     protected LineRenderer laserLine; // the line renderer for the laser
     protected string laserTag; // name of the thing hit by the laser
+    protected string laserTagSplit; // name of the thing hit by the second laser
     protected playerScript playerScript; // get a reference to the player script
     [Tooltip("Layers the laser can hit")] public LayerMask laserLayer; // what can the laser collide with? 
     protected powerCell powerCell; // the powercell script of the powercell hit
@@ -54,13 +56,20 @@ public class laserRouter : activate
     GameObject collisionEffectSplit;
     LineRenderer laserLineSplit;
     Vector2 laserEndpointSplit;
+    Component[] animators;
 
     void Start()
     {
+        // Later on we can set it to also use blue lasers, but it's just red for now
+        deathRay = true;
+        //
+
+
+        if(! physicalCollider) Destroy(transform.Find("PhysicalCollider").gameObject);
         player = GameObject.Find("Player").gameObject;
         aimSprite = gameObject.transform.Find("aimSprite").gameObject;
         coreSprite = aimSprite.transform.Find("coreSprite").gameObject;
-        coreSprite.SetActive(false);
+        if(!charged) coreSprite.SetActive(false);
         rotateTimer = 0f;
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
@@ -74,6 +83,7 @@ public class laserRouter : activate
         targetPosition = moveTo + (Vector2)transform.position;
         wasCharged = false;
         initialRotation = transform.rotation;
+        animators = GetComponentsInChildren(typeof(Animator) , true);
 
         // splitter lasercaster
         aimSpriteSplit = gameObject.transform.Find("aimSpriteSplit").gameObject;
@@ -123,6 +133,7 @@ public class laserRouter : activate
                 laserLineSplit.enabled = true;
             }
             LaserCaster();
+            if(laserSplitter) SecondaryLaserCaster();
         }
 
         if(wasCharged != charged)
@@ -138,10 +149,6 @@ public class laserRouter : activate
 
     public virtual void LaserCaster()
     {
-        if(laserSplitter)
-        {
-            SecondaryLaserCaster();
-        }
         Vector2 laserOriginDirection = (aimSprite.transform.up + aimSprite.transform.right).normalized;
         Vector2 laserOrigin = (Vector2)transform.position + (laserOriginDirection * colRadius);
 
@@ -167,6 +174,7 @@ public class laserRouter : activate
 
             if(laser.collider.tag == "LaserRouter")
             {
+                Debug.Log("1");
                 if(laserTag != "laserRouter")
                 {
                     laserRouter laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
@@ -195,7 +203,6 @@ public class laserRouter : activate
             {
                 if(laserTag != "Shield") // if the most recent collider hit was not the player
                 {
-                    playerScript playerScript = laser.transform.gameObject.GetComponent<playerScript>();
                     playerScript.InitiateDeflect();
                     if(deathRay)
                     {
@@ -219,10 +226,10 @@ public class laserRouter : activate
             }
             else
             {
-                if(playerScript != null && laserTag == "Shield")
+                if(laserTag == "Shield")
                 {
-                    playerScript.EndDeflect();
                     playerScript.DeathRay(false);
+                    playerScript.EndDeflect();
                 }
             }
 
@@ -299,7 +306,7 @@ public class laserRouter : activate
 
             if(laser.collider.tag == "LaserRouter")
             {
-                if(laserTag != "laserRouter")
+                if(laserTagSplit != "laserRouter")
                 {
                     laserRouter laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();
                     laserRouter.Charged();
@@ -316,7 +323,7 @@ public class laserRouter : activate
             else if(laser.collider.tag == "HeldBox")
             {
                 collisionEffect.transform.position = laser.point;
-                if(playerScript.heldBoxTag == "powerCell" && ((laserTag != "HeldBox" && charged) || (!wasCharged && charged)))
+                if(playerScript.heldBoxTag == "powerCell" && ((laserTagSplit != "HeldBox" && charged) || (!wasCharged && charged)))
                 {
                     powerCell powerCell = player.transform.Find("PowerCell").GetComponent<powerCell>();
                     powerCell.activated = true;
@@ -325,7 +332,7 @@ public class laserRouter : activate
             }
             else if(laser.collider.tag == "Shield")
             {
-                if(laserTag != "Shield") // if the most recent collider hit was not the player
+                if(laserTagSplit != "Shield") // if the most recent collider hit was not the player
                 {
                     playerScript playerScript = laser.transform.gameObject.GetComponent<playerScript>();
                     playerScript.InitiateDeflect();
@@ -341,7 +348,7 @@ public class laserRouter : activate
             }
             else if(laser.collider.tag == "Player")
             {
-                if(laserTag != "Player") // if the most recent collider hit was not the player
+                if(laserTagSplit != "Player") // if the most recent collider hit was not the player
                 {
                     if(charged)
                     {
@@ -352,10 +359,10 @@ public class laserRouter : activate
             }
             else
             {
-                if(playerScript != null && laserTag == "Shield")
+                if(playerScript != null && laserTagSplit == "Shield")
                 {
-                    playerScript.EndDeflect();
                     playerScript.DeathRay(false);
+                    playerScript.EndDeflect();
                 }
             }
 
@@ -370,7 +377,7 @@ public class laserRouter : activate
 
             if(laser.collider.tag == "powerCell")
             {
-                if((laserTag != "powerCell" && charged) || (!wasCharged && charged))
+                if((laserTagSplit != "powerCell" && charged) || (!wasCharged && charged))
                 {
                     powerCell = laser.transform.gameObject.GetComponent<powerCell>();
                     powerCell.activated = true;
@@ -378,14 +385,14 @@ public class laserRouter : activate
             }
             else if(laser.collider.tag == "PowerStation")
             {
-                if(laserTag != "PowerStation")
+                if(laserTagSplit != "PowerStation")
                 {
                     powerStation = laser.transform.gameObject.GetComponent<powerStation>();
                     powerStation.activated = true;
                 }
             }
             
-            laserTag = laser.collider.tag;
+            laserTagSplit = laser.collider.tag;
         }
         else
         {
@@ -434,6 +441,8 @@ public class laserRouter : activate
 
     public void DeathRay(bool death)
     {
+        deathRay = true;
+        /*
         if(death)
         {
             deathRay = true;
@@ -442,6 +451,7 @@ public class laserRouter : activate
         {
             deathRay = false;
         }
+        */
     }
 
     void Patrol()

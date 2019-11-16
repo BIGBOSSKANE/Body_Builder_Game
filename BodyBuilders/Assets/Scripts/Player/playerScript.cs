@@ -216,9 +216,9 @@ public class playerScript : MonoBehaviour
     playerSound playerSound;
 
     [Tooltip("Animation Functions Sub-Object")] public RobotAnimations anims;
+    public laserBurstColour burstColour;
+    public laserBurstColour collisionColour;
     bool wasDying = false;
-
-
     // Jump Sounds
     bool justJumped;
     // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
@@ -270,6 +270,8 @@ public class playerScript : MonoBehaviour
         laserLine = gameObject.GetComponent<LineRenderer>();
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
+        collisionColour = collisionEffect.GetComponent<laserBurstColour>();
+        burstColour = burstEffect.GetComponent<laserBurstColour>();
         currentSpawnPoint = transform.position;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
@@ -1080,20 +1082,27 @@ public class playerScript : MonoBehaviour
             isDeflecting = true;
             laserLine.enabled = true;
             laserLine.material = laserMaterialAim;
-            collisionEffect.SetActive(true);
+            if(isDeflecting) collisionEffect.SetActive(true);
         }
     }
 
     public void DeathRay(bool firing)
     {
         firingLaser = firing;
+        if(isDeflecting) collisionEffect.SetActive(true);
+        burstEffect.SetActive(true);
+
         if(firingLaser)
         {
             laserLine.material = laserMaterialFire;
+            burstColour.ColourChange("red");
+            collisionColour.ColourChange("red");
         }
         else
         {
             laserLine.material = laserMaterialAim;
+            burstColour.ColourChange("blue");
+            collisionColour.ColourChange("blue");
         }
     }
 
@@ -1103,6 +1112,8 @@ public class playerScript : MonoBehaviour
         laserLine.enabled = false;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
+        burstColour.ColourChange("none");
+        collisionColour.ColourChange("none");
         laserLine.material = laserMaterialAim;
     }
 
@@ -1141,7 +1152,7 @@ public class playerScript : MonoBehaviour
         if(laser.collider != null)
         {
             laserEndpoint = laser.point;
-            collisionEffect.SetActive(true);
+            if(isDeflecting) collisionEffect.SetActive(true);
 
             Vector2 laserCollisionNormal = laser.normal;
             float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
@@ -1223,7 +1234,10 @@ public class playerScript : MonoBehaviour
         burstEffect.transform.position = (Vector2)transform.position + (laserOriginDirection * (shieldRadius - 0.01f));
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
 
-        wasFiringLaser = firingLaser;
+        if(firingLaser != wasFiringLaser)
+        {
+            wasFiringLaser = firingLaser;
+        }
     }
 
 
