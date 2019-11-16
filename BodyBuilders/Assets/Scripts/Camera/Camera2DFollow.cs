@@ -319,7 +319,7 @@ using Random=UnityEngine.Random;
                                              Mathf.SmoothDamp(transform.position.y , aheadTargetPos.y , ref m_CurrentVelocity.y , damping),
                                              Mathf.SmoothDamp(transform.position.z , aheadTargetPos.z , ref m_CurrentVelocity.z , damping));
 
-                if(!scouting) transform.position = newPos;
+                if(!scouting && !float.IsNaN(newPos.y)) transform.position = newPos;
 
                 m_LastTargetPosition = target.position;
 

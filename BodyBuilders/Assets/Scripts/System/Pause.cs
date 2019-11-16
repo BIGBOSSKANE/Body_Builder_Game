@@ -43,7 +43,10 @@ public class Pause : MonoBehaviour
     }
     
     void Paused () // a hidden(private) function called pause
-    { 
+    {
+        // Added soundtrack change
+        AkSoundEngine.SetState("Mode" , "PauseMenu");
+        //
         pausePanel.SetActive(true); // activate the Pause menu
         pausedTimeScale = Time.timeScale;
         Time.timeScale = 0; // set time to stop (0)
@@ -53,6 +56,9 @@ public class Pause : MonoBehaviour
 
     public void Resume () // a selectable(public) function called resume
     {// this function is set to a button and when the player presses the 'Esc' key
+        // Added soundtrack change
+        AkSoundEngine.SetState("Mode" , "Gameplay");
+        //
         pausePanel.SetActive(false); // disable the Pause menu
         Time.timeScale = 1; // set time to normal (1)
         isPaused = false; // set the bool isPaused is set to false
@@ -88,6 +94,9 @@ public class Pause : MonoBehaviour
 
     public void ExitButton() // a selectable(public) function called Exit
     {
+        // Added soundtrack change
+        AkSoundEngine.SetState("Mode" , "MainMenu");
+        //
         SceneManager.LoadScene(0); // in the SceneManager (build settings) load the scene numbered 0 in the index
         timeSlow.TimeSlave(pausedTimeScale, !isPaused);
     } // you can have it use the name of the scene instead of the number it's indexed as "SceneManger.LoadScene(MainMenu);" if it you have put that scene in the build setting

@@ -132,7 +132,7 @@ public static class InputManager
 
     public static bool TriggerLeft() // Return true while trigger left is held
     {
-        if(Input.GetAxisRaw("Trigger Left") != 0)
+        if(Input.GetAxisRaw("Trigger Left") != 0 || Input.GetKeyDown("left shift") | Input.GetKeyDown("right shift"))
         {
             if(!wasTriggerLeft)
             {

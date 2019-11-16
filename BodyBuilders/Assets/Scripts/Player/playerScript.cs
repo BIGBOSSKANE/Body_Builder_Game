@@ -555,7 +555,7 @@ public class playerScript : MonoBehaviour
 
 
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
-            if(!jumpBan) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
+            if(!jumpBan && !lockController) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
 
 
             previousFacingDirection = facingDirection;

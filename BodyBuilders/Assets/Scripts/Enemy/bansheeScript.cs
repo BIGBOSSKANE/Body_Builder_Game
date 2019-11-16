@@ -18,6 +18,7 @@ public class bansheeScript : MonoBehaviour
     [Tooltip("How long must the laser focus to activate the death ray?")] public float laserChargeTime = 1.5f;
     public float  laserChargeTimer = 0f;    
     bool isCharging = false;
+    bool wasCharging = false;
     [Tooltip("How long does the laser stop before firing the death ray?")] public float laserPauseTime = 0.5f;
     float laserPauseTimer = 0f;
     bool isPaused = false;
@@ -48,6 +49,8 @@ public class bansheeScript : MonoBehaviour
     [Tooltip("Laser material while pausing")] public Material materialPause;
     [Tooltip("Laser material while firing")] public Material materialFire;
     bool killedPlayer;
+    bool unFocussed = false;
+    bool wasUnFocussed = false;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +70,7 @@ public class bansheeScript : MonoBehaviour
         laserChargeTimer = 0f;
         laserFireTimer = 0f;
         laserLine.material = materialCharge;
+        AkSoundEngine.PostEvent("BansheeStop" , gameObject);
     }
 
     // Update is called once per frame
@@ -220,7 +224,7 @@ public class bansheeScript : MonoBehaviour
                     }
                     else
                     {
-                        //collisionEffect.transform.position = laser.point;
+                        collisionEffect.transform.position = laser.point;
                     }
                 }
 
@@ -257,8 +261,10 @@ public class bansheeScript : MonoBehaviour
             isCharging = false;
             collisionEffect.SetActive(false);
             laserLine.enabled = false;
-            if(laserChargeTimer > 0) laserChargeTimer -= 2f * Time.deltaTime;
-            if(laserChargeTimer <= 0) laserChargeTimer = 0f;
+            laserChargeTimer = 0;
+            // Unwind
+            //if(laserChargeTimer > 0) laserChargeTimer -= 2f * Time.deltaTime;
+            //if(laserChargeTimer <= 0) laserChargeTimer = 0f;
         }
 
 
@@ -267,6 +273,11 @@ public class bansheeScript : MonoBehaviour
 
         if(isCharging)
         {
+            if(!wasCharging)
+            {
+                AkSoundEngine.PostEvent("BansheeWindUp" , gameObject);
+                Debug.Log("Started");
+            }
             laserLine.material = materialCharge;
             laserChargeTimer += Time.deltaTime;
 
@@ -284,6 +295,12 @@ public class bansheeScript : MonoBehaviour
                 collisionColour.ColourChange("purple");
             }
         }
+        else
+        {
+            laserChargeTimer = 0f;
+        }
+
+        wasCharging = isCharging;
 
         if(isPaused)
         {
@@ -295,6 +312,7 @@ public class bansheeScript : MonoBehaviour
                 laserFireTimer = 0f;
                 isFiring = true;
                 isPaused = false;
+                AkSoundEngine.PostEvent("BansheeFire" , gameObject);
             }            
         }
 
@@ -311,6 +329,8 @@ public class bansheeScript : MonoBehaviour
                 isFiring = false;
                 laserFireTimer = 0f;
                 killedPlayer = false;
+                burstColour.ColourChange("blue");
+                collisionColour.ColourChange("blue");
             }
    
             float laserAngle = Mathf.Atan2(laserOriginDirection.y , laserOriginDirection.x); // apply the laser burst effect
@@ -331,5 +351,22 @@ public class bansheeScript : MonoBehaviour
             burstEffect.SetActive(false);
             collisionEffect.transform.localScale = new Vector3(0.6f , 0.6f , 1f);
         }
+
+        if(!isCharging && !isFiring && !isPaused)
+        {
+            unFocussed = true;
+            if(!wasUnFocussed)
+            {
+                AkSoundEngine.PostEvent("BansheeStop" , gameObject);
+                burstColour.ColourChange("blue");
+                collisionColour.ColourChange("blue");
+            }
+        }
+        else
+        {
+            unFocussed = false;
+        }
+
+        wasUnFocussed = unFocussed;
     }
 }

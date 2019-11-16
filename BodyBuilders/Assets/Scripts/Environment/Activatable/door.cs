@@ -21,6 +21,7 @@ public class door : activate
     float xBounds;
     float yBounds;
     public doorFrame doorFrame;
+    bool doorMoving = false;
 
     void Start()
     {
@@ -43,6 +44,11 @@ public class door : activate
             if(moveTime > moveTimeTotal)
             {
                 moveTime = moveTimeTotal;
+                if(doorMoving)
+                {
+                    AkSoundEngine.PostEvent("DoorSlam" , gameObject);
+                    doorMoving = false;
+                }
             }
             gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTime/moveTimeTotal);
 
@@ -54,13 +60,19 @@ public class door : activate
             if(moveTime < 0f)
             {
                 moveTime = 0f;
+                if(doorMoving)
+                {
+                    AkSoundEngine.PostEvent("DoorSlam" , gameObject);
+                    doorMoving = false;
+                }
             }
             gameObject.transform.position = Vector2.Lerp(originalPosition , targetPosition , moveTime/moveTimeTotal);
         }
 
         if(activated != previousState) // play sound effect on a state change
         {
-            AkSoundEngine.PostEvent("DoorMoves" , gameObject);
+            AkSoundEngine.PostEvent("DoorMove" , gameObject);
+            doorMoving = true;
         }
         previousState = activated;
     }
