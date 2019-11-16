@@ -121,7 +121,7 @@ public class bansheeScript : MonoBehaviour
                 if(laser.collider.tag == "Player") // if hitting the player and they do not have the deflector shield
                 {
                     collisionEffect.transform.position = targetPosition;
-                    if(laserTag != "Player")
+                    if(laserTag != "Player") // if it wasn't previously hitting the player
                     {
                         playerScript.DeathRay(false);
                         playerScript.EndDeflect();
@@ -220,7 +220,7 @@ public class bansheeScript : MonoBehaviour
                     }
                     else
                     {
-                        collisionEffect.transform.position = laser.point;
+                        //collisionEffect.transform.position = laser.point;
                     }
                 }
 
@@ -233,6 +233,7 @@ public class bansheeScript : MonoBehaviour
                     }
                 }
                 laserTag = laser.collider.tag;
+                collisionEffect.transform.position = laser.point;
             }
             else
             {

@@ -10,8 +10,6 @@ public class laserBurstColour : MonoBehaviour
 
     public void ColourChange(string colour)
     {
-        if(gameObject.name == "burstEffectPosition") Debug.Log(colour);
-
         if(colour == "blue")
         {
             blue.SetActive(true);
