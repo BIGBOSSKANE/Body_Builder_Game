@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class spriteAnimator : MonoBehaviour
 {
+    public bool animated = true;
     float animationTime;
     int currentFrame; // current frame
     int lastFrame; // the animation frame in the last update cycle;
@@ -20,10 +21,13 @@ public class spriteAnimator : MonoBehaviour
 
     void Update()
     {
-        animationTime = (Time.time * framesPerSecond) % frameCount; // get the animation time by finding the remainder of the real time to the frame count
-        currentFrame = (int)(animationTime); // cycle through frames over time
-        if(reverse) currentFrame = frameCount - (currentFrame + 1); // reverse the order
-        if(lastFrame != currentFrame) render.sprite = animationFrames[currentFrame]; // if the next frame to allocate isn't the same as the last one, play it
-        lastFrame = currentFrame; // track the frame that just showed
+        if(animated)
+        {
+            animationTime = (Time.time * framesPerSecond) % frameCount; // get the animation time by finding the remainder of the real time to the frame count
+            currentFrame = (int)(animationTime); // cycle through frames over time
+            if(reverse) currentFrame = frameCount - (currentFrame + 1); // reverse the order
+            if(lastFrame != currentFrame) render.sprite = animationFrames[currentFrame]; // if the next frame to allocate isn't the same as the last one, play it
+            lastFrame = currentFrame; // track the frame that just showed
+        }
     }
 }

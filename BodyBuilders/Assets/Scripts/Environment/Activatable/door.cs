@@ -16,21 +16,29 @@ public class door : activate
     [Tooltip("Move to be centred at this position")] public Vector2 moveTo;
     Vector2 targetPosition;
     float moveTime;
+    float moveDistance;
     bool previousState;
     float xBounds;
     float yBounds;
+    public doorFrame doorFrame;
 
     void Start()
     {
         originalPosition = gameObject.transform.position;
-        moveTime = 0f;
         targetPosition = moveTo + (Vector2)transform.position;
+        moveTime = 0f;
+        moveDistance = (targetPosition - originalPosition).magnitude;
+        if(doorFrame != null)
+        {
+            doorFrame.ReceiveDoorTraits(moveTimeTotal , moveDistance);
+        }
     }
 
     void Update()
     {
         if(activated)
         {
+            if(!previousState && doorFrame != null) doorFrame.Operate(true);
             moveTime += Time.deltaTime;
             if(moveTime > moveTimeTotal)
             {
@@ -41,6 +49,7 @@ public class door : activate
         }
         else if(!activated)
         {
+            if(previousState && doorFrame != null) doorFrame.Operate(false);
             moveTime -= Time.deltaTime;
             if(moveTime < 0f)
             {
