@@ -221,6 +221,8 @@ public class playerScript : MonoBehaviour
     bool wasDying = false;
     // Jump Sounds
     bool justJumped;
+
+    float timeSinceSpawn = 0f;
     // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
 
 
@@ -283,6 +285,7 @@ public class playerScript : MonoBehaviour
         rb.sharedMaterial = frictionMaterial;
         playerSound = GetComponent<playerSound>();
         playerSound.Respawn();
+        timeSinceSpawn = 0f;
     }
 
     void FixedUpdate()
@@ -361,6 +364,8 @@ public class playerScript : MonoBehaviour
             Destroy(boxCol);
         }
 
+        timeSinceSpawn += Time.unscaledDeltaTime;
+
         if(GroundCheck() == true)
         {
             rb.gravityScale = 2f; // restore gravity to normal value (after changed by swinging or rocket boost legs)
@@ -369,8 +374,9 @@ public class playerScript : MonoBehaviour
 
             timeSlowScript.TimeNormal(); // disable any time slow effects
 
-            if(maxHeight > (1f + transform.position.y)) // cause the ground to shake if you just landed
+            if(maxHeight > (1f + transform.position.y) && timeSinceSpawn > 1f) // cause the ground to shake if you just landed
             {
+                Debug.Log("Shaking");
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
                 playerSound.LandingPlay();
