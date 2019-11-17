@@ -24,6 +24,10 @@ public class passThroughPlatform : MonoBehaviour
     {
         playerScript = GameObject.Find("Player").gameObject.GetComponent<playerScript>();
         effector = gameObject.GetComponent<PlatformEffector2D>();
+        if(GetComponent<SpriteRenderer>().drawMode == SpriteDrawMode.Tiled) // safety net for implementation transition
+        {
+            transform.Find("secondaryCollider").transform.localScale = new Vector3(GetComponent<SpriteRenderer>().size.x , 1 , 1);
+        }
         waitTimer = 0.1f;
         resetTimer = 0.1f;
         playerAbove = false;
