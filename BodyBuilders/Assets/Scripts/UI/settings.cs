@@ -6,10 +6,13 @@ using UnityEngine.UI;
 
 public class settings : MonoBehaviour
 {
-    public AudioMixer audioMixer;
 
     public Dropdown resolutionDD;
     faders faders;
+
+    public Slider masterFader;
+    public Slider musicFader;
+    public Slider sfxFader;
 
     Resolution[] resolutions;
 
@@ -28,7 +31,7 @@ public class settings : MonoBehaviour
             options.Add(option);
 
             if (resolutions[i].width == Screen.currentResolution.width && 
-               resolutions[i].height == Screen.currentResolution.width)
+                resolutions[i].height == Screen.currentResolution.width)
             {
                 currentResolutionIndex = i;
             }
@@ -39,6 +42,9 @@ public class settings : MonoBehaviour
         resolutionDD.RefreshShownValue();
 
         faders = GameObject.Find("WwiseGlobal").gameObject.GetComponent<faders>();
+        masterFader.value = faders.Master;
+        sfxFader.value = faders.SFX;
+        musicFader.value = faders.Music;
     }
 
     public void SetResolution (int resolutionIndex)
