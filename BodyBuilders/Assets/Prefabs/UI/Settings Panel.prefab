@@ -388,16 +388,16 @@ MonoBehaviour:
   m_FillRect: {fileID: 90737905812280343}
   m_HandleRect: {fileID: 90737907173988302}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: -40
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 90737906688618818}
         m_MethodName: SetMusicVolume
-        m_Mode: 4
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -887,15 +887,15 @@ MonoBehaviour:
   m_FillRect: {fileID: 90737906762393174}
   m_HandleRect: {fileID: 90737907608324432}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: -40
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 90737906688618818}
-        m_MethodName: SetVolume
+        m_MethodName: SetMasterVolume
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2159,8 +2159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2faf36b6d899f3747a7ca44ee3cd713e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioMixer: {fileID: 0}
   resolutionDD: {fileID: 90737907430556065}
+  masterFader: {fileID: 90737906012237540}
+  musicFader: {fileID: 90737905902196460}
+  sfxFader: {fileID: 90737906943307013}
 --- !u!1 &90737906702360346
 GameObject:
   m_ObjectHideFlags: 0
@@ -2725,15 +2727,15 @@ MonoBehaviour:
   m_FillRect: {fileID: 90737906289647201}
   m_HandleRect: {fileID: 90737907163253981}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: -40
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 90737906688618818}
-        m_MethodName: SetVolume
+        m_MethodName: SetEffectsVolume
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

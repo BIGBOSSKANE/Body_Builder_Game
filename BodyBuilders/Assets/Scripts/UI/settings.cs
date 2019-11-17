@@ -42,9 +42,9 @@ public class settings : MonoBehaviour
         resolutionDD.RefreshShownValue();
 
         faders = GameObject.Find("WwiseGlobal").gameObject.GetComponent<faders>();
-        masterFader.value = faders.Master;
-        sfxFader.value = faders.SFX;
-        musicFader.value = faders.Music;
+        masterFader.value = PlayerPrefs.GetFloat("MasterFader" , 50f);
+        sfxFader.value = PlayerPrefs.GetFloat("SFXFader" , 50f);
+        musicFader.value = PlayerPrefs.GetFloat("MusicFader" , 50f);
     }
 
     public void SetResolution (int resolutionIndex)

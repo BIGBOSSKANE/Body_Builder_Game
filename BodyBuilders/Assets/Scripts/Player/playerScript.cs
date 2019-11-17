@@ -376,7 +376,6 @@ public class playerScript : MonoBehaviour
 
             if(maxHeight > (1f + transform.position.y) && timeSinceSpawn > 1f) // cause the ground to shake if you just landed
             {
-                Debug.Log("Shaking");
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
                 playerSound.LandingPlay();
