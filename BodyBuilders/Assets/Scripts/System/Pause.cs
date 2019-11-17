@@ -46,6 +46,7 @@ public class Pause : MonoBehaviour
     {
         // Added soundtrack change
         AkSoundEngine.SetState("Mode" , "PauseMenu");
+        AkSoundEngine.PostEvent("ExitFan" , gameObject);
         //
         pausePanel.SetActive(true); // activate the Pause menu
         pausedTimeScale = Time.timeScale;
