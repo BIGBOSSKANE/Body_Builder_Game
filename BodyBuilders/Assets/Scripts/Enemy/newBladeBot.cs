@@ -163,6 +163,7 @@ public class newBladeBot : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             playerScript.Die(0.2f);
+            AkSoundEngine.PostEvent("GyreSlice" , gameObject);
         }
 
         if (col.gameObject.layer == LayerMask.NameToLayer("Groundbreakable"))
