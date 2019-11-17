@@ -191,7 +191,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a3b0c194a4ed8f448357d044dfb880c3
     GuidInternal: 
-    m_lastTime: -8586276677293589163
+    m_lastTime: -8586276540043299781
     List:
     - name: Character
       guid: 55ea0ef8e4ed0241be99fb2df6b9f267
@@ -234,7 +234,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 1b16332c908874488ead1fde7cecd217
     GuidInternal: 
-    m_lastTime: -8586276650552234214
+    m_lastTime: -8586276539675926332
     List:
     - name: Ambience
       guid: 3babaf65c50af14a9068ea9cf07fa74a
@@ -598,6 +598,20 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0.573043
       minDuration: 0.540256
+    - name: Respawn
+      guid: fea16342dd72bf4b91112cb05074285c
+      id: 4279841335
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Player
+        ObjectType: 4
+      - ElementName: Respawn
+        ObjectType: 3
+      Path: Default Work Unit\Player\Respawn
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Rolling
       guid: f5ad28484e93b1459202876846edd3ba
       id: 4227290872
@@ -890,7 +904,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a33f6c5f0d850f459d5aa195e0db09e8
     GuidInternal: 
-    m_lastTime: -8586276740373798060
+    m_lastTime: -8586276418766241917
     List:
     - name: Alive
       guid: cf1d1d07818d4e4493327b1c788020b4
@@ -1024,6 +1038,39 @@ MonoBehaviour:
         id: 2144363834
         PathAndIcons:
         - ElementName: Rock
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
+    - name: Intensity
+      guid: c8f27423af1fc949b0169f14c5ab5acf
+      id: 2470328564
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Intensity
+        ObjectType: 9
+      Path: Default Work Unit\Music\Intensity
+      values:
+      - name: Calm
+        guid: d2f5f54fc8527247bc0da811d698e5f2
+        id: 3753286132
+        PathAndIcons:
+        - ElementName: Calm
+          ObjectType: 8
+      - name: None
+        guid: 75403a6d38f97d428ba40d7c03cda822
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      - name: Tension
+        guid: 02f60839e192044e9ced543904fd1f8f
+        id: 1571361561
+        PathAndIcons:
+        - ElementName: Tension
           ObjectType: 8
       ValueGuids: []
       ValueIcons: []

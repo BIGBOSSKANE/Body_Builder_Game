@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 555493723226733702}
+  - component: {fileID: 4110078857942918388}
   - component: {fileID: 2771259389059796524}
   - component: {fileID: 555493723226733703}
-  - component: {fileID: 4110078857942918388}
   m_Layer: 25
   m_Name: SongSwitcher
   m_TagString: Untagged
@@ -27,12 +27,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 555493723226733705}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -20}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4110078857942918388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555493723226733705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e75acbcdf8b91d42b9c4e9d434a5996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intensity: 0
+  gameplay: 1
+  Puzzle: 1
+  stopMusic: 0
 --- !u!212 &2771259389059796524
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -107,15 +123,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4110078857942918388
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 555493723226733705}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e75acbcdf8b91d42b9c4e9d434a5996, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
