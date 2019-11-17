@@ -57,7 +57,7 @@ public class newBladeBot : MonoBehaviour
             }
             else if (speed < maxSpeed)
             {
-                speed += Time.deltaTime / 10f;
+                speed += speedAccelerationPerSecond * Time.deltaTime;
             }
         }
 
