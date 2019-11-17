@@ -404,7 +404,6 @@ public class playerScript : MonoBehaviour
             {
                 justJumped = false;
                 playerSound.JumpPlay();
-                Debug.Log("this one");  
             }
 
             if(leftGroundTimer > coyoteTimeLimit && coyoteJump)
