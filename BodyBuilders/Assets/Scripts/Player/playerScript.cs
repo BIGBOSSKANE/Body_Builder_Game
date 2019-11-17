@@ -282,6 +282,7 @@ public class playerScript : MonoBehaviour
         camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
         rb.sharedMaterial = frictionMaterial;
         playerSound = GetComponent<playerSound>();
+        playerSound.Respawn();
     }
 
     void FixedUpdate()

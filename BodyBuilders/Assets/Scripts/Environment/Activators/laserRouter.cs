@@ -174,7 +174,6 @@ public class laserRouter : activate
 
             if(laser.collider.tag == "LaserRouter")
             {
-                Debug.Log("1");
                 if(laserTag != "laserRouter")
                 {
                     laserRouter laserRouter = laser.transform.gameObject.GetComponent<laserRouter>();

@@ -276,7 +276,6 @@ public class bansheeScript : MonoBehaviour
             if(!wasCharging)
             {
                 AkSoundEngine.PostEvent("BansheeWindUp" , gameObject);
-                Debug.Log("Started");
             }
             laserLine.material = materialCharge;
             laserChargeTimer += Time.deltaTime;
