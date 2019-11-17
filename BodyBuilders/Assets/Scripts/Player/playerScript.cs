@@ -82,7 +82,7 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
-    [HideInInspector] public bool isGrounded; // is the player on the ground?
+    public bool isGrounded; // is the player on the ground?
     [HideInInspector] public float maxHeight; // the maximum height of the jump
     [HideInInspector] public bool jumpGate; // prevent jumping while this is true
     [HideInInspector] public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
@@ -378,7 +378,7 @@ public class playerScript : MonoBehaviour
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
-                playerSound.LandingPlay();
+                if(!(ceilingAbove && scaler)) playerSound.LandingPlay();
             }
 
             maxHeight = transform.position.y; // reset maxHeight
@@ -398,12 +398,14 @@ public class playerScript : MonoBehaviour
         }
         else // if not grounded
         {
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+
             if(justJumped)
             {
                 justJumped = false;
                 playerSound.JumpPlay();
+                Debug.Log("this one");  
             }
-            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
 
             if(leftGroundTimer > coyoteTimeLimit && coyoteJump)
             {
@@ -579,7 +581,7 @@ public class playerScript : MonoBehaviour
             if(isGrounded || (coyoteTime && coyoteJump))
             {
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
-                playerSound.JumpPlay();
+                
                 //ANIMATION CODE - JUMP
                 if (anims!= null)
                     anims.Jump();            
@@ -772,7 +774,7 @@ public class playerScript : MonoBehaviour
         {
             climbing = false;
 
-            if(hitC.collider != null)
+            if(hitC.collider != null) // central collision raycast
             {
                 if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms" || hitC.collider.gameObject.tag == "Parts") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
                 {
