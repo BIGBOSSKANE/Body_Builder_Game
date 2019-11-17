@@ -5,7 +5,7 @@ using UnityEngine;
 public class songSwitcher : MonoBehaviour
 {
     [Range(1 , 4)] int partConfiguration;
-    public enum Intensity {Calm , Threat};
+    public enum Intensity {Calm , Tension};
     public Intensity intensity;
     public enum Gameplay {Boss , Exploration};
     public Gameplay gameplay;
@@ -23,9 +23,9 @@ public class songSwitcher : MonoBehaviour
         {
             intensityString = "Calm";
         }
-        else if(intensity == Intensity.Threat)
+        else if(intensity == Intensity.Tension)
         {
-            intensityString = "Threat";
+            intensityString = "Tension";
         }
 
         if(gameplay == Gameplay.Boss)
@@ -50,11 +50,12 @@ public class songSwitcher : MonoBehaviour
                 AkSoundEngine.SetState("Mode" , "None");
                 return;
             }
-            AkSoundEngine.SetState("Mode" , "Gameplay");
-            AkSoundEngine.SetState("Alive" , "Alive");
-            AkSoundEngine.SetSwitch("Intensity" , intensityString , gameObject);
-            AkSoundEngine.SetState("Gameplay" , gameplayString);
+            
             AkSoundEngine.SetState("Puzzle" , puzzleString);
+            AkSoundEngine.SetState("Intensity" , intensityString);
+            AkSoundEngine.SetState("Alive" , "Alive");
+            AkSoundEngine.SetState("Mode" , "Gameplay");
+            AkSoundEngine.SetState("Gameplay" , gameplayString);
         }
     }
 }

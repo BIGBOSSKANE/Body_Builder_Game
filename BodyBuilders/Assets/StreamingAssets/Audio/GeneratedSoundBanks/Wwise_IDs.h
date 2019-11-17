@@ -89,6 +89,17 @@ namespace AK
             } // namespace STATE
         } // namespace GROUNDMATERIAL
 
+        namespace INTENSITY
+        {
+            static const AkUniqueID GROUP = 2470328564U;
+
+            namespace STATE
+            {
+                static const AkUniqueID CALM = 3753286132U;
+                static const AkUniqueID TENSION = 1571361561U;
+            } // namespace STATE
+        } // namespace INTENSITY
+
         namespace MODE
         {
             static const AkUniqueID GROUP = 3313201736U;

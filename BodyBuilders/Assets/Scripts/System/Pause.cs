@@ -60,9 +60,11 @@ public class Pause : MonoBehaviour
         AkSoundEngine.SetState("Mode" , "Gameplay");
         //
         pausePanel.SetActive(false); // disable the Pause menu
+        exitPanel.SetActive(false); // disable the Exit menu
+        settingsPanel.SetActive(false); // disable the settings menu
+        restartPanel.SetActive(false); // disable the restart panel menu
         Time.timeScale = 1; // set time to normal (1)
         isPaused = false; // set the bool isPaused is set to false
-        exitPanel.SetActive(false); // disable the Exit menu
         TimeMaster(pausedTimeScale);
     }
 
