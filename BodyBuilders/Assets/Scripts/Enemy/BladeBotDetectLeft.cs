@@ -19,4 +19,12 @@ public class BladeBotDetectLeft : MonoBehaviour
             nBB.ChargeL();
         }
     }
+
+    void OnTriggerStay2D(Collider2D col)
+    {
+        if (col.tag == "Player")
+        {
+            nBB.ChargeR();
+        }
+    }
 }
