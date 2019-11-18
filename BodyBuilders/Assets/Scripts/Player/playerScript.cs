@@ -488,7 +488,7 @@ public class playerScript : MonoBehaviour
                             forceSlavedTimer = 0f;
                             rb.velocity = new Vector2(rawInputX * wallJumpForce.x, wallJumpForce.y);
                             previousVelocity = rb.velocity;
-                            AkSoundEngine.PostEvent("Jump" , gameObject);
+                            playerSound.JumpPlay();
                             if(remainingJumps == maximumJumps)
                             {
                                 remainingJumps --;
@@ -989,7 +989,7 @@ public class playerScript : MonoBehaviour
                 {
                     if(((closestBox.tag != "HeavyLiftable") && (closestBox.tag != "powerCell")) || lifter)
                     {
-                        AkSoundEngine.PostEvent("PickUpBox" , gameObject);
+                        playerSound.PickUpPlay();
                         closestBox.transform.parent = this.transform;
                         closestBox.transform.position = boxHoldPos.position;
                         closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -1292,12 +1292,12 @@ public class playerScript : MonoBehaviour
         {
             if(previousPartConfiguration == 2)
             {
-                AkSoundEngine.PostEvent("DetachArms" , gameObject);
+                playerSound.AttachPlay();
                 transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             }
             else if(previousPartConfiguration > 2)
             {
-                AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+                playerSound.DetachPlay();
             }
 
             rb.sharedMaterial = frictionMaterial;
@@ -1378,10 +1378,11 @@ public class playerScript : MonoBehaviour
             if(previousPartConfiguration > 2)
             {
                 AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+                playerSound.DetachPlay();
             }
             else if(previousPartConfiguration < 2)
             {
-                AkSoundEngine.PostEvent("AttachBasicArms" , gameObject);
+                playerSound.AttachPlay();
             }
 
             partConfiguration = 2; // just a head and arms
@@ -1458,7 +1459,11 @@ public class playerScript : MonoBehaviour
         {
             if(previousPartConfiguration == 1)
             {
-                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
+                playerSound.AttachPlay();
+            }
+            else
+            {
+                playerSound.DetachPlay();
             }
 
             partConfiguration = 3;
@@ -1517,14 +1522,7 @@ public class playerScript : MonoBehaviour
 
         else if(hasArms && hasLegs) // need to change collider
         {
-            if(previousPartConfiguration == 2)
-            {
-                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
-            }
-            else if(previousPartConfiguration == 3)
-            {
-                AkSoundEngine.PostEvent("AttachArms" , gameObject);
-            }
+            playerSound.AttachPlay(); // this is always going to come out of a part being attached
 
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;
