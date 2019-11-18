@@ -1263,6 +1263,8 @@ public class playerScript : MonoBehaviour
         bool hasArms = false;
         bool hasLegs = false;
 
+        AkSoundEngine.PostEvent("ExitFan" , gameObject);
+
         rb.gravityScale = 2f;
         for(int i = 0; i < transform.childCount; i++) // loop through children to find if it has arms or legs
         {
