@@ -223,16 +223,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SongSwitcher (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: intensity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: Puzzle
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -302,6 +292,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 3.5971
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: Puzzle
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 072411bd918b5da42ab40448f14a198a, type: 3}
@@ -14234,7 +14234,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &312635920
 GameObject:
@@ -14451,16 +14451,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SongSwitcher (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: intensity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: Puzzle
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14531,6 +14521,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 3.5971
       objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: Puzzle
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 072411bd918b5da42ab40448f14a198a, type: 3}
 --- !u!4 &370866192 stripped
@@ -14575,7 +14575,7 @@ Transform:
   - {fileID: 2037713992}
   - {fileID: 976423969}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &376128907
 GameObject:
@@ -14767,7 +14767,7 @@ Transform:
   - {fileID: 370866192}
   - {fileID: 18521814}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &404552080
 PrefabInstance:
@@ -16091,7 +16091,7 @@ RectTransform:
   - {fileID: 572009674}
   - {fileID: 303879798}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -16941,7 +16941,7 @@ Transform:
   - {fileID: 2043721658}
   - {fileID: 618169370}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &800596480
 PrefabInstance:
@@ -17383,7 +17383,7 @@ Transform:
   - {fileID: 1023967421}
   - {fileID: 269295549}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &873217497
 PrefabInstance:
@@ -20666,6 +20666,85 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1357147034}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1380072628
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6327286638898996195, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_Name
+      value: Wall Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5753315155556121801, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982495827786399857, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -694092079
+      objectReference: {fileID: 0}
+    - target: {fileID: 6982495827786399857, guid: 03dceec5d46337d45834ab25291cdd4c,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: -3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 03dceec5d46337d45834ab25291cdd4c, type: 3}
 --- !u!1001 &1387987439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23589,16 +23668,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SongSwitcher (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: intensity
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: Puzzle
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -23668,6 +23737,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 3.5971
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: intensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: Puzzle
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 072411bd918b5da42ab40448f14a198a, type: 3}
@@ -24392,7 +24471,7 @@ Transform:
   - {fileID: 1930625713}
   - {fileID: 376128909}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2025890973
 PrefabInstance:
@@ -25287,16 +25366,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SongSwitcher
       objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: intensity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: Puzzle
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -25366,6 +25435,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 3.5971
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: Puzzle
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 072411bd918b5da42ab40448f14a198a, type: 3}
