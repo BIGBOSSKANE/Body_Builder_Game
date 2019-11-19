@@ -2731,6 +2731,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 18.605865
       objectReference: {fileID: 0}
+    - target: {fileID: 905934734, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.45
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
 --- !u!1 &301604445
@@ -3571,6 +3575,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: SongSwitcher
       objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: intensity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
+        type: 3}
+      propertyPath: Puzzle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3624,16 +3638,6 @@ PrefabInstance:
     - target: {fileID: 555493723226733702, guid: 072411bd918b5da42ab40448f14a198a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: intensity
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4110078857942918388, guid: 072411bd918b5da42ab40448f14a198a,
-        type: 3}
-      propertyPath: Puzzle
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6271,11 +6275,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -1.217
       objectReference: {fileID: 0}
-    - target: {fileID: 503277293664358337, guid: 1df1090bc0c2e684a975934cbb231d26,
-        type: 3}
-      propertyPath: speedAccelerationPerSecond
-      value: 0.315
-      objectReference: {fileID: 0}
     - target: {fileID: 503277294177491023, guid: 1df1090bc0c2e684a975934cbb231d26,
         type: 3}
       propertyPath: m_Offset.x
@@ -6295,6 +6294,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.x
       value: 10.75137
+      objectReference: {fileID: 0}
+    - target: {fileID: 503277293664358337, guid: 1df1090bc0c2e684a975934cbb231d26,
+        type: 3}
+      propertyPath: speedAccelerationPerSecond
+      value: 0.315
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1df1090bc0c2e684a975934cbb231d26, type: 3}
@@ -6835,6 +6839,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -5606351447977730624, guid: b34ae8bcf0a688a46b1cfa73c315128d,
         type: 3}
+    - target: {fileID: 1891894803, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1891894803, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 6596589010366336338, guid: b34ae8bcf0a688a46b1cfa73c315128d,
+        type: 3}
     - target: {fileID: 1009491186, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
       propertyPath: basic
       value: 
@@ -6849,15 +6862,6 @@ PrefabInstance:
       propertyPath: augment2
       value: 
       objectReference: {fileID: 410165514800827008, guid: b34ae8bcf0a688a46b1cfa73c315128d,
-        type: 3}
-    - target: {fileID: 1891894803, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1891894803, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 6596589010366336338, guid: b34ae8bcf0a688a46b1cfa73c315128d,
         type: 3}
     - target: {fileID: 1891894802, guid: 4010310f503a29642a820f4b5b93fcea, type: 3}
       propertyPath: augment2
