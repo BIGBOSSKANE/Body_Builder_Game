@@ -211,8 +211,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8896255}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -57.7, y: -2.3, z: 0}
-  m_LocalScale: {x: 1.0987629, y: 0.282, z: 1}
+  m_LocalPosition: {x: -61.94, y: -2.3, z: 0}
+  m_LocalScale: {x: 1.0987629, y: 0.38634002, z: 1}
   m_Children: []
   m_Father: {fileID: 1268097057}
   m_RootOrder: 8
@@ -5883,11 +5883,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ReturnButton
       objectReference: {fileID: 0}
-    - target: {fileID: 90737906702360347, guid: cd35204fa2df4e0488f8b05e17f66818,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -0.024902344
-      objectReference: {fileID: 0}
     - target: {fileID: 90737906688618818, guid: cd35204fa2df4e0488f8b05e17f66818,
         type: 3}
       propertyPath: masterFader
@@ -5903,6 +5898,11 @@ PrefabInstance:
       propertyPath: sfxFader
       value: 
       objectReference: {fileID: 613311232}
+    - target: {fileID: 90737906702360347, guid: cd35204fa2df4e0488f8b05e17f66818,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.024902344
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd35204fa2df4e0488f8b05e17f66818, type: 3}
 --- !u!114 &613311232 stripped
@@ -12226,8 +12226,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1128801427}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 34.389, y: -35.6, z: 0}
-  m_LocalScale: {x: 2.320864, y: 0.282, z: 1}
+  m_LocalPosition: {x: 34.389, y: -49.85, z: 0}
+  m_LocalScale: {x: 2.320864, y: 0.62886, z: 1}
   m_Children: []
   m_Father: {fileID: 1268097057}
   m_RootOrder: 6
@@ -13296,6 +13296,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorFrame
       objectReference: {fileID: 0}
+    - target: {fileID: 1803256452816294468, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+        type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1803256452816294490, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13366,10 +13371,20 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.8539503
       objectReference: {fileID: 0}
-    - target: {fileID: 1803256452816294468, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+    - target: {fileID: 1803256452816294469, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
-      propertyPath: rotateSpeed
-      value: 8
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1803256453731110375, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1803256454532018541, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1803256454532018540, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
@@ -13415,21 +13430,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.009
-      objectReference: {fileID: 0}
-    - target: {fileID: 1803256452816294469, guid: 3cf39bac965d2d8409f2ab6e7280051c,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1803256453731110375, guid: 3cf39bac965d2d8409f2ab6e7280051c,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1803256454532018541, guid: 3cf39bac965d2d8409f2ab6e7280051c,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3cf39bac965d2d8409f2ab6e7280051c, type: 3}
@@ -33995,6 +33995,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DoorFrame
       objectReference: {fileID: 0}
+    - target: {fileID: 1803256452816294468, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+        type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1803256452816294490, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -34065,10 +34070,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.8539503
       objectReference: {fileID: 0}
-    - target: {fileID: 1803256452816294468, guid: 3cf39bac965d2d8409f2ab6e7280051c,
+    - target: {fileID: 1803256452816294469, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
-      propertyPath: rotateSpeed
-      value: 8
+      propertyPath: m_SortingOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1803256454532018540, guid: 3cf39bac965d2d8409f2ab6e7280051c,
         type: 3}
@@ -34114,11 +34119,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.009
-      objectReference: {fileID: 0}
-    - target: {fileID: 1803256452816294469, guid: 3cf39bac965d2d8409f2ab6e7280051c,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3cf39bac965d2d8409f2ab6e7280051c, type: 3}
@@ -38193,7 +38193,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215688, g: 0.19215688, b: 0.19215688, a: 1}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

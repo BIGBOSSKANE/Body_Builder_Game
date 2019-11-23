@@ -47,7 +47,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215688, g: 0.19215688, b: 0.19215688, a: 1}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -121,7 +121,6 @@ MonoBehaviour:
   waypointCycling: 0
   unlockOnInput: 0
   waypointMoveTime: 1
-  wayPointResizeDuration: 0
   previousWaypointPos: {x: 0, y: 0, z: 0}
 --- !u!50 &1086584327616391370
 Rigidbody2D:
@@ -161,8 +160,7 @@ MonoBehaviour:
   data:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: f52a14513a946a949acedc1a21a42d2a,
-      type: 2}
+    WwiseObjectReference: {fileID: 0}
   decodeBank: 0
   loadAsynchronous: 0
   saveDecodedBank: 0
