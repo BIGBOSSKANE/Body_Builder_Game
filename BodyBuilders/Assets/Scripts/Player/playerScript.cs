@@ -732,6 +732,9 @@ public class playerScript : MonoBehaviour
 
         BoxInteract(); // check for box pickup or drop prompts
 
+        //ANIM SYNC - use holding boolean
+        anims.Hold(holding);
+
         DetachPart(); // detach part on "space" press
 
         DeployShield();
@@ -1632,6 +1635,7 @@ public class playerScript : MonoBehaviour
         // ANIMS: Set animation states
         if (anims != null)
         {
+            anims.SetConfigurations(legConfiguration, armConfiguration, headConfiguration);
             //Update the animation state with arms/legs
             anims.SetParts(hasLegs ? legs : null, hasArms ? arms : null, head);
         }

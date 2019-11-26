@@ -13,6 +13,10 @@ public class RobotAnimations : MonoBehaviour
     public float moveThreshold = 0.05f;
     public float legsOffset = -1.1f;
     public float armsOffset = -0.8f;
+    bool holding;
+    int armConfig = 1; //2=lifter, 3=deflector
+    int legConfig = 1; //2=groundbreakers, 3=afterburners
+    int headConfig = 1; //not used yet, 2=scaler, 3=hookshot, 4=all
     
  
     // Start is called before the first frame update
@@ -25,6 +29,16 @@ public class RobotAnimations : MonoBehaviour
     void CompleteTransition()
     {
         //No need for this function any more, but it's an anim trigger.
+    }
+
+    public void Hold(bool val)
+    {
+        //Only make the change if there's a differenc
+        if (holding != val)
+        {
+            holding = val;
+            anim.SetBool("holding", holding);
+        }
     }
 
     public void Land()
@@ -86,6 +100,13 @@ public class RobotAnimations : MonoBehaviour
         if (!part)
             return;
         part.GetComponent<SpriteRenderer>().enabled = shouldShow;
+    }
+
+    public void SetConfigurations(int legs, int arms, int head)
+    {
+        legConfig = legs;
+        armConfig = arms;
+        headConfig = head;
     }
 
     public void SetParts(GameObject legs, GameObject arms, GameObject head)
