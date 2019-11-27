@@ -22,7 +22,9 @@ public class Destroyer : MonoBehaviour
 
         if(col.gameObject.tag == "Groundbreakable")
         {
-            col.gameObject.GetComponent<groundbreakable>().Groundbreak();
+            //col.gameObject.GetComponent<groundbreakable>().Groundbreak();
+            if(col.gameObject.GetComponent<groundbreakable>() != null) col.gameObject.GetComponent<groundbreakable>().Groundbreak();
+            else col.gameObject.GetComponent<destructiblePlatform>().Groundbreak((transform.position - col.transform.position) / 2f);
         }
     }
 }
