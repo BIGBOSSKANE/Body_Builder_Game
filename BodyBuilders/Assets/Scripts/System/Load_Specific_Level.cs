@@ -10,10 +10,8 @@ using UnityEngine.SceneManagement; //uses the scene manager
 
 public class Load_Specific_Level : MonoBehaviour
 {
-    public int lvlNumber; // pick a number from the build settings
-
-    public void loadlevel(string level)
+     public void loadlevel(int level)
     {
-        SceneManager.LoadScene(lvlNumber); // loads the scene equalled to lvlNumber
+        SceneManager.LoadScene(level); // loads the scene equalled to lvlNumber
     }
 }

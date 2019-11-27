@@ -82,7 +82,7 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
 
-    [HideInInspector] public bool isGrounded; // is the player on the ground?
+    public bool isGrounded; // is the player on the ground?
     [HideInInspector] public float maxHeight; // the maximum height of the jump
     [HideInInspector] public bool jumpGate; // prevent jumping while this is true
     [HideInInspector] public bool jumpBan; // is an external script preventing the player from jumping (like the slam up elevator)
@@ -216,11 +216,13 @@ public class playerScript : MonoBehaviour
     playerSound playerSound;
 
     [Tooltip("Animation Functions Sub-Object")] public RobotAnimations anims;
+    public laserBurstColour burstColour;
+    public laserBurstColour collisionColour;
     bool wasDying = false;
-
-
     // Jump Sounds
     bool justJumped;
+
+    float timeSinceSpawn = 0f;
     // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
 
 
@@ -270,6 +272,8 @@ public class playerScript : MonoBehaviour
         laserLine = gameObject.GetComponent<LineRenderer>();
         collisionEffect = gameObject.transform.Find("collisionEffectPosition").gameObject;
         burstEffect = gameObject.transform.Find("burstEffectPosition").gameObject;
+        collisionColour = collisionEffect.GetComponent<laserBurstColour>();
+        burstColour = burstEffect.GetComponent<laserBurstColour>();
         currentSpawnPoint = transform.position;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
@@ -280,6 +284,8 @@ public class playerScript : MonoBehaviour
         camera.transform.position = new Vector3(transform.position.x , transform.position.y , camera.transform.position.z);
         rb.sharedMaterial = frictionMaterial;
         playerSound = GetComponent<playerSound>();
+        playerSound.Respawn();
+        timeSinceSpawn = 0f;
     }
 
     void FixedUpdate()
@@ -358,6 +364,8 @@ public class playerScript : MonoBehaviour
             Destroy(boxCol);
         }
 
+        timeSinceSpawn += Time.unscaledDeltaTime;
+
         if(GroundCheck() == true)
         {
             rb.gravityScale = 2f; // restore gravity to normal value (after changed by swinging or rocket boost legs)
@@ -366,11 +374,11 @@ public class playerScript : MonoBehaviour
 
             timeSlowScript.TimeNormal(); // disable any time slow effects
 
-            if(maxHeight > (1f + transform.position.y)) // cause the ground to shake if you just landed
+            if(maxHeight > (1f + transform.position.y) && timeSinceSpawn > 1f) // cause the ground to shake if you just landed
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
-                playerSound.LandingPlay();
+                if(!(ceilingAbove && scaler)) playerSound.LandingPlay();
             }
 
             maxHeight = transform.position.y; // reset maxHeight
@@ -390,12 +398,13 @@ public class playerScript : MonoBehaviour
         }
         else // if not grounded
         {
+            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
+
             if(justJumped)
             {
                 justJumped = false;
                 playerSound.JumpPlay();
             }
-            leftGroundTimer += Time.fixedDeltaTime; // try swapping back to deltaTime if this isn't working
 
             if(leftGroundTimer > coyoteTimeLimit && coyoteJump)
             {
@@ -479,7 +488,7 @@ public class playerScript : MonoBehaviour
                             forceSlavedTimer = 0f;
                             rb.velocity = new Vector2(rawInputX * wallJumpForce.x, wallJumpForce.y);
                             previousVelocity = rb.velocity;
-                            AkSoundEngine.PostEvent("Jump" , gameObject);
+                            playerSound.JumpPlay();
                             if(remainingJumps == maximumJumps)
                             {
                                 remainingJumps --;
@@ -553,7 +562,7 @@ public class playerScript : MonoBehaviour
 
 
 // Non-Scaler JUMPING ------------------------------------------------------------------------------------------------------------------
-            if(!jumpBan) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
+            if(!jumpBan && !lockController) Jump(); // jump ban is applied by the elevator script to lock the player to it when slamming upwards
 
 
             previousFacingDirection = facingDirection;
@@ -571,7 +580,7 @@ public class playerScript : MonoBehaviour
             if(isGrounded || (coyoteTime && coyoteJump))
             {
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower);
-                playerSound.JumpPlay();
+                
                 //ANIMATION CODE - JUMP
                 if (anims!= null)
                     anims.Jump();            
@@ -767,7 +776,7 @@ public class playerScript : MonoBehaviour
         {
             climbing = false;
 
-            if(hitC.collider != null)
+            if(hitC.collider != null) // central collision raycast
             {
                 if((hitC.collider.gameObject.tag == "Legs" || hitC.collider.gameObject.tag == "Arms" || hitC.collider.gameObject.tag == "Parts") && (transform.position.y > (0.1f + lastGroundedHeight) || (transform.position.y < (lastGroundedHeight - 0.08))))
                 {
@@ -983,7 +992,7 @@ public class playerScript : MonoBehaviour
                 {
                     if(((closestBox.tag != "HeavyLiftable") && (closestBox.tag != "powerCell")) || lifter)
                     {
-                        AkSoundEngine.PostEvent("PickUpBox" , gameObject);
+                        playerSound.PickUpPlay();
                         closestBox.transform.parent = this.transform;
                         closestBox.transform.position = boxHoldPos.position;
                         closestBox.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -1083,20 +1092,27 @@ public class playerScript : MonoBehaviour
             isDeflecting = true;
             laserLine.enabled = true;
             laserLine.material = laserMaterialAim;
-            collisionEffect.SetActive(true);
+            if(isDeflecting) collisionEffect.SetActive(true);
         }
     }
 
     public void DeathRay(bool firing)
     {
         firingLaser = firing;
+        if(isDeflecting) collisionEffect.SetActive(true);
+        burstEffect.SetActive(true);
+
         if(firingLaser)
         {
             laserLine.material = laserMaterialFire;
+            burstColour.ColourChange("red");
+            collisionColour.ColourChange("red");
         }
         else
         {
             laserLine.material = laserMaterialAim;
+            burstColour.ColourChange("blue");
+            collisionColour.ColourChange("blue");
         }
     }
 
@@ -1106,6 +1122,8 @@ public class playerScript : MonoBehaviour
         laserLine.enabled = false;
         collisionEffect.SetActive(false);
         burstEffect.SetActive(false);
+        burstColour.ColourChange("none");
+        collisionColour.ColourChange("none");
         laserLine.material = laserMaterialAim;
     }
 
@@ -1144,7 +1162,7 @@ public class playerScript : MonoBehaviour
         if(laser.collider != null)
         {
             laserEndpoint = laser.point;
-            collisionEffect.SetActive(true);
+            if(isDeflecting) collisionEffect.SetActive(true);
 
             Vector2 laserCollisionNormal = laser.normal;
             float collisionNormalAngle = Mathf.Atan2(laserCollisionNormal.y , laserCollisionNormal.x);
@@ -1226,7 +1244,10 @@ public class playerScript : MonoBehaviour
         burstEffect.transform.position = (Vector2)transform.position + (laserOriginDirection * (shieldRadius - 0.01f));
         burstEffect.transform.up = Quaternion.Euler(0 , 0 , (laserAngle * Mathf.Rad2Deg)) * Vector2.right;
 
-        wasFiringLaser = firingLaser;
+        if(firingLaser != wasFiringLaser)
+        {
+            wasFiringLaser = firingLaser;
+        }
     }
 
 
@@ -1244,6 +1265,8 @@ public class playerScript : MonoBehaviour
         // assume that the robot has neither arms or legs, then check for them
         bool hasArms = false;
         bool hasLegs = false;
+
+        AkSoundEngine.PostEvent("ExitFan" , gameObject);
 
         rb.gravityScale = 2f;
         for(int i = 0; i < transform.childCount; i++) // loop through children to find if it has arms or legs
@@ -1274,12 +1297,12 @@ public class playerScript : MonoBehaviour
         {
             if(previousPartConfiguration == 2)
             {
-                AkSoundEngine.PostEvent("DetachArms" , gameObject);
+                playerSound.AttachPlay();
                 transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             }
             else if(previousPartConfiguration > 2)
             {
-                AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+                playerSound.DetachPlay();
             }
 
             rb.sharedMaterial = frictionMaterial;
@@ -1360,10 +1383,11 @@ public class playerScript : MonoBehaviour
             if(previousPartConfiguration > 2)
             {
                 AkSoundEngine.PostEvent("DetachLegs" , gameObject);
+                playerSound.DetachPlay();
             }
             else if(previousPartConfiguration < 2)
             {
-                AkSoundEngine.PostEvent("AttachBasicArms" , gameObject);
+                playerSound.AttachPlay();
             }
 
             partConfiguration = 2; // just a head and arms
@@ -1440,7 +1464,11 @@ public class playerScript : MonoBehaviour
         {
             if(previousPartConfiguration == 1)
             {
-                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
+                playerSound.AttachPlay();
+            }
+            else
+            {
+                playerSound.DetachPlay();
             }
 
             partConfiguration = 3;
@@ -1499,14 +1527,7 @@ public class playerScript : MonoBehaviour
 
         else if(hasArms && hasLegs) // need to change collider
         {
-            if(previousPartConfiguration == 2)
-            {
-                AkSoundEngine.PostEvent("AttachLegs" , gameObject);
-            }
-            else if(previousPartConfiguration == 3)
-            {
-                AkSoundEngine.PostEvent("AttachArms" , gameObject);
-            }
+            playerSound.AttachPlay(); // this is always going to come out of a part being attached
 
             partConfiguration = 4; // has all parts
             movementSpeed = augmentedMovementSpeed * 8.5f;

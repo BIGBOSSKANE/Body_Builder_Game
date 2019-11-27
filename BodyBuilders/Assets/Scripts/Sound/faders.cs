@@ -14,36 +14,55 @@ public class faders : MonoBehaviour
     float previousMusic = 200;
     float previousSFX = 200;
     float previousVoices = 200;
-    int frames = 0;    
+    int frames = 0;
+
+    void Awake()
+    {
+        Master = PlayerPrefs.GetFloat("MasterFader" , 50f);
+        UpdateMasterVolume(Master);
+        Ambience = PlayerPrefs.GetFloat("AmbienceFader" , 50f);
+        UpdateAmbienceVolume(Ambience);
+        Music = PlayerPrefs.GetFloat("MusicFader" , 50f);
+        UpdateMusicVolume(Music);
+        SFX = PlayerPrefs.GetFloat("SFXFader" , 50f);
+        UpdateSFXVolume(SFX);
+        Voices = PlayerPrefs.GetFloat("VoicesFader" , 50f);
+        UpdateVoicesVolume(Voices);
+    }
 
     public void UpdateMasterVolume(float volume)
     {
         Master = volume;
         AkSoundEngine.SetRTPCValue("MasterFader" , volume);
+        PlayerPrefs.SetFloat("MasterFader" , volume);
     }
     
     public void UpdateAmbienceVolume(float volume)
     {
         Ambience = volume;
         AkSoundEngine.SetRTPCValue("AmbienceFader" , volume);
+        PlayerPrefs.SetFloat("AmbienceFader" , volume);
     }
 
     public void UpdateMusicVolume(float volume)
     {
         Music = volume;
         AkSoundEngine.SetRTPCValue("MusicFader" , volume);
+        PlayerPrefs.SetFloat("MusicFader" , volume);
     }
     
     public void UpdateSFXVolume(float volume)
     {
         SFX = volume;
-        AkSoundEngine.SetRTPCValue("SFXVVolume" , volume);
+        AkSoundEngine.SetRTPCValue("SFXVolume" , volume);
+        PlayerPrefs.SetFloat("SFXVolume" , volume);
     }
     
     public void UpdateVoicesVolume(float volume)
     {
         Voices = volume;
         AkSoundEngine.SetRTPCValue("VoicesFader" , volume);
+        PlayerPrefs.SetFloat("VoicesFader" , volume);
     }
 
     void Update() // this allows for volume control in the editor;

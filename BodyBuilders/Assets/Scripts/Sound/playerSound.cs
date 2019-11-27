@@ -79,7 +79,12 @@ public class playerSound : MonoBehaviour
 
     public void DeathPlay()
     {
-        AkSoundEngine.PostEvent("PlayerDeath" , gameObject);
+        AkSoundEngine.PostEvent("Death" , gameObject);
+    }
+
+    public void Respawn()
+    {
+        AkSoundEngine.PostEvent("Respawn" , gameObject);
     }
 
     public void RollPlay()

@@ -184,14 +184,14 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 2201572b3ba6594ba3871aad11366252
     GuidInternal: 
-    m_lastTime: -8586300223694092043
+    m_lastTime: -8586282946352552227
     List: []
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     ParentPhysicalPath: 
     guid: a3b0c194a4ed8f448357d044dfb880c3
     GuidInternal: 
-    m_lastTime: -8586294102735342741
+    m_lastTime: -8586276540043299781
     List:
     - name: Character
       guid: 55ea0ef8e4ed0241be99fb2df6b9f267
@@ -234,7 +234,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 1b16332c908874488ead1fde7cecd217
     GuidInternal: 
-    m_lastTime: -8586294094487310723
+    m_lastTime: -8586276346020123229
     List:
     - name: Ambience
       guid: 3babaf65c50af14a9068ea9cf07fa74a
@@ -264,6 +264,20 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 1.177646
       minDuration: 0.619745
+    - name: BansheeFire
+      guid: bbaedfa8703a3e4c84dfeadd7e752ac1
+      id: 1272453455
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Environmental Mechanics
+        ObjectType: 4
+      - ElementName: BansheeFire
+        ObjectType: 3
+      Path: Default Work Unit\Environmental Mechanics\BansheeFire
+      maxAttenuation: 0
+      maxDuration: 2.585215
+      minDuration: 2.585215
     - name: BansheeScream
       guid: 55f2ad1afe27fb4486058cd9de17eae8
       id: 693759888
@@ -276,6 +290,34 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: BansheeStop
+      guid: 31f8ab4e45fda74e92a6949e027e234a
+      id: 3709394147
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Environmental Mechanics
+        ObjectType: 4
+      - ElementName: BansheeStop
+        ObjectType: 3
+      Path: Default Work Unit\Environmental Mechanics\BansheeStop
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: BansheeWindUp
+      guid: 61c1fbbb024d4348b3d7980fd958ac12
+      id: 3000235650
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Environmental Mechanics
+        ObjectType: 4
+      - ElementName: BansheeWindUp
+        ObjectType: 3
+      Path: Default Work Unit\Environmental Mechanics\BansheeWindUp
+      maxAttenuation: 0
+      maxDuration: 3.040431
+      minDuration: 3.040431
     - name: ButtonPress
       guid: 9b15c5b248754144817830be42f52661
       id: 317641954
@@ -334,20 +376,36 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.477415
       minDuration: 1.550129
-    - name: DoorMoves
+    - name: DoorMove
       guid: 4525d0a63f7f9942ba01179228425fd9
-      id: 3612883293
+      id: 799200986
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
       - ElementName: Environmental Mechanics
         ObjectType: 4
-      - ElementName: DoorMoves
+      - ElementName: DoorMove
         ObjectType: 3
-      Path: Default Work Unit\Environmental Mechanics\DoorMoves
+      Path: Default Work Unit\Environmental Mechanics\DoorMove
       maxAttenuation: 0
-      maxDuration: 5.36975
-      minDuration: 5.36975
+      maxDuration: 3.470862
+      minDuration: 3.470862
+    - name: DoorSlam
+      guid: c94c90ce2f24a8499877eccdf988d3ed
+      id: 3178299198
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Environmental Mechanics
+        ObjectType: 4
+      - ElementName: EndEnvironmentalEffect
+        ObjectType: 4
+      - ElementName: DoorSlam
+        ObjectType: 3
+      Path: Default Work Unit\Environmental Mechanics\EndEnvironmentalEffect\DoorSlam
+      maxAttenuation: 0
+      maxDuration: 1.898866
+      minDuration: 1.898866
     - name: DropBox
       guid: a644840d367d204a9681df87264d2708
       id: 255253217
@@ -540,6 +598,20 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0.573043
       minDuration: 0.540256
+    - name: Respawn
+      guid: fea16342dd72bf4b91112cb05074285c
+      id: 4279841335
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Player
+        ObjectType: 4
+      - ElementName: Respawn
+        ObjectType: 3
+      Path: Default Work Unit\Player\Respawn
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Rolling
       guid: f5ad28484e93b1459202876846edd3ba
       id: 4227290872
@@ -574,7 +646,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: db3a536319b7bb4e9b3a630e8bb2adbe
     GuidInternal: 
-    m_lastTime: -8586294102735598767
+    m_lastTime: -8586282947839611310
     List:
     - name: PlayGameMusic
       guid: 2a9949cec035244b89573cb62b73878f
@@ -585,18 +657,6 @@ MonoBehaviour:
       - ElementName: PlayGameMusic
         ObjectType: 3
       Path: Music\PlayGameMusic
-      maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
-    - name: PlayMenuMusic
-      guid: 717cb61b788ae64ca822fb83d9309b48
-      id: 413545259
-      PathAndIcons:
-      - ElementName: Music
-        ObjectType: 12
-      - ElementName: PlayMenuMusic
-        ObjectType: 3
-      Path: Music\PlayMenuMusic
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -617,7 +677,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 28f1e18fbe21c74880e833a7cfb1ead4
     GuidInternal: 
-    m_lastTime: -8586294133122027705
+    m_lastTime: -8586276650638306823
     List:
     - name: AmbienceFader
       guid: 3238739353ad47448f7fd3f5e692007b
@@ -659,6 +719,15 @@ MonoBehaviour:
       - ElementName: MasterFader
         ObjectType: 13
       Path: Default Work Unit\VolumeControls\MasterFader
+    - name: MusicDucker
+      guid: 5de284f300b9624a99ea9d35210f9380
+      id: 3983034184
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: MusicDucker
+        ObjectType: 13
+      Path: Default Work Unit\MusicDucker
     - name: MusicFader
       guid: ddd66474ea488444a77b34da982c9fcf
       id: 2738936886
@@ -670,6 +739,15 @@ MonoBehaviour:
       - ElementName: MusicFader
         ObjectType: 13
       Path: Default Work Unit\VolumeControls\MusicFader
+    - name: ProximityToThreat
+      guid: d2aed322a2157e47b442b6b57e8006da
+      id: 855586167
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: ProximityToThreat
+        ObjectType: 13
+      Path: Default Work Unit\ProximityToThreat
     - name: SFXFader
       guid: 0b92d077bb8e2c4aa74a9526020d8c39
       id: 1664711118
@@ -826,7 +904,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a33f6c5f0d850f459d5aa195e0db09e8
     GuidInternal: 
-    m_lastTime: -8586295793250503077
+    m_lastTime: -8586276418766241917
     List:
     - name: Alive
       guid: cf1d1d07818d4e4493327b1c788020b4
@@ -847,13 +925,79 @@ MonoBehaviour:
         - ElementName: Alive
           ObjectType: 8
       - name: Dead
-        guid: 21f4f01cfff09a45affe1c3758e2fa4c
+        guid: 53129f6d2b4a7942a81cbddd27116e41
         id: 2044049779
         PathAndIcons:
         - ElementName: Dead
           ObjectType: 8
       - name: None
-        guid: 53129f6d2b4a7942a81cbddd27116e41
+        guid: e2f735bd188fc149b20f31463f285736
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
+    - name: Boss
+      guid: 3e553d41250c51498876c57b94e8175c
+      id: 1560169506
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Boss
+        ObjectType: 9
+      Path: Default Work Unit\Music\Boss
+      values:
+      - name: Combat
+        guid: c55cbbccd2816f4396c7a6035fde3291
+        id: 2764240573
+        PathAndIcons:
+        - ElementName: Combat
+          ObjectType: 8
+      - name: None
+        guid: 82867efedd8c224c86392d146a36e5df
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      - name: Respite
+        guid: 55d8f9496011454c980e0e0ff159441e
+        id: 201600125
+        PathAndIcons:
+        - ElementName: Respite
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
+    - name: Gameplay
+      guid: eb336c1dd8373843ab8ed31ecf18fb0e
+      id: 89505537
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Gameplay
+        ObjectType: 9
+      Path: Default Work Unit\Music\Gameplay
+      values:
+      - name: Boss
+        guid: 814432552ed785428cbefc0ae5a24f88
+        id: 1560169506
+        PathAndIcons:
+        - ElementName: Boss
+          ObjectType: 8
+      - name: Exploration
+        guid: a814270292408f41876d415720de8ef7
+        id: 2582085496
+        PathAndIcons:
+        - ElementName: Exploration
+          ObjectType: 8
+      - name: None
+        guid: 9e5f4d827499e14680b0b7f0c549a693
         id: 748895195
         PathAndIcons:
         - ElementName: None
@@ -898,41 +1042,101 @@ MonoBehaviour:
       ValueGuids: []
       ValueIcons: []
       valuesInternal: []
-    - name: Threat
-      guid: eb336c1dd8373843ab8ed31ecf18fb0e
-      id: 1959898597
+    - name: Intensity
+      guid: c8f27423af1fc949b0169f14c5ab5acf
+      id: 2470328564
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
       - ElementName: Music
         ObjectType: 4
-      - ElementName: Threat
+      - ElementName: Intensity
         ObjectType: 9
-      Path: Default Work Unit\Music\Threat
+      Path: Default Work Unit\Music\Intensity
       values:
-      - name: Boss
-        guid: 814432552ed785428cbefc0ae5a24f88
-        id: 1560169506
+      - name: Calm
+        guid: d2f5f54fc8527247bc0da811d698e5f2
+        id: 3753286132
         PathAndIcons:
-        - ElementName: Boss
-          ObjectType: 8
-      - name: EnemiesNearby
-        guid: 7428fc2453182447b0d17c475839af00
-        id: 1542416594
-        PathAndIcons:
-        - ElementName: EnemiesNearby
-          ObjectType: 8
-      - name: Low
-        guid: a814270292408f41876d415720de8ef7
-        id: 545371365
-        PathAndIcons:
-        - ElementName: Low
+        - ElementName: Calm
           ObjectType: 8
       - name: None
-        guid: 5e3ed6e98218334b95e23b230b60e43b
+        guid: 75403a6d38f97d428ba40d7c03cda822
         id: 748895195
         PathAndIcons:
         - ElementName: None
+          ObjectType: 8
+      - name: Tension
+        guid: 02f60839e192044e9ced543904fd1f8f
+        id: 1571361561
+        PathAndIcons:
+        - ElementName: Tension
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
+    - name: Mode
+      guid: 0d31dd304510514bb2f87d6007065ea2
+      id: 3313201736
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Mode
+        ObjectType: 9
+      Path: Default Work Unit\Music\Mode
+      values:
+      - name: Gameplay
+        guid: af07451d99f3574cbc95d9837cbceba7
+        id: 89505537
+        PathAndIcons:
+        - ElementName: Gameplay
+          ObjectType: 8
+      - name: MainMenu
+        guid: 41453cd4e97fbb43b9a610cc2510ca92
+        id: 3604647259
+        PathAndIcons:
+        - ElementName: MainMenu
+          ObjectType: 8
+      - name: None
+        guid: 55cd6b7a7dbcab489b83d9a4f508dc4c
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      - name: PauseMenu
+        guid: 561165990141264abb90100ffafdff1f
+        id: 3494343696
+        PathAndIcons:
+        - ElementName: PauseMenu
+          ObjectType: 8
+      ValueGuids: []
+      ValueIcons: []
+      valuesInternal: []
+    - name: Puzzle
+      guid: d383cccbba3de242bd87166774d0db37
+      id: 1780448749
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Music
+        ObjectType: 4
+      - ElementName: Puzzle
+        ObjectType: 9
+      Path: Default Work Unit\Music\Puzzle
+      values:
+      - name: None
+        guid: fda4260f9027bb4a8ed272965712b16a
+        id: 748895195
+        PathAndIcons:
+        - ElementName: None
+          ObjectType: 8
+      - name: Puzzle
+        guid: f8e3119a2bff5d4fbd11ad631a81b93f
+        id: 1780448749
+        PathAndIcons:
+        - ElementName: Puzzle
           ObjectType: 8
       ValueGuids: []
       ValueIcons: []
@@ -942,7 +1146,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: a1a44da9d872fd4588ba58da632fe32d
     GuidInternal: 
-    m_lastTime: -8586295771333954276
+    m_lastTime: -8586282947839521282
     List:
     - name: CorruptionPresence
       guid: 1489d0603cb4a548961b459f020d2470
@@ -969,75 +1173,27 @@ MonoBehaviour:
       ValueGuids: []
       ValueIcons: []
       valuesInternal: []
-    - name: MusicIntensity
+    - name: Intensity
       guid: 80c05d2a3a4d3b4d9997f4859702c7bf
-      id: 1301299809
+      id: 2470328564
       PathAndIcons:
       - ElementName: Default Work Unit
         ObjectType: 12
-      - ElementName: MusicIntensity
+      - ElementName: Intensity
         ObjectType: 11
-      Path: Default Work Unit\MusicIntensity
+      Path: Default Work Unit\Intensity
       values:
-      - name: Absent
-        guid: ce23f1ff346f334fa22e691209c0f207
-        id: 1633207570
+      - name: Calm
+        guid: 1ec1d657bcf2f24496c806c9265f1d30
+        id: 3753286132
         PathAndIcons:
-        - ElementName: Absent
-          ObjectType: 10
-      - name: BridgeToInsane
-        guid: 6315b96fc11ccd49838d600179d3ab87
-        id: 2928650311
-        PathAndIcons:
-        - ElementName: BridgeToInsane
-          ObjectType: 10
-      - name: BridgeToIntense
-        guid: 862dd3028d67fb4a9fd46b7f7e275db6
-        id: 381137553
-        PathAndIcons:
-        - ElementName: BridgeToIntense
-          ObjectType: 10
-      - name: Chill
-        guid: 81ceed59662ae445a49d691d31a0a65b
-        id: 4294400669
-        PathAndIcons:
-        - ElementName: Chill
-          ObjectType: 10
-      - name: Insane
-        guid: cded28eea93aa443bd0690a3d0fefc96
-        id: 3719846035
-        PathAndIcons:
-        - ElementName: Insane
-          ObjectType: 10
-      - name: Intense
-        guid: 32e07ab95d27a64f94713efa1ffb54d2
-        id: 4223512837
-        PathAndIcons:
-        - ElementName: Intense
-          ObjectType: 10
-      - name: Linear
-        guid: ff23a8b28378d84fb494f753b2c0117c
-        id: 3616880742
-        PathAndIcons:
-        - ElementName: Linear
-          ObjectType: 10
-      - name: TenseMedium
-        guid: 0ccebea53537eb4885ec313620204bd9
-        id: 2997931687
-        PathAndIcons:
-        - ElementName: TenseMedium
+        - ElementName: Calm
           ObjectType: 10
       - name: Threat
         guid: 750734b2a286fe4e9ef2e395a6c1b1c4
         id: 1959898597
         PathAndIcons:
         - ElementName: Threat
-          ObjectType: 10
-      - name: UpbeatMedium
-        guid: 1ec1d657bcf2f24496c806c9265f1d30
-        id: 1872095099
-        PathAndIcons:
-        - ElementName: UpbeatMedium
           ObjectType: 10
       ValueGuids: []
       ValueIcons: []
@@ -1162,7 +1318,5 @@ MonoBehaviour:
       Path: Music\Death
   ExpandedItems:
   - /Bodybuilders Wwise
-  - /Bodybuilders Wwise/Events
-  - /Bodybuilders Wwise/Events/Music
   autoPopulateEnabled: 1
   CurrentPluginConfig: 

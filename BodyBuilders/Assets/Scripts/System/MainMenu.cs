@@ -15,6 +15,9 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
+        // Music
+            AkSoundEngine.SetState("Mode" , "MainMenu");
+        //
         mainMenu.gameObject.SetActive(true); 
         levelSelect.gameObject.SetActive(false);
         settings.gameObject.SetActive(false);

@@ -7,6 +7,8 @@ public class newBladeBot : MonoBehaviour
     public GameObject startPos;
 
     public bool playerDetect;
+    public bool movingBack = false;
+    bool collided = false;
 
     playerScript playerScript;
 
@@ -14,7 +16,6 @@ public class newBladeBot : MonoBehaviour
     public GameObject dU; //detect up
     public GameObject dL; //detect left
     public GameObject dR; //detect right
-
     public GameObject blade;
 
     bool up = false;
@@ -22,12 +23,11 @@ public class newBladeBot : MonoBehaviour
     bool left = false;
     bool right = false;
 
+    [Tooltip("The amount of speed that is gained per frame.")]
     public float speedAccelerationPerSecond = 1f;
-
+    [Tooltip("The highest limit the speed the bladebot can go")]
     public float maxSpeed = 1.39f;
-
-    bool movingBack = false;
-
+    [Tooltip("The speed tthat the blade bot starts with.")]
     public float speed = 0.07f;
 
     float resetSpeed;
@@ -55,9 +55,9 @@ public class newBladeBot : MonoBehaviour
             {
                 speed = maxSpeed;
             }
-            else if (speed < maxSpeed)
+            else if (speed < maxSpeed && !collided)
             {
-                speed += speedAccelerationPerSecond * Time.deltaTime;
+                speed += Time.deltaTime * speedAccelerationPerSecond;
             }
         }
 
@@ -74,6 +74,19 @@ public class newBladeBot : MonoBehaviour
 
         else
         {
+            if (!collided && movingBack)
+            {
+                movingBack = true;
+                dU.SetActive(false);
+                dD.SetActive(false);
+                dL.SetActive(false);
+                dR.SetActive(false);
+            }
+        }
+
+        if (gameObject.transform.position != startPos.transform.position && !playerDetect && !movingBack)
+        {
+            movingBack = true;
             dU.SetActive(false);
             dD.SetActive(false);
             dL.SetActive(false);
@@ -154,7 +167,9 @@ public class newBladeBot : MonoBehaviour
     IEnumerator WaitASec()
     {
         yield return new WaitForSeconds(2);
+        playerDetect = false;
         movingBack = true;
+        collided = false;
         speed = resetSpeed;
     }
 
@@ -163,6 +178,7 @@ public class newBladeBot : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             playerScript.Die(0.2f);
+            AkSoundEngine.PostEvent("GyreSlice" , gameObject);
         }
 
         if (col.gameObject.layer == LayerMask.NameToLayer("Groundbreakable"))
@@ -172,12 +188,12 @@ public class newBladeBot : MonoBehaviour
 
         if (col.gameObject.tag == "Environment" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Box" || col.gameObject.tag == "Object" || col.gameObject.tag == "Legs" || col.gameObject.tag == "Arms")
         {
+            collided = true;
             speed = 0;
             up = false;
             down = false;
             left = false;
             right = false;
-            playerDetect = false;
             StartCoroutine(WaitASec());
         }
     }
