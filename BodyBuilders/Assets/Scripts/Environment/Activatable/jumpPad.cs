@@ -72,6 +72,7 @@ public class jumpPad : activate
             colRb.velocity = new Vector2(colRb.velocity.x * 0.9f , colRb.velocity.y); // reduce horizontal velocity slightly
             playerScript.forceSlaved = true;
             colRb.gravityScale = 2f;
+            playerScript.fastFall = false;
 
             if(Input.GetAxis("Vertical") > 0f || InputManager.Jump()) // if the player is holding up, provide a larger jump boost
             {

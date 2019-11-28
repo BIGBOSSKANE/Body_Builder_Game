@@ -81,6 +81,8 @@ public class playerScript : MonoBehaviour
     [Tooltip("How long does the player have to jump after falling from a ledge?")] public float coyoteTimeLimit = 0.3f;
     [HideInInspector] public float lastGroundedHeight; // the height you were at when you were last grounded
     float leftGroundTimer; // how long ago were you last grounded
+    [HideInInspector] public bool fastFall = true;
+
 
     public bool isGrounded; // is the player on the ground?
     [HideInInspector] public float maxHeight; // the maximum height of the jump
@@ -222,7 +224,7 @@ public class playerScript : MonoBehaviour
     // Jump Sounds
     bool justJumped;
 
-    float timeSinceSpawn = 0f;
+    bool touchedGroundSinceSpawn = false;
     // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
 
 
@@ -285,7 +287,7 @@ public class playerScript : MonoBehaviour
         rb.sharedMaterial = frictionMaterial;
         playerSound = GetComponent<playerSound>();
         playerSound.Respawn();
-        timeSinceSpawn = 0f;
+        touchedGroundSinceSpawn = false;
     }
 
     void FixedUpdate()
@@ -364,22 +366,24 @@ public class playerScript : MonoBehaviour
             Destroy(boxCol);
         }
 
-        timeSinceSpawn += Time.unscaledDeltaTime;
 
         if(GroundCheck() == true)
         {
             rb.gravityScale = 2f; // restore gravity to normal value (after changed by swinging or rocket boost legs)
             isGrounded = true;
             coyoteJump = true;
+            fastFall = true;
 
             timeSlowScript.TimeNormal(); // disable any time slow effects
 
-            if(maxHeight > (1f + transform.position.y) && timeSinceSpawn > 1f) // cause the ground to shake if you just landed
+            if(maxHeight > (1f + transform.position.y) && touchedGroundSinceSpawn) // cause the ground to shake if you just landed
             {
                 float shakeAmount = maxHeight - transform.position.y;
                 cameraScript.TriggerShake(shakeAmount , false , partConfiguration);
                 if(!(ceilingAbove && scaler)) playerSound.LandingPlay();
             }
+
+            touchedGroundSinceSpawn = true;
 
             maxHeight = transform.position.y; // reset maxHeight
             lastGroundedHeight = transform.position.y; // reset lastGroundedHeight
@@ -730,7 +734,7 @@ public class playerScript : MonoBehaviour
                 boostSprites.SetActive(false);
             }
         }
-        else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging) // reduces jump height when button isn't held (gravity inputs a negative value)
+        else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging && fastFall) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
             if(boostSprites != null)
@@ -881,7 +885,8 @@ public class playerScript : MonoBehaviour
             {
                 if(hitC.collider.gameObject.tag == "Groundbreakable")
                 {
-                    hitC.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
+                    if(hitC.collider.gameObject.GetComponent<groundbreakable>() != null) hitC.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
+                    else hitC.collider.gameObject.GetComponent<destructiblePlatform>().Groundbreak(hitC.point);
                     return false;
                 }
                 /*
