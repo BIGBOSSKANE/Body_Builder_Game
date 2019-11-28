@@ -166,7 +166,7 @@ public class RobotAnimations : MonoBehaviour
         anim.SetBool("hasArms", arms);
         anim.SetBool("hasLegs", legs);
         anim.SetInteger("armConfig", armConfig);
-        anim.SetInteger("legCongfig", legConfig);
+        anim.SetInteger("legConfig", legConfig);
         anim.Play("Base Layer.Root");
     }
 }
