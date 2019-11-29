@@ -61,7 +61,6 @@ public class checkPoint : MonoBehaviour
                 }
                 gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
                                           armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
-                Debug.Log("Checkpoint Reached");
             }
         }
     }
