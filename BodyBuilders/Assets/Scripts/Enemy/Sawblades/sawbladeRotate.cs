@@ -40,6 +40,7 @@ public class sawbladeRotate : activate
     {
         if(activated)
         {
+            lineRenderer.SetPosition(0 , centrePoint);
             lineRenderer.SetPosition(1 , blade.position);
         }
     }
