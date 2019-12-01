@@ -183,6 +183,7 @@ public class playerSpawner : MonoBehaviour
         }
         
         playerScript.spaceForJump = spaceForJump;
+
     }
 
     void Update()

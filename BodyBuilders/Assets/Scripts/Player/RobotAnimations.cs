@@ -30,11 +30,14 @@ public class RobotAnimations : MonoBehaviour
     
  
     // Start is called before the first frame update
+    
     void Start()
     {
         anim = GetComponent<Animator>();
+        /*Disabled as this overwrites the spawn values
         SetConfigurations(1,1,1);
         SetParts(null, null, null);
+        */
         //ToggleObjects(animatedHead, false );
     }
 

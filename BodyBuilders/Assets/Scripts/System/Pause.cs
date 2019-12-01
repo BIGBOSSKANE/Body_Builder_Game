@@ -16,10 +16,13 @@ public class Pause : MonoBehaviour
     public GameObject restartPanel; // put a panel for the restart clarification menu here
     float pausedTimeScale;
     timeSlow timeSlow;
+    playerScript playerScript;
 
     void Start() // on start..
     {
-        timeSlow = GameObject.Find("Player").GetComponent<timeSlow>(); // set timeSlow to be the timeSlow component on the player
+        GameObject player = GameObject.Find("Player");
+        timeSlow = player.GetComponent<timeSlow>(); // set timeSlow to be the timeSlow component on the player
+        playerScript = player.GetComponent<playerScript>();
         pausePanel.SetActive(false); // disable the pause screen
         exitPanel.SetActive(false); // disable the Exit menu
         settingsPanel.SetActive(false); // disable the settings menu
@@ -53,6 +56,7 @@ public class Pause : MonoBehaviour
         Time.timeScale = 0; // set time to stop (0)
         isPaused = true; // set the bool isPaused is set to true
         TimeMaster(pausedTimeScale);
+        playerScript.paused = true;
     }
 
     public void Resume () // a selectable(public) function called resume
@@ -67,6 +71,7 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1; // set time to normal (1)
         isPaused = false; // set the bool isPaused is set to false
         TimeMaster(pausedTimeScale);
+        playerScript.paused = false;
     }
 
     public void MainMenuPanel() // a selectable(public) function called MainMenu
