@@ -63,6 +63,8 @@ public class fanZone : activate
             {
                 player.GetComponent<hookShot>().DetachRope();
             }
+            
+            playerScript.fastFall = false;
 
             if(colRb.velocity.y < 0f) // if moving down, reduce velocity
             {

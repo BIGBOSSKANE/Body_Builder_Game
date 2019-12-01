@@ -120,7 +120,8 @@ public class Legs : MonoBehaviour
                 {
                     if(hit.collider.gameObject.tag == "Groundbreakable")
                     {
-                        hit.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
+                        if(hit.collider.gameObject.GetComponent<groundbreakable>() != null) hit.collider.gameObject.GetComponent<groundbreakable>().Groundbreak();
+                        else hit.collider.gameObject.GetComponent<destructiblePlatform>().Groundbreak(hit.point);
                     }
                 }
                 else

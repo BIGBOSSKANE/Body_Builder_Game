@@ -14,8 +14,8 @@ public class sawbladeTranslate : activate
     float previousMovementLength;
     Vector2 startPos;
     Vector2 endPos;
-    [HideInInspector] public Transform movingSaw;
-    [HideInInspector] public Transform groove; // assigned from a hidden public insert
+    public Transform movingSaw;
+    public Transform groove;
 
     void Start()
     {

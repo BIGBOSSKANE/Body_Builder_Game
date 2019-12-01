@@ -216,6 +216,7 @@ public class elevator : activate
                         playerScript.jumpBan = false;
                         playerScript.jumpGate = true;
                         playerScript.jumpGateTimer = 0f;
+                        playerScript.fastFall = false;
                         playerScript.coyoteTimeLimit = 0.4f;
                         elevatorPlatform.layer = 25;
                         playerScript.forceSlaved = true;

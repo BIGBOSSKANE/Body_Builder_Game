@@ -17,7 +17,6 @@ public class cameraWaypoint : MonoBehaviour
     [Header("Lock To Zone:")]
     [Tooltip("Locks player view to first location and size, until player leaves the area")] public bool firstPointLock = true;
 
-
     [Header("Lock Camera Axis:")]
     [Tooltip("Does this interact wtih the axis lock camera function?")] public bool axisInteract; // Does this interact with the axis lock camera function?
     bool lockAxis; // Lock or unlock
@@ -37,6 +36,7 @@ public class cameraWaypoint : MonoBehaviour
     Vector2 previousPosition; // used for drawing lines between locations
     Vector2 playerPos;
     [Tooltip("To create a new waypoint, increase the size of this array, then adjust the parameters of each waypoint.")] public SubClass[] waypointCycle;
+    public GameObject enableObject;
 
     public SubClass GetValue (int index)
     {
@@ -117,6 +117,7 @@ public class cameraWaypoint : MonoBehaviour
             }
             else if(endEffect)
             {
+                if(enableObject != null) enableObject.SetActive(true);
                 cameraScript.EndCycle();
                 playerScript.UpdateParts();
             }
@@ -127,7 +128,9 @@ public class cameraWaypoint : MonoBehaviour
                 NextCoordinate();
             }
 
-            if(firstPointLock && onlyOnce) Destroy(gameObject);
+            if(enableObject != null) enableObject.SetActive(true);
+
+            if(firstPointLock && onlyOnce) gameObject.SetActive(false);
         }
     }
 
