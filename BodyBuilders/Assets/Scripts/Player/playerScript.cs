@@ -143,7 +143,6 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public string legString; // this is referenced from the name of the leg prefab
     [HideInInspector] public bool groundbreaker = false; // do you have the groundbreaker legs?
     bool afterburner = false; // do you have the afterburner legs equipped?
-    GameObject boostSprites; // sprites used for rocket boots
     [Tooltip("Distance that the player must descend to activate groundbreakers")] public float groundbreakerDistance = 4f; // have you fallen far enough to break through ground
     bool groundBreakerReset; // used to make sure time slow is only used once
 
@@ -157,9 +156,9 @@ public class playerScript : MonoBehaviour
     GameObject head; // the head component
     CircleCollider2D headCol; // the collider used when the player is just a head
     new Camera camera; // the scene's camera
-    GameObject scalerAugment; // the sprite for the Scaler Augment - starts disabled
+    GameObject currentScalerSprite; // the sprite for the Scaler Augment - starts disabled
     GameObject hookshotAnchor;
-    GameObject hookshotAugment;
+    GameObject currentHookshotSprite;
     hookShot hookshotScript;
     bool wasGrounded; // was the player grounded on the last frame?
 
@@ -227,7 +226,17 @@ public class playerScript : MonoBehaviour
     bool touchedGroundSinceSpawn = false;
     // set this to true upon jumping, if the groundcheck returns false after this happened, make it false and play the jump sound
 
+    SpriteRenderer boostSprite1;
+    SpriteRenderer boostSprite2;
+
     [HideInInspector] public bool paused = false;
+
+    GameObject scalerHeadSprite;
+    GameObject scalerUpperAnimSprite;
+    GameObject scalerLowerAnimSprite;
+    GameObject hookshotHeadSprite;
+    GameObject hookShotUpperAnimSprite;
+    GameObject hookshotLowerAnimSprite;
 
 
 
@@ -237,12 +246,10 @@ public class playerScript : MonoBehaviour
         boxCol = gameObject.GetComponent<BoxCollider2D>();
         head = gameObject.transform.Find("Head").gameObject;
         headCol = head.GetComponent<CircleCollider2D>();
-        scalerAugment = gameObject.transform.Find("Head").gameObject.transform.Find("ScalerHead").gameObject;
-        scalerAugment.SetActive(false);
+        FindAugmentSprites();
+        DisableAugmentSprites();
         hookshotScript = gameObject.GetComponent<hookShot>();
         hookshotScript.enabled = false;
-        hookshotAugment = gameObject.transform.Find("Head").gameObject.transform.Find("HookshotHead").gameObject;
-        hookshotAugment.SetActive(false);
         hookshotAnchor = gameObject.transform.Find("HookshotAnchor").gameObject;
         hookshotAnchor.SetActive(false);
         hookShot = false;
@@ -290,6 +297,73 @@ public class playerScript : MonoBehaviour
         playerSound = GetComponent<playerSound>();
         playerSound.Respawn();
         touchedGroundSinceSpawn = false;
+    }
+
+    void FindBoostSprites()
+    {
+        Transform AnimationRig = transform.Find("Multipart_Animation_Prefab").transform.Find("hip");
+        boostSprite1 = AnimationRig.Find("back upper leg").transform.Find("back lower leg").transform.Find("BoostSprite").GetComponent<SpriteRenderer>();
+        boostSprite2 = AnimationRig.Find("front upper leg").transform.Find("front lower leg").transform.Find("BoostSprite").GetComponent<SpriteRenderer>();
+    }
+
+    void FindAugmentSprites()
+    {
+        Transform AnimationRig = transform.Find("Multipart_Animation_Prefab");
+
+        scalerHeadSprite = head.transform.Find("ScalerHead").gameObject;
+        scalerUpperAnimSprite = AnimationRig.transform.Find("hip").transform.Find("waist").transform.Find("chest").transform.Find("head").transform.Find("ScalerHead").gameObject;
+        scalerLowerAnimSprite = AnimationRig.Find("lower torso Copy").transform.Find("ScalerHead").gameObject;
+
+        hookshotHeadSprite = head.transform.Find("HookshotHead").gameObject;
+        hookShotUpperAnimSprite = AnimationRig.transform.Find("hip").Find("waist").transform.Find("chest").transform.Find("head").transform.Find("HookshotHead").gameObject;
+        hookshotLowerAnimSprite = AnimationRig.Find("lower torso Copy").transform.Find("HookshotHead").gameObject;
+    }
+
+    void ShiftAugmentSprites()
+    {
+        DisableAugmentSprites();
+
+        if(partConfiguration == 1)
+        {
+            currentHookshotSprite = hookshotHeadSprite;
+            currentScalerSprite = scalerHeadSprite;
+            currentScalerSprite.transform.localScale = Vector2.one * 0.4f;
+            currentHookshotSprite.transform.localScale = Vector2.one * 0.3f;
+        }
+        else if(partConfiguration == 2 || partConfiguration == 4)
+        {
+            currentHookshotSprite = hookShotUpperAnimSprite;
+            currentScalerSprite = scalerUpperAnimSprite;
+            currentScalerSprite.transform.localScale = Vector2.one * 1.1f;
+            currentHookshotSprite.transform.localScale = Vector2.one * 1f;
+
+        }
+        else if(partConfiguration == 3)
+        {
+            currentHookshotSprite = hookshotLowerAnimSprite;
+            currentScalerSprite = scalerLowerAnimSprite;
+            currentScalerSprite.transform.localScale = Vector2.one * 1.1f;
+            currentHookshotSprite.transform.localScale = Vector2.one * 1f;
+        }
+
+        if(hookShot) currentHookshotSprite.SetActive(true);
+        if(scaler) currentScalerSprite.SetActive(true);
+    }
+
+    void DisableAugmentSprites()
+    {
+        hookshotLowerAnimSprite.SetActive(false);
+        scalerLowerAnimSprite.SetActive(false);
+        hookShotUpperAnimSprite.SetActive(false);
+        scalerUpperAnimSprite.SetActive(false);   
+        hookshotHeadSprite.SetActive(false);
+        scalerHeadSprite.SetActive(false);
+    }
+
+    void ActivateBoostSprites(bool activate)
+    {
+        boostSprite1.enabled = activate;
+        boostSprite2.enabled = activate;
     }
 
     void FixedUpdate()
@@ -393,9 +467,9 @@ public class playerScript : MonoBehaviour
                 lastGroundedHeight = transform.position.y; // reset lastGroundedHeight
                 leftGroundTimer = 0f; // reset the jump time
                 remainingJumps = maximumJumps; // reset remaining jumps
-                if(boostSprites != null) // disable jump booster sprites if they were active
+                if(boostSprite1 != null) // disable jump booster sprites if they were active
                 {
-                    boostSprites.SetActive(false);
+                    ActivateBoostSprites(false);
                 }
                 
                 //ANIMATION CODE - LAND
@@ -596,7 +670,7 @@ public class playerScript : MonoBehaviour
             }
             else if(afterburner == true && !climbing && remainingJumps == 1)
             {
-                boostSprites.SetActive(true);
+                ActivateBoostSprites(true);
                 rb.velocity = new Vector2(rb.velocity.x , jumpPower * 1.1f);
                 afterburnerApex = transform.position.y;
             }
@@ -726,25 +800,25 @@ public class playerScript : MonoBehaviour
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
 
-            if(boostSprites != null && climbing == false)
+            if(boostSprite1 != null && climbing == false)
             {
-                boostSprites.SetActive(true);
+                ActivateBoostSprites(true);
             }
         }
         else if(rb.velocity.y < 0f && !wallSliding && !isSwinging) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
-            if(boostSprites != null)
+            if(boostSprite1 != null)
             {
-                boostSprites.SetActive(false);
+                ActivateBoostSprites(false);
             }
         }
         else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging && fastFall) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
-            if(boostSprites != null)
+            if(boostSprite1 != null)
             {
-                boostSprites.SetActive(false);
+                ActivateBoostSprites(false);
             }       
         }
 
@@ -1321,6 +1395,9 @@ public class playerScript : MonoBehaviour
             jumpPower = jumpForce * 6f;
             jumpGateDuration = 0.2f;
 
+
+            ShiftAugmentSprites();
+
             // upgrades
             maximumJumps = 1;
             groundbreaker = false;
@@ -1328,10 +1405,9 @@ public class playerScript : MonoBehaviour
             lifter = false;
             shield = false;
             DeactivateShield();
-            if(boostSprites != null)
+            if(boostSprite1 != null)
             {
-                boostSprites.SetActive(false);
-                boostSprites = null;
+                ActivateBoostSprites(false);
             }
 
             if(headString == "ScalerHead" || scaler) // if the player already has a head augmenr, they keep it when they get a new one
@@ -1349,7 +1425,7 @@ public class playerScript : MonoBehaviour
             if(headString == "HookshotHead" || hookShot) // if the player already has a head augment, they keep it when they get a new one
             {
                 hookShot = true;
-                hookshotAugment.SetActive(true);
+                currentHookshotSprite.SetActive(true);
                 hookshotScript.enabled = true;
                 fallMultiplier = 1f;
                 // do stuff here
@@ -1357,11 +1433,12 @@ public class playerScript : MonoBehaviour
             else
             {
                 hookShot = false;
-                hookshotAugment.SetActive(false);
+                currentHookshotSprite.SetActive(false);
                 hookshotAnchor.SetActive(false);
                 hookshotScript.enabled = false;
                 // cancel stuff here
             }
+            
 
             if(boxCol != null)
             {
@@ -1384,7 +1461,7 @@ public class playerScript : MonoBehaviour
             groundedDistance = 0.33f;
 
             BoxDrop(); // drops any box immediately
-            scalerAugment.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
+            currentScalerSprite.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
         else if (hasArms && !hasLegs)
         {
@@ -1402,6 +1479,7 @@ public class playerScript : MonoBehaviour
             movementSpeed = augmentedMovementSpeed * 7.5f;
             jumpPower = jumpForce * 8.5f;
 
+            ShiftAugmentSprites();
             NonHeadConfig();
             fallMultiplier = 3f;
             if(armString == "LifterArms" || armString == "ShieldArms")
@@ -1435,10 +1513,9 @@ public class playerScript : MonoBehaviour
                 maximumJumps = 1;
                 groundbreaker = false;
                 afterburner = false;
-                if(boostSprites != null)
+                if(boostSprite1 != null)
                 {
-                    boostSprites.SetActive(false);
-                    boostSprites = null;
+                    ActivateBoostSprites(false);
                 }
            
             // adjust height of other parts
@@ -1486,6 +1563,7 @@ public class playerScript : MonoBehaviour
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
             
+            ShiftAugmentSprites();
             NonHeadConfig();
             armString = "None"; // no arms
             lifter = false;
@@ -1499,16 +1577,15 @@ public class playerScript : MonoBehaviour
                     legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
-                    boostSprites = legs.transform.Find("BoostSprites").gameObject;
+                    FindBoostSprites();
                 }
                 else
                 {
                     maximumJumps = 1;
                     afterburner = false;
-                    if(boostSprites != null)
+                    if(boostSprite1 != null)
                     {
-                        boostSprites.SetActive(false);
-                        boostSprites = null;
+                        ActivateBoostSprites(false);
                     }
                 }
 
@@ -1532,7 +1609,7 @@ public class playerScript : MonoBehaviour
 
 
             boxCol.size = new Vector2(0.6f , 1.79f);
-            boxCol.offset = new Vector2(0f , -0.16f);
+            boxCol.offset = new Vector2(0f , -0.15f);
 
         //    boxCol.size = new Vector2(0.6f , 1.45f);
         //    boxCol.offset = new Vector2(0f , -0.27f);
@@ -1548,6 +1625,7 @@ public class playerScript : MonoBehaviour
             movementSpeed = augmentedMovementSpeed * 8.5f;
             jumpPower = jumpForce * 11f;
 
+            ShiftAugmentSprites();
             NonHeadConfig();
             if(armString == "LifterArms" || armString == "ShieldArms")
             {
@@ -1583,16 +1661,15 @@ public class playerScript : MonoBehaviour
                     legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
-                    boostSprites = legs.transform.Find("BoostSprites").gameObject;
+                    FindBoostSprites();
                 }
                 else
                 {
                     maximumJumps = 1;
                     afterburner = false;
-                    if(boostSprites != null)
+                    if(boostSprite1 != null)
                     {
-                        boostSprites.SetActive(false);
-                        boostSprites = null;
+                        ActivateBoostSprites(false);
                     }
                 }
 
@@ -1617,7 +1694,7 @@ public class playerScript : MonoBehaviour
             shieldBubble.transform.localPosition = new Vector3(0f , 0.135f, 0f);
             boxCol.size = new Vector2(0.6f , 2.37f);
             boxCol.offset = new Vector2(0f , 0.14f);
-        //    boxCol.size = new Vector2(0.6f , 2.08f);
+        //   boxCol.size = new Vector2(0.6f , 2.08f);
         //   boxCol.offset = new Vector2(0f , 0.03f);
 
             if(holding == true) // keep holding the box if you were
@@ -1642,23 +1719,23 @@ public class playerScript : MonoBehaviour
 
         if(headString == "ScalerHead" || scaler) // changes whether the Scaler Augment is visible or not - no mechanical difference
         {
-            scalerAugment.SetActive(true);
+            currentScalerSprite.SetActive(true);
             headConfiguration = 2;
         }
 
         if(headString == "HookshotHead" || hookShot)
         {
             hookShot = true;
-            hookshotAugment.SetActive(true);
+            currentHookshotSprite.SetActive(true);
             headConfiguration = 3;
         }
         
         if(headString == "BasicHead" && !scaler && !hookShot)
         {
             scaler = false;
-            scalerAugment.SetActive(false);
+            currentScalerSprite.SetActive(false);
             hookShot = false;
-            hookshotAugment.SetActive(false);
+            currentHookshotSprite.SetActive(false);
             hookshotScript.enabled = false;
             hookshotAnchor.SetActive(false);
             headConfiguration = 1;
@@ -1696,7 +1773,6 @@ public class playerScript : MonoBehaviour
         rb.sharedMaterial = slipperyMaterial;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation; // can no longer roll
-        scalerAugment.transform.localScale = new Vector3(0.25f, 0.25f, 1f); // shrink the scaler star to signify it is no longer usable
         transform.rotation = Quaternion.identity; // lock rotation to 0;
         hookshotScript.enabled = false;
         hookshotAnchor.SetActive(false);
@@ -1714,11 +1790,11 @@ public class playerScript : MonoBehaviour
         hookshotScript.enabled = false;
         if(facingDirection == 1)
         {
-            hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f , 45f);
+            currentHookshotSprite.transform.eulerAngles = new Vector3(0f, 0f , 45f);
         }
         else
         {
-            hookshotAugment.transform.eulerAngles = new Vector3(0f, 0f, -45f);
+            currentHookshotSprite.transform.eulerAngles = new Vector3(0f, 0f, -45f);
         }
     }
 
