@@ -206,7 +206,6 @@ public class hookShot : MonoBehaviour
                     if(hit.collider != null) ropeAnchorPoint = hit.point;
                     ropeAttached = false;
                     ropeMiss = true;
-                    Debug.Log("Heyo");
                     return;
                 }
 

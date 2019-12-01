@@ -1386,8 +1386,6 @@ public class playerScript : MonoBehaviour
             BoxDrop(); // drops any box immediately
             scalerAugment.transform.localScale = new Vector3(0.35f, 0.35f, 1f); // set the Scaler star/spikes to maximum size
         }
-
-
         else if (hasArms && !hasLegs)
         {
             if(previousPartConfiguration > 2)
@@ -1446,10 +1444,13 @@ public class playerScript : MonoBehaviour
             // adjust height of other parts
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
             arms.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y - 0.255f); // arms snap down relative to the head, maintaining their original height
-            raycastYOffset = -0.7f;
+            raycastYOffset = -0.78f;
+            shieldBubble.transform.localPosition = Vector3.zero;
+            boxCol.size = new Vector2(0.6f , 1.2f);
+            boxCol.offset = new Vector2(0f , -0.27f);
 
-            boxCol.size = new Vector2(0.6f , 1.6f);
-            boxCol.offset = new Vector2(0f , 0.03f);
+        //    boxCol.size = new Vector2(0.6f , 1.6f);
+        //    boxCol.offset = new Vector2(0f , 0.03f);
             
             if(holding == true) // keep holding the box if you were
             {
@@ -1529,8 +1530,12 @@ public class playerScript : MonoBehaviour
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.155f); // head snaps up... legs stay where they are
             raycastYOffset = -0.95f;
 
-            boxCol.size = new Vector2(0.6f , 1.45f);
-            boxCol.offset = new Vector2(0f , -0.27f);
+
+            boxCol.size = new Vector2(0.6f , 1.79f);
+            boxCol.offset = new Vector2(0f , -0.16f);
+
+        //    boxCol.size = new Vector2(0.6f , 1.45f);
+        //    boxCol.offset = new Vector2(0f , -0.27f);
             BoxDrop(); // no arms, so drop the box
         }
 
@@ -1609,9 +1614,11 @@ public class playerScript : MonoBehaviour
             head.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y + 0.755f); // head snaps up
             arms.transform.position = new Vector2(snapOffsetPos.x , snapOffsetPos.y); // arms share the complete character's origin
             raycastYOffset = -0.95f;
-
-            boxCol.size = new Vector2(0.6f , 2.08f);
-            boxCol.offset = new Vector2(0f , 0.03f);
+            shieldBubble.transform.localPosition = new Vector3(0f , 0.135f, 0f);
+            boxCol.size = new Vector2(0.6f , 2.37f);
+            boxCol.offset = new Vector2(0f , 0.14f);
+        //    boxCol.size = new Vector2(0.6f , 2.08f);
+        //   boxCol.offset = new Vector2(0f , 0.03f);
 
             if(holding == true) // keep holding the box if you were
             {

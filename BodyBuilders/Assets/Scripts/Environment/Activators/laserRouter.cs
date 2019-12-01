@@ -352,7 +352,6 @@ public class laserRouter : activate
                     if(charged)
                     {
                         playerScript.Die(0.5f);
-                        Debug.Log("Killed");
                     }
                 }               
             }

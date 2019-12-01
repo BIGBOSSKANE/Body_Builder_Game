@@ -105,7 +105,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009491184}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5469999, z: 0}
+  m_LocalPosition: {x: 0, y: 0.95799994, z: 0}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5014912384142670237}
@@ -148,7 +148,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: fec36799c82b2414b83e952432071141, type: 3}
+  m_Sprite: {fileID: -5606351447977730624, guid: b34ae8bcf0a688a46b1cfa73c315128d,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -171,9 +172,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14264ad73a9e02d4b82168cc18fa62c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basic: {fileID: 21300000, guid: fec36799c82b2414b83e952432071141, type: 3}
-  augment1: {fileID: 21300000, guid: acad2e0f3035cdf4ba334e22133004d5, type: 3}
-  augment2: {fileID: 21300000, guid: e76535bf45b533e46841e35b249dd768, type: 3}
+  basic: {fileID: -5606351447977730624, guid: b34ae8bcf0a688a46b1cfa73c315128d, type: 3}
+  augment1: {fileID: 8232466775740470103, guid: b34ae8bcf0a688a46b1cfa73c315128d,
+    type: 3}
+  augment2: {fileID: 410165514800827008, guid: b34ae8bcf0a688a46b1cfa73c315128d, type: 3}
 --- !u!1 &1554560233
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,7 +375,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891894800}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.802, z: 0}
+  m_LocalPosition: {x: 0, y: 0.944, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5014912384142670237}
@@ -416,7 +418,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: 85b884d0a5520094cb61fa24dc57c7c5, type: 3}
+  m_Sprite: {fileID: 951202722330857587, guid: b34ae8bcf0a688a46b1cfa73c315128d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -439,9 +441,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14264ad73a9e02d4b82168cc18fa62c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basic: {fileID: 21300000, guid: 85b884d0a5520094cb61fa24dc57c7c5, type: 3}
-  augment1: {fileID: 21300000, guid: af23c6343c5b1734384b75e2fc2091ca, type: 3}
-  augment2: {fileID: 21300000, guid: 56ddf5ac43abdce43b660aa50f2bf1fc, type: 3}
+  basic: {fileID: 951202722330857587, guid: b34ae8bcf0a688a46b1cfa73c315128d, type: 3}
+  augment1: {fileID: 6432522758623288637, guid: b34ae8bcf0a688a46b1cfa73c315128d,
+    type: 3}
+  augment2: {fileID: 6596589010366336338, guid: b34ae8bcf0a688a46b1cfa73c315128d,
+    type: 3}
 --- !u!1 &2056297645
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,11 +490,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Head: {fileID: 5744412106282342317, guid: 985b593b610f62f4485b7c5320424fd0, type: 3}
-  HeadAndArms: {fileID: 7135904791305683921, guid: 85ea30610bac0da4ea788dbad3fc27d3,
+  HeadAndArms: {fileID: 1843626842466131, guid: 20a8339237019d946877338b9c5f018e,
     type: 3}
-  HeadAndLegs: {fileID: 5989249348201961629, guid: fdafb4ca8fad27d47a2461d062491c36,
+  HeadAndLegs: {fileID: 8019623139588467996, guid: ac28c9218f736dd4eb5b9bbe0c458645,
     type: 3}
-  Fullbody: {fileID: 2952321944478750386, guid: 80028252e9c4ade45985fb7812165390,
+  Fullbody: {fileID: 2868832049749132432, guid: ab033fcdfe5278043aa10cfe9dba8d3c,
     type: 3}
 --- !u!1 &5014912384142670208
 GameObject:
@@ -545,8 +549,8 @@ MonoBehaviour:
   headConfiguration: 1
   armConfiguration: 1
   legConfiguration: 1
-  bodyConfiguration: Head
+  bodyConfiguration: Full Body
   headAugment: Basic Head
-  armType: Lifter Arms
-  legType: Basic Legs
-  editorSpawnPos: {x: -8.08, y: -0.44}
+  armType: Basic Arms
+  legType: Groundbreaker Legs
+  editorSpawnPos: {x: 0, y: 0}
