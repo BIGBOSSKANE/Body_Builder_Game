@@ -2,50 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class RobotSpriteSegment
-{
-    public string name;
-    public GameObject rootObj;
-    public Sprite[] spriteSet;
-    SpriteRenderer renderer;
-
-    public void Init()
-    {
-        if (rootObj)
-            renderer = rootObj.GetComponent<SpriteRenderer>(); 
-    }
-
-    public void Enable(bool enable)
-    {
-        rootObj.SetActive(enable);
-    }
-
-    public void SetSprite(int index)
-    {
-        if (index >=0 && index < spriteSet.Length)
-            renderer.sprite = spriteSet[index];
-    }
-}
-
 [RequireComponent(typeof(Animator))]
 public class RobotAnimations : MonoBehaviour
 {
     public float moveThreshold = 0.05f;
     public float legsOffset = -1.1f;
     public float armsOffset = -0.8f;
-    public SpriteRenderer[] defaultLegs;
-    public SpriteRenderer[] afterburnerLegs;
-    public SpriteRenderer[] groundbreakerLegs;
+    public SpriteRenderer[] defaultLegs; //should include lower torso
+    public SpriteRenderer[] afterburnerLegs; //shouldn't include lower torso
+    public SpriteRenderer[] groundbreakerLegs; //shouldn't include lower torso.
     public SpriteRenderer[] defaultArms;
     public SpriteRenderer[] shieldArms;
     public SpriteRenderer[] lifterArms;
     public SpriteRenderer[] animatedHead;
+    public SpriteRenderer[] lowerTorso;
+    public SpriteRenderer[] augmentedLowerTorso;
 
-    public RobotSpriteSegment[] armSegments;
-    public RobotSpriteSegment[] legSegments;
-    
-    
     Animator anim;
     float speed = 0.0f;
     GameObject lastArms;
@@ -61,17 +33,9 @@ public class RobotAnimations : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        foreach (RobotSpriteSegment rss in legSegments)
-        {
-            rss.Init();
-        }
-        foreach (RobotSpriteSegment rss in armSegments)
-        {
-            rss.Init();
-        }
         SetConfigurations(1,1,1);
         SetParts(null, null, null);
-        ToggleObjects(animatedHead, false );
+        //ToggleObjects(animatedHead, false );
     }
 
     void CompleteTransition()
@@ -155,12 +119,22 @@ public class RobotAnimations : MonoBehaviour
 
     void UpdateVisibility()
     {
-        bool showhead = (lastLegs != null  || lastArms != null);
+        //only show head if you have arms
+        bool showhead = (lastArms != null);
         //Debug.Log("Showhead: " + showhead);
         ToggleObjects(animatedHead, showhead, showhead);
         ShowArms(lastArms != null);
-        ShowLegs(lastLegs != null);
-        
+        ShowLegs(lastLegs != null); 
+
+        //This is for the 'torso head', but we have to disable augment sprites.
+        if (lastLegs != null)
+        {
+            ToggleObjects(lowerTorso, true, true);
+            if (lastArms == null)
+            {
+                ToggleObjects(augmentedLowerTorso, false, true);
+            }
+        }
     }
 
     public void SetParts(GameObject legs, GameObject arms, GameObject head)
@@ -229,7 +203,7 @@ public class RobotAnimations : MonoBehaviour
         anim.Play("Base Layer.Root");
     }
 
-    //This is for showing / hiding parts we pick up..
+    //This is for showing / hiding parts we pick up, not our own body parts.
     public void ShowPart(GameObject part, bool shouldShow = true)
     {
         if (!part)
@@ -251,9 +225,10 @@ public class RobotAnimations : MonoBehaviour
         //renderers
 
         //Step1: disable all renderers, but turn default game objects on.
-        ToggleObjects(defaultArms, false, true);
+        ToggleObjects(defaultArms, false, true); //needs to come first
         ToggleObjects(lifterArms, false);
         ToggleObjects(shieldArms, false);
+        
 
         //Step2: enable renderers as necessary
         switch(armConfig)
@@ -289,9 +264,10 @@ public class RobotAnimations : MonoBehaviour
         //renderers.
 
         //Step 1 disable all renderers, but turn default game objects on.
-        ToggleObjects(defaultLegs, false, true);
         ToggleObjects(groundbreakerLegs, false);
         ToggleObjects(afterburnerLegs, false);
+        ToggleObjects(defaultLegs, false, true);
+        
         //Step 2 enable sprite renderers as necessary.
         switch(legConfig)
         {
@@ -325,20 +301,6 @@ public class RobotAnimations : MonoBehaviour
             s.enabled = shouldShow;
             if (s.gameObject.activeSelf != setActive)
                 s.gameObject.SetActive(setActive);
-        }
-    }
-
-    void UpdateSegments(RobotSpriteSegment[] segments, bool shouldShow, int spriteIndex = 0)
-    {
-        foreach (RobotSpriteSegment rss in segments)
-        {
-            if (shouldShow)
-            {
-                //set correct spriteset
-                rss.SetSprite(spriteIndex);
-            }
-            //enable or disable the game object
-            rss.Enable(shouldShow);
         }
     }
 }
