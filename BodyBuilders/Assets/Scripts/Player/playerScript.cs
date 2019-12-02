@@ -784,6 +784,12 @@ public class playerScript : MonoBehaviour
             {
                 timeSlowScript.TimeSlow();
                 groundBreakerReset = true;
+                
+                // ANIMS: Set animation states
+                if (anims != null)
+                {
+                    anims.DrillTransition(true);
+                }
             }
         }
 

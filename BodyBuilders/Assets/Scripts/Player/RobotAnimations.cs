@@ -110,7 +110,10 @@ public class RobotAnimations : MonoBehaviour
         transform.localPosition = new Vector2(0, offset);
     }
     
-    
+    public void DrillTransition(bool drill)
+    {
+        anim.SetBool("isDrill", drill);
+    }    
 
     public void SetConfigurations(int legs, int arms, int head)
     {
