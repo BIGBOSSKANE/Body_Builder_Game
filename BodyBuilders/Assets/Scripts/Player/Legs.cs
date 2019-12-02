@@ -178,12 +178,12 @@ public class Legs : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && playerScript.partConfiguration != 2 && playerScript.isGrounded == true) // reset the collider if the player is not jumping
+        if(col.gameObject.tag == "Player" && playerScript.partConfiguration != 2 && playerScript.isGrounded == true && !(playerScript.partConfiguration == 1 && playerScript.scaler && playerScript.scalerTrueGrounded)) // reset the collider if the player is not jumping
         {
             playerBoxCol.enabled = false;
             playerBoxCol.enabled = true;
         }
-        else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
+        else if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 2 || (playerScript.partConfiguration == 1 && playerScript.scaler && !playerScript.scalerTrueGrounded)) && playerScript.partConfiguration != 3 && playerScript.partConfiguration != 4)
         {
             playerScript.legString = this.name;
             int playerParts = playerScript.partConfiguration;

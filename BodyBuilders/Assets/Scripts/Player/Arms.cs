@@ -135,7 +135,7 @@ public class Arms : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         Vector2 thisPos = gameObject.transform.position;
-        if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 3) && playerScript.partConfiguration != 2 && playerScript.partConfiguration != 4) // if the player has just legs, snap anyway
+        if(col.gameObject.tag == "Player" && (!playerScript.isGrounded || playerScript.partConfiguration == 3 || (playerScript.partConfiguration == 1 && playerScript.scaler && !playerScript.scalerTrueGrounded)) && playerScript.partConfiguration != 2 && playerScript.partConfiguration != 4) // if the player has just legs, snap anyway
         {
             playerScript.armString = this.name;
             int playerParts = playerScript.partConfiguration;

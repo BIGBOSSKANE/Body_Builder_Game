@@ -475,6 +475,7 @@ public class playerScript : MonoBehaviour
                 if (!wasGrounded && anims != null)
                 {
                     anims.Land();
+                    anims.DrillTransition(false);
                 }
             }
             else // if not grounded

@@ -110,9 +110,9 @@ public class RobotAnimations : MonoBehaviour
         transform.localPosition = new Vector2(0, offset);
     }
     
-    public void DrillTransition(bool drill)
+    public void DrillTransition(bool drill) // not currently working, the player head is just vanishing and no animation is occuring
     {
-        anim.SetBool("isDrill", drill);
+        //anim.SetBool("isDrill", drill);
     }    
 
     public void SetConfigurations(int legs, int arms, int head)
