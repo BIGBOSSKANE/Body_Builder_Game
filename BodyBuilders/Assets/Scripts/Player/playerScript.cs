@@ -297,6 +297,8 @@ public class playerScript : MonoBehaviour
         playerSound = GetComponent<playerSound>();
         playerSound.Respawn();
         touchedGroundSinceSpawn = false;
+        FindBoostSprites();
+        ActivateBoostSprites(false);
     }
 
     void FindBoostSprites()
@@ -467,10 +469,7 @@ public class playerScript : MonoBehaviour
                 lastGroundedHeight = transform.position.y; // reset lastGroundedHeight
                 leftGroundTimer = 0f; // reset the jump time
                 remainingJumps = maximumJumps; // reset remaining jumps
-                if(boostSprite1 != null) // disable jump booster sprites if they were active
-                {
-                    ActivateBoostSprites(false);
-                }
+                ActivateBoostSprites(false);
                 
                 //ANIMATION CODE - LAND
                 if (!wasGrounded && anims != null)
@@ -800,26 +799,17 @@ public class playerScript : MonoBehaviour
             rb.gravityScale = 1f;
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime * 0.0005f;
 
-            if(boostSprite1 != null && climbing == false)
-            {
-                ActivateBoostSprites(true);
-            }
+            if(climbing == false) ActivateBoostSprites(true);
         }
         else if(rb.velocity.y < 0f && !wallSliding && !isSwinging) // fast fall for impactful jumping... not great for the knees though (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
-            if(boostSprite1 != null)
-            {
-                ActivateBoostSprites(false);
-            }
+            ActivateBoostSprites(false);
         }
         else if (rb.velocity.y > 0f && rawMovementInput.y <= 0 && !InputManager.Jump() && !InputManager.ButtonB() && !lockController && !isSwinging && fastFall) // reduces jump height when button isn't held (gravity inputs a negative value)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (unheldJumpReduction - 1) * Time.deltaTime;
-            if(boostSprite1 != null)
-            {
-                ActivateBoostSprites(false);
-            }       
+            ActivateBoostSprites(false);
         }
 
         BoxInteract(); // check for box pickup or drop prompts
@@ -1405,10 +1395,7 @@ public class playerScript : MonoBehaviour
             lifter = false;
             shield = false;
             DeactivateShield();
-            if(boostSprite1 != null)
-            {
-                ActivateBoostSprites(false);
-            }
+            ActivateBoostSprites(false);
 
             if(headString == "ScalerHead" || scaler) // if the player already has a head augmenr, they keep it when they get a new one
             {
@@ -1513,10 +1500,7 @@ public class playerScript : MonoBehaviour
                 maximumJumps = 1;
                 groundbreaker = false;
                 afterburner = false;
-                if(boostSprite1 != null)
-                {
-                    ActivateBoostSprites(false);
-                }
+                ActivateBoostSprites(false);
            
             // adjust height of other parts
             head.transform.position = new Vector2 (snapOffsetPos.x , snapOffsetPos.y + 0.55f); // head snaps up
@@ -1577,16 +1561,12 @@ public class playerScript : MonoBehaviour
                     legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
-                    FindBoostSprites();
                 }
                 else
                 {
                     maximumJumps = 1;
                     afterburner = false;
-                    if(boostSprite1 != null)
-                    {
-                        ActivateBoostSprites(false);
-                    }
+                    ActivateBoostSprites(false);
                 }
 
                 if(legString == "GroundbreakerLegs")
@@ -1661,16 +1641,12 @@ public class playerScript : MonoBehaviour
                     legConfiguration = 3;
                     maximumJumps = 2;
                     afterburner = true;
-                    FindBoostSprites();
                 }
                 else
                 {
                     maximumJumps = 1;
                     afterburner = false;
-                    if(boostSprite1 != null)
-                    {
-                        ActivateBoostSprites(false);
-                    }
+                    ActivateBoostSprites(false);
                 }
 
                 if(legString == "GroundbreakerLegs")
