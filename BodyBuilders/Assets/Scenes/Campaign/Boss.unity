@@ -882,14 +882,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 905934734, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.7
+      objectReference: {fileID: 0}
     - target: {fileID: 4281081074423762802, guid: 6182a1560dd6f384b9e095968904196d,
         type: 3}
       propertyPath: m_SortingOrder
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 905934734, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 4281081075188009682, guid: 6182a1560dd6f384b9e095968904196d,
         type: 3}
@@ -900,6 +900,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 11.074
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.03137255
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
@@ -2863,6 +2873,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.03137255
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
@@ -10721,14 +10741,19 @@ PrefabInstance:
       propertyPath: m_LocalScale.x
       value: 1.1726644
       objectReference: {fileID: 0}
+    - target: {fileID: 905934734, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.65
+      objectReference: {fileID: 0}
     - target: {fileID: 4281081074423762802, guid: 6182a1560dd6f384b9e095968904196d,
         type: 3}
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 905934734, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 1.65
+    - target: {fileID: 4281081074423762802, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4281081075188009682, guid: 6182a1560dd6f384b9e095968904196d,
         type: 3}
@@ -10739,6 +10764,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 20.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281081075188009681, guid: 6182a1560dd6f384b9e095968904196d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.03137255
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6182a1560dd6f384b9e095968904196d, type: 3}
@@ -10753,11 +10788,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MovingSawBlade (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 14.353168
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -10828,6 +10858,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 14.353168
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -11581,11 +11616,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 12.193495
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11655,6 +11685,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 12.193495
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -14626,11 +14661,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 12.193486
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14700,6 +14730,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 12.193486
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -15310,16 +15345,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 90737907291773157, guid: cd35204fa2df4e0488f8b05e17f66818,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 669882065}
-    - target: {fileID: 90737907291773157, guid: cd35204fa2df4e0488f8b05e17f66818,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ReturnButton
-      objectReference: {fileID: 0}
     - target: {fileID: 90737906688618818, guid: cd35204fa2df4e0488f8b05e17f66818,
         type: 3}
       propertyPath: masterFader
@@ -15335,6 +15360,16 @@ PrefabInstance:
       propertyPath: sfxFader
       value: 
       objectReference: {fileID: 613311232}
+    - target: {fileID: 90737907291773157, guid: cd35204fa2df4e0488f8b05e17f66818,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 669882065}
+    - target: {fileID: 90737907291773157, guid: cd35204fa2df4e0488f8b05e17f66818,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReturnButton
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd35204fa2df4e0488f8b05e17f66818, type: 3}
 --- !u!114 &613311232 stripped
@@ -24747,11 +24782,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10.060632
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -24821,6 +24851,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10.060632
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -26059,11 +26094,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10.060632
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -26133,6 +26163,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10.060632
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -27789,7 +27824,7 @@ SpriteRenderer:
   m_SortingLayer: -2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 754d2638425adb34f8453a594fc2774d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.37647063, g: 0.32156864, b: 0.29803923, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -30306,7 +30341,7 @@ SpriteRenderer:
   m_SortingLayer: -2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 754d2638425adb34f8453a594fc2774d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.35686275, g: 0.29411766, b: 0.27058825, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -30333,11 +30368,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MovingSawBlade (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 12.193495
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -30408,6 +30438,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 12.193495
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -34878,11 +34913,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 13.266629
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -34952,6 +34982,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 13.266629
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
@@ -48046,7 +48081,7 @@ SpriteRenderer:
   m_SortingLayer: -2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 754d2638425adb34f8453a594fc2774d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.37647063, g: 0.32156864, b: 0.29803923, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -51074,11 +51109,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MovingSawBlade
       objectReference: {fileID: 0}
-    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10.060632
-      objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191483, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -51148,6 +51178,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6707088
+      objectReference: {fileID: 0}
+    - target: {fileID: 3850240100489702908, guid: 37ed3b7dec9b0654a8cdb8436a723320,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10.060632
       objectReference: {fileID: 0}
     - target: {fileID: 3850240099121191480, guid: 37ed3b7dec9b0654a8cdb8436a723320,
         type: 3}

@@ -474,6 +474,7 @@ public class playerScript : MonoBehaviour
                 //ANIMATION CODE - LAND
                 if (!wasGrounded && anims != null)
                 {
+                    Debug.Log("Landed");
                     anims.Land();
                     anims.DrillTransition(false);
                 }
