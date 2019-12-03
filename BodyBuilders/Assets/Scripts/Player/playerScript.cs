@@ -130,7 +130,7 @@ public class playerScript : MonoBehaviour
     [HideInInspector] public GameObject heldBox;
     [HideInInspector] public string heldBoxTag;
     bool lifter = false; // do you have the lifter augment?
-    [HideInInspector] public bool shield = false; // do you have the shield augment?
+    public bool shield = false; // do you have the shield augment?
     bool climbing = false; // are you climbing?
     [HideInInspector] public bool wallSliding = false; // are you on a wall-jumpable surface
     float wallSlideSpeedMax = 0.1f; // how fast can you slide down walls
@@ -238,8 +238,6 @@ public class playerScript : MonoBehaviour
     GameObject hookshotHeadSprite;
     GameObject hookShotUpperAnimSprite;
     GameObject hookshotLowerAnimSprite;
-
-
 
     void Awake()
     {
@@ -1477,6 +1475,9 @@ public class playerScript : MonoBehaviour
             ShiftAugmentSprites();
             NonHeadConfig();
             fallMultiplier = 3f;
+            shield = false;
+            lifter = false;
+
             if(armString == "LifterArms" || armString == "ShieldArms")
             {
                 if(armString == "LifterArms")
@@ -1562,6 +1563,8 @@ public class playerScript : MonoBehaviour
             shield = false;
             DeactivateShield();
 
+            afterburner = false;
+            groundbreaker = false;
             if(legString == "AfterburnerLegs" || legString == "GroundbreakerLegs")
             {
                 if(legString == "AfterburnerLegs")
@@ -1615,6 +1618,9 @@ public class playerScript : MonoBehaviour
 
             ShiftAugmentSprites();
             NonHeadConfig();
+            
+            shield = false;
+            lifter = false;
             if(armString == "LifterArms" || armString == "ShieldArms")
             {
                 if(armString == "LifterArms")
@@ -1642,6 +1648,8 @@ public class playerScript : MonoBehaviour
                 armConfiguration = 1;
             }
 
+            afterburner = false;
+            groundbreaker = false;
             if(legString == "AfterburnerLegs" || legString == "GroundbreakerLegs")
             {
                 if(legString == "AfterburnerLegs")

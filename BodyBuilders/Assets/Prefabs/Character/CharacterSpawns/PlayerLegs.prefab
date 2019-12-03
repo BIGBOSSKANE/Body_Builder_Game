@@ -9600,7 +9600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundBreaker: 0
-  legType: 2
+  legType: 0
   instance: 1
   BasicSprite: {fileID: 951202722330857587, guid: b34ae8bcf0a688a46b1cfa73c315128d,
     type: 3}
@@ -9645,8 +9645,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 48
-  m_Sprite: {fileID: 6596589010366336338, guid: b34ae8bcf0a688a46b1cfa73c315128d,
-    type: 3}
+  m_Sprite: {fileID: 951202722330857587, guid: b34ae8bcf0a688a46b1cfa73c315128d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9674,7 +9673,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 1}
-    oldSize: {x: 0.8725, y: 1.3275}
+    oldSize: {x: 0.5425, y: 1.3225}
     newSize: {x: 8.1, y: 8.56}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -16053,6 +16052,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10eb0163482abe54eb46e9d5ebae012c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoutEnabled: 1
   spaceForJump: 0
   forceSlaved: 0
   scalingWall: 0
