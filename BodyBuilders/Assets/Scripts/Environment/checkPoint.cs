@@ -26,6 +26,7 @@ public class checkPoint : MonoBehaviour
     public int legIdentifier;
     public int augmentScalerIdentifier;
     public int augmentHookshotIdentifier;
+    public bool scoutEnabled;
 
 
     void Start()
@@ -60,7 +61,7 @@ public class checkPoint : MonoBehaviour
                     augmentHookshotIdentifier = playerScript.augmentHookshotIdentifier;
                 }
                 gameManager.SetCheckpoint(new Vector2(transform.position.x , transform.position.y + 1f) , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
-                                          armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
+                                          armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier, scoutEnabled);
             }
         }
     }

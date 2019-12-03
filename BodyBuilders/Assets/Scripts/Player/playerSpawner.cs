@@ -11,8 +11,9 @@ using UnityEngine;
 
 public class playerSpawner : MonoBehaviour
 {
-    public bool spaceForJump;
     public bool preview;
+    public bool spaceForJump;
+    public bool scoutEnabled = true;
 
     [Header("Configuration:")]
     [Tooltip("1 is head, 2 is head and arms, 3 is head and legs, 4 is full body")] [Range (1 , 4)] public int partConfiguration = 1;
@@ -50,7 +51,7 @@ public class playerSpawner : MonoBehaviour
         spawnPos = editorSpawnPos + Vector2.up * verticalOffset;
     }
 
-    public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs , int armIdenti , int legIdenti , int scalerIdenti , int hookshotIdenti) // called by the GameManagerScript
+    public void OverrideSpawn(Vector2 spawnPosition, int parts , int head , int arms , int legs , int armIdenti , int legIdenti , int scalerIdenti , int hookshotIdenti , bool scoutAble) // called by the GameManagerScript
     {
         spawnPos = spawnPosition + Vector2.up * verticalOffset;
         partConfiguration = parts;
@@ -61,6 +62,7 @@ public class playerSpawner : MonoBehaviour
         legIdentifier = legIdenti;
         augmentScalerIdentifier = scalerIdenti;
         augmentHookshotIdentifier = hookshotIdenti;
+        scoutEnabled = scoutAble;
         SpawnPlayer();
     }
 
@@ -183,6 +185,7 @@ public class playerSpawner : MonoBehaviour
         }
         
         playerScript.spaceForJump = spaceForJump;
+        playerScript.scoutEnabled = scoutEnabled;
 
     }
 

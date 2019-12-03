@@ -21,6 +21,7 @@ public class gameManager : MonoBehaviour
     public int headConfiguration;
     public int armConfiguration;
     public int legConfiguration;
+    public bool scoutEnabled;
     GameObject scalerAugment;
     GameObject hookshotAugment;
 
@@ -129,6 +130,8 @@ public class gameManager : MonoBehaviour
                 headConfiguration = playerSpawnerScript.headConfiguration;
                 armConfiguration = playerSpawnerScript.armConfiguration;
                 legConfiguration = playerSpawnerScript.legConfiguration;
+                scoutEnabled = playerSpawnerScript.scoutEnabled;
+
                 armIdentifier = 0;
                 legIdentifier = 0;
                 augmentScalerIdentifier = 0;
@@ -140,11 +143,11 @@ public class gameManager : MonoBehaviour
             playerSpawner = GameObject.Find("PlayerSpawner").gameObject;
             playerSpawnerScript = playerSpawner.GetComponent<playerSpawner>();
             playerSpawnerScript.OverrideSpawn(spawnPos , partConfiguration , headConfiguration , armConfiguration , legConfiguration,
-                                              armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier);
+                                              armIdentifier , legIdentifier , augmentScalerIdentifier , augmentHookshotIdentifier , scoutEnabled);
         }
     }
 
-    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig , int armsIdenti , int legsIdenti , int augmentScalerIdenti , int augmentHookshotIdenti) // set checkpoint when entering a checkpoint
+    public void SetCheckpoint(Vector2 checkpointPos , int bodyParts , int headParts , int armsConfig , int legsConfig , int armsIdenti , int legsIdenti , int augmentScalerIdenti , int augmentHookshotIdenti , bool scoutAble) // set checkpoint when entering a checkpoint
     {
         xPosition = checkpointPos.x;
         yPosition = checkpointPos.y;
@@ -156,5 +159,6 @@ public class gameManager : MonoBehaviour
         legIdentifier = legsIdenti;
         augmentScalerIdentifier = augmentScalerIdenti;
         augmentHookshotIdentifier = augmentHookshotIdenti;
+        scoutEnabled = scoutAble;
     }
 }

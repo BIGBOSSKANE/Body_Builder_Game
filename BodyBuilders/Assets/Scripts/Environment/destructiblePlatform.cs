@@ -5,6 +5,7 @@ using UnityEngine;
 public class destructiblePlatform : MonoBehaviour
 {
     List<SpriteRenderer> partSprites = new List<SpriteRenderer>();
+    public float forceLimit = 10f;
     bool breaking = false;
     float frameCount;
     [Tooltip("The duration that the fractured pieces take to turn invisible")] public float fadeDuration = 1f;
@@ -17,16 +18,16 @@ public class destructiblePlatform : MonoBehaviour
         if(!breaking)
         {
             breaking = true;
-            Debug.Log("destroying");
             Destroy(GetComponent<BoxCollider2D>());
             if(GetComponent<SpriteRenderer>() != null) Destroy(GetComponent<SpriteRenderer>());
             foreach (GameObject part in parts)
             {
+                part.transform.parent = null;
                 part.SetActive(true);
                 Vector2 colVec = (Vector2)part.transform.position - colPos;
                 float torque = Mathf.Clamp(colVec.magnitude * Mathf.Sign(colVec.x) * 3, 1 , 5);
                 part.GetComponent<Rigidbody2D>().AddTorque(torque , ForceMode2D.Impulse);
-                part.GetComponent<Rigidbody2D>().AddForce(new Vector2(colVec.x / 2f , Mathf.Clamp(colVec.y, 1 , Mathf.Infinity) * 4f) , ForceMode2D.Impulse);
+                part.GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Clamp(colVec.x / 2f , 0 , forceLimit) , Mathf.Clamp(Mathf.Clamp(colVec.y, 1 , Mathf.Infinity) * 4f , 0 , forceLimit)) , ForceMode2D.Impulse);
                 partSprites.Add(part.GetComponent<SpriteRenderer>());
             }
         }

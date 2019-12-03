@@ -50,6 +50,7 @@ public class playerScript : MonoBehaviour
 // Checkpoint
 
     private Vector2 currentSpawnPoint;
+    public bool scoutEnabled = true;
 
 // BASIC MOVEMENT
     public bool spaceForJump = false;
@@ -391,7 +392,7 @@ public class playerScript : MonoBehaviour
             previousVelocity = rb.velocity;
             Vector2 targetVelocity = Vector2.zero;
 
-            if(InputManager.ToggleScout())
+            if(InputManager.ToggleScout() && scoutEnabled)
             {
                 if(!lockController)
                 {
@@ -474,7 +475,6 @@ public class playerScript : MonoBehaviour
                 //ANIMATION CODE - LAND
                 if (!wasGrounded && anims != null)
                 {
-                    Debug.Log("Landed");
                     anims.Land();
                     anims.DrillTransition(false);
                 }

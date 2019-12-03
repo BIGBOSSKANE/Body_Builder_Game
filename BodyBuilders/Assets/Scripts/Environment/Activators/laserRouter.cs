@@ -558,15 +558,18 @@ public class laserRouter : activate
 
     override public void ActivateDirection(bool right)
     {
-        if(anticlockwise)
+        if(canRotate)
         {
-            right = !right;
+            if(anticlockwise)
+            {
+                right = !right;
+            }
+
+            float currentRotation = (rotating)? (targetRotation.eulerAngles - aimSprite.transform.rotation.eulerAngles).z : 0;
+
+            rotateTimer = 0f;
+            Rotate(right , currentRotation);
         }
-
-        float currentRotation = (rotating)? (targetRotation.eulerAngles - aimSprite.transform.rotation.eulerAngles).z : 0;
-
-        rotateTimer = 0f;
-        Rotate(right , currentRotation);
     }
 
     void OnDrawGizmos() // shows the waypoints in both editor and in game
