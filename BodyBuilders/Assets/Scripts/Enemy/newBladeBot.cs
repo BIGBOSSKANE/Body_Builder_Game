@@ -95,32 +95,32 @@ public class newBladeBot : MonoBehaviour
 
         if (down)
         {
-            transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed);
+            transform.position = Vector2.MoveTowards(transform.position, DownDestination.transform.position, speed * Time.deltaTime);
             blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (up)
         {
-            transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed);
+            transform.position = Vector2.MoveTowards(transform.position, UpDestination.transform.position, speed * Time.deltaTime);
             blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (left)
         {
-            transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed);
+            transform.position = Vector2.MoveTowards(transform.position, LeftDestination.transform.position, speed * Time.deltaTime);
             blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (right)
         {
-            transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed);
+            transform.position = Vector2.MoveTowards(transform.position, RightDestination.transform.position, speed * Time.deltaTime);
             blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed * 2);
         }
 
         if (movingBack)
         {
             transform.position = Vector2.MoveTowards(transform.position, startPos.transform.position, 5 * Time.deltaTime);
-            blade.gameObject.transform.Rotate(Vector3.forward, 10 * speed);
+            blade.gameObject.transform.Rotate(Vector3.forward, 5 * maxSpeed);
         }
     }
 

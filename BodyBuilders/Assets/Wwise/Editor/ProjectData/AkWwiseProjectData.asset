@@ -184,14 +184,14 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 2201572b3ba6594ba3871aad11366252
     GuidInternal: 
-    m_lastTime: -8586282946352552227
+    m_lastTime: -8586275276306248097
     List: []
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     ParentPhysicalPath: 
     guid: a3b0c194a4ed8f448357d044dfb880c3
     GuidInternal: 
-    m_lastTime: -8586276540043299781
+    m_lastTime: -8586261705315190113
     List:
     - name: Character
       guid: 55ea0ef8e4ed0241be99fb2df6b9f267
@@ -234,7 +234,7 @@ MonoBehaviour:
     ParentPhysicalPath: 
     guid: 1b16332c908874488ead1fde7cecd217
     GuidInternal: 
-    m_lastTime: -8586276346020123229
+    m_lastTime: -8586261705315010597
     List:
     - name: Ambience
       guid: 3babaf65c50af14a9068ea9cf07fa74a
@@ -480,6 +480,20 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: GetTrophy
+      guid: 90688358594ea74fbdb5bdda0721b3a0
+      id: 2759292257
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Player
+        ObjectType: 4
+      - ElementName: GetTrophy
+        ObjectType: 3
+      Path: Default Work Unit\Player\GetTrophy
+      maxAttenuation: 0
+      maxDuration: 1.064902
+      minDuration: 1.064902
     - name: GyreDeactivate
       guid: ae6ad3285524e44d8b5a2b64f4dcbfa6
       id: 1571093136
@@ -1318,5 +1332,9 @@ MonoBehaviour:
       Path: Music\Death
   ExpandedItems:
   - /Bodybuilders Wwise
+  - /Bodybuilders Wwise/Events
+  - /Bodybuilders Wwise/Events/Default Work Unit
+  - /Bodybuilders Wwise/Events/Default Work Unit/Environmental Mechanics
+  - /Bodybuilders Wwise/Events/Default Work Unit/Player
   autoPopulateEnabled: 1
   CurrentPluginConfig: 

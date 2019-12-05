@@ -8,6 +8,7 @@ public class Trophy : MonoBehaviour
     {
         if(col.tag == "Player")
         {
+            AkSoundEngine.PostEvent("GetTrophy" , col.gameObject);
             Destroy(gameObject);
         }
     }

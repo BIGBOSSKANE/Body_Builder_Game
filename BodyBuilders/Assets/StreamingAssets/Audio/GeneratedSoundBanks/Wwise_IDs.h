@@ -28,6 +28,7 @@ namespace AK
         static const AkUniqueID ENTERFANAREA = 2406234679U;
         static const AkUniqueID EXITFAN = 1587122176U;
         static const AkUniqueID FOOTSTEP = 1866025847U;
+        static const AkUniqueID GETTROPHY = 2759292257U;
         static const AkUniqueID GYREDEACTIVATE = 1571093136U;
         static const AkUniqueID GYREDETECTION = 3261812143U;
         static const AkUniqueID GYRESLICE = 4149978840U;
