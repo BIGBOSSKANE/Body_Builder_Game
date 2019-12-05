@@ -40,7 +40,7 @@ public class checkPoint : MonoBehaviour
 
     void Update()
     {
-        boxCollider.enabled = true;
+        if(!boxCollider.enabled) boxCollider.enabled = true; // delay collisions until after the first frame to stop it from collecting data as the player spawner is editing the prefab
     }
 
     void OnTriggerEnter2D(Collider2D col)

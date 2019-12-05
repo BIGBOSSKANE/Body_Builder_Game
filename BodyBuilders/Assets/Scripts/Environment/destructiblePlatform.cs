@@ -48,6 +48,10 @@ public class destructiblePlatform : MonoBehaviour
                 }
                 if(fadeTimer <= 0)
                 {
+                    foreach (SpriteRenderer render in partSprites)
+                    {
+                        Destroy(render.gameObject);
+                    }
                     Destroy(gameObject);
                 }
             }
