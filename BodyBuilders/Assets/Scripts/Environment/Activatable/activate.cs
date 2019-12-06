@@ -5,6 +5,10 @@ Last Edited by: Daniel
 Last Edit 29/08/2019
 */
 
+/*
+Creator: Daniel
+*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿/*
+Creator: Daniel
+*/
+
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class checkpointData : MonoBehaviour

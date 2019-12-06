@@ -5,41 +5,6 @@ Last Edited by: Daniel
 Last Edit 06/09/2019
 */
 
-/*
-
-To do:
- - Bladebot
- - Refine screenshake
- - Sound implementation
- - Animation Implementation
- - Level Design
-
-
-The wall jump is failing because normal jump is being called first
-
-Altering wall jump movement in the air isn't feeling smooth, because deceleration is being applied, and then the target velocity > current velocity clause is completely shifting the movement speed.
-
-Wall jumping upwards disables groundchecker, meaning that if you hit a ceiling, you instantly bounce off if you jumped from a short enough distance - solved?
-
-
-
-Still need to fix:
-
-    try to get animations in from > sprites > V's Animations
-
-    currently when w is held and you have the scaler augment, you move up walls without rolling, if rotate speed is too low while w is held, lerp it up
-
-    wall jumping allows you to jump straight up, don't use walls until wall jump is properly implemented from the addition section below (later on)
-
-    Fix up hit ray on scaler form so that ground check isn't disabled when colliding with the ceiling
-
-
-Still need to add:
-
-    headbanger - like groundbreaker legs, but requiring a speed threshold to gain armour plates - jump - swing break puzzle
-*/
-
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;

@@ -1,4 +1,6 @@
 ﻿//Created by Kane Girvan
+//Edited by Daniel Creusot
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
