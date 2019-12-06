@@ -37,7 +37,7 @@ public class passThroughPlatform : MonoBehaviour
     {
         if(playerScript.lockController) return;
 
-        if(playerScript.isSwinging) gameObject.layer = 13; // while swinging, disable collisions with the player
+        if(playerScript.isSwinging || playerScript.currentVelocity.y > 5f) gameObject.layer = 13; // while swinging, disable collisions with the player
         else gameObject.layer = 14;
 
         if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow) || !playerAbove)
